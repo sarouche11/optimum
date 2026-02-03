@@ -1,0 +1,32 @@
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert 
+      {% if message.tags == 'debug' %}
+        alert-secondary
+      {% elif message.tags == 'info' %}
+        alert-info
+      {% elif message.tags == 'success' %}
+        alert-success
+      {% elif message.tags == 'warning' %}
+        alert-warning
+      {% elif message.tags == 'error' %}
+        alert-danger
+      {% else %}
+        alert-primary
+      {% endif %}
+      alert-dismissible fade show mt-2 message-box" role="alert">
+      
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+
+  <script>
+    // Supprimer tous les messages après 3 secondes
+    setTimeout(function () {
+      document.querySelectorAll(".message-box").forEach(function (el) {
+        el.remove();
+      });
+    }, 3000);
+  </script>
+{% endif %}

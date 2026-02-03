@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'partials/head.html' %}
+
+<body>
+    <div class="container">
+        <div class="card">
+
+            <div class="checkmark-container">
+                <div class="error-icon" style="font-size: 60px; color: red;">&#9888;</div>
+            </div>
+            <div class="titre">
+
+
+                <h2>{{ code }}</h2>
+                <p>{{ err }} </p>
+                <p>{{ detail }} </p>
+                
+            </div>
+
+            <div class="col-sm-12">
+                <a href="{% url 'login' %}" name="submit" id="submit" class="btn btn-gradient-primary mr-2"> Cliquez
+                    ici pour vous connecter</a>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to top left, #008080, #001f3f);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card {
+
+        background-color: white;
+        border-radius: 10px;
+        padding: 40px 30px;
+        width: 350px;
+        /* height: 400px; */
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .checkmark-container {
+        /* margin-top: 100px; */
+        padding-top: 90px;
+        margin-bottom: 20px;
+    }
+
+    .checkmark {
+        font-size: 48px;
+        color: #00c853;
+        border: 2px solid #00c853;
+        border-radius: 50%;
+        display: inline-block;
+        width: 70px;
+        height: 70px;
+        line-height: 65px;
+    }
+
+    h2 {
+        /* margin: 10px 0; */
+        padding-bottom: 10px;
+        font-size: 22px;
+        color: #333;
+    }
+
+    p {
+        
+        color: #555;
+        font-size: 14px;
+    }
+
+    .titre{
+         padding-bottom: 70px;
+    }
+
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #343a40;
+        text-align: center;
+        vertical-align: middle;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: 0.875rem 2.5rem;
+        font-size: 0.875rem;
+        line-height: 1;
+        border-radius: 0.1875rem;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .btn-gradient-primary {
+        background: linear-gradient(to right, #6FCF97, #66D2A1);
+        border: 0;
+        -webkit-transition: opacity 0.3s ease;
+        -moz-transition: opacity 0.3s ease;
+        -ms-transition: opacity 0.3s ease;
+        -o-transition: opacity 0.3s ease;
+        transition: opacity 0.3s ease;
+    }
+
+    .btn-gradient-primary:not([disabled]):not(.disabled):active,
+    .btn-gradient-primary:not([disabled]):not(.disabled).active,
+    .show>.btn-gradient-primary.dropdown-toggle {
+        background: linear-gradient(to right, #6FCF97, #66D2A1);
+
+    }
+
+    .btn-gradient-primary:hover {
+        opacity: .8;
+    }
+
+    .btn-gradient-primary:not(.btn-gradient-light) {
+        color: #ffffff;
+        font-weight: bold;
+    }
+
+    .btn-gradient-primary:not(.btn-gradient-light):hover,
+    .btn-gradient-primary:not(.btn-gradient-light):focus,
+    .btn-gradient-primary:not(.btn-gradient-light):active {
+        color: #ffffff;
+    }
+
+
+
+
+    @media (prefers-reduced-motion: reduce) {
+        .btn {
+            transition: none;
+        }
+    }
+
+    .btn:hover {
+        color: #343a40;
+        text-decoration: none;
+    }
+
+    .btn:focus,
+    .btn.focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .btn.disabled,
+    .btn:disabled {
+        opacity: 0.65;
+    }
+
+    a.btn.disabled,
+    fieldset:disabled a.btn {
+        pointer-events: none;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #6FCF97;
+        border-color: #6FCF97;
+    }
+
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #a347ff;
+        border-color: #9d3aff;
+    }
+
+    .btn-primary:focus,
+    .btn-primary.focus {
+        box-shadow: 0 0 0 0.2rem rgba(193, 131, 255, 0.5);
+    }
+
+    .btn-primary.disabled,
+    .btn-primary:disabled {
+        color: #fff;
+        background-color: #6FCF97;
+        border-color: #6FCF97;
+    }
+
+    .btn-primary:not(:disabled):not(.disabled):active,
+    .btn-primary:not(:disabled):not(.disabled).active,
+    .show>.btn-primary.dropdown-toggle {
+        color: #fff;
+        background-color: #9d3aff;
+        border-color: #962dff;
+    }
+
+    .btn-primary:not(:disabled):not(.disabled):active:focus,
+    .btn-primary:not(:disabled):not(.disabled).active:focus,
+    .show>.btn-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 0.2rem rgba(193, 131, 255, 0.5);
+    }
+
+    a {
+        text-decoration: none;
+
+    }
+</style>
+
+</html>

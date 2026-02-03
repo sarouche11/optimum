@@ -1,0 +1,99 @@
+{% load static %}
+<div class="d-flex justify-content-between align-items-center w-100 mb-3 flex-wrap">
+
+  <div class="d-flex align-items-center gap-2">
+   
+
+    <!-- 🔥 Sélecteur nombre d’éléments -->
+    <label style="margin-top: 20px;">Afficher :</label>
+    <select id="perPageSelect" class="form-show w-auto" name="per_page">
+      <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+      <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
+      <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+      <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+
+
+    </select>
+  </div>
+
+  <div class="w-100" style="max-width: 400px;">
+    <form class="position-relative d-flex" method="get" action="#">
+
+      <div class="input-with-x w-100">
+
+        <!-- Icône loupe -->
+        <!-- <i class="mdi mdi-magnify text-dark position-absolute"
+          style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 18px;"></i> -->
+
+        <!-- Input -->
+        <input type="text" class="input-search border rounded-start" placeholder="Recherche..."
+          style="padding-left: 10px; " name="search" value="{{ search }}" />
+
+
+        {% if search %}
+        <a href="?" class="clear-btn">
+          <i class="mdi mdi-close"></i>
+        </a>
+        {% endif %}
+
+      </div>
+
+
+        <button type="submit"
+      style="
+        background-color: white;
+        border: 1px solid #5E1414;
+        color: #962F2F;
+        border-radius: 6px;
+        padding: 0.3px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        margin-left: 10px;
+      ">
+      <i class="mdi mdi-magnify" style="font-size: 15px;" class="search-btn"></i>
+    </button>
+
+
+
+   
+
+    </form>
+  </div>
+
+</div>
+
+
+<style>
+  .input-with-x {
+    position: relative;
+  }
+
+  .input-with-x input {
+    padding-right: 35px;
+    /* espace pour le X */
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    color: #ff2d2d;
+  }
+
+  .clear-btn:hover {
+    color: #cc0000;
+  }
+</style>
+
+<script>
+  document.getElementById("perPageSelect").addEventListener("change", function () {
+    const value = this.value;
+    const search = document.querySelector("input[name='search']")?.value || "";
+    window.location.href = `?per_page=${value}&search=${search}`;
+  });
+</script>

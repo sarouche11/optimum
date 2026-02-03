@@ -1,0 +1,168 @@
+{% load static %}
+{% load group_tags %}
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+{% include 'partials/head.html' %}
+
+<body>
+
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+
+    <div id="main-wrapper">
+
+        <!-- Topbar header - style you can find in pages.scss -->
+
+        {% include 'partials/header.html' %}
+
+        <!-- End Topbar header -->
+
+
+        <!--sidebar-->
+
+        {% include 'partials/sidebar.html' %}
+        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+
+        <!-- Page wrapper  -->
+
+        <div class="page-wrapper">
+
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+                <!-- ============================================================== -->
+                <!-- Start Page Content -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Activation Code</h4>
+                                <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
+
+
+                                <div class="table-responsive">
+                                    {% include 'partials/search_mode.html' %}
+                                    <table class="table table-hover">
+                                       
+
+                                        <thead>
+                                            <tr>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Montant (DA)</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {% for profile in page_obj %}
+                                            <tr>
+                                                <td>{{ profile.user.first_name }}</td>
+                                                <td>{{ profile.user.last_name }}</td>
+
+                                                <td>
+                                                    <!-- Bloc scrollable comme Recent Comments -->
+                                                    <div class="comment-widgets scrollable"
+                                                        style="height: 430px; overflow-y:auto;">
+
+                                                        {% for paie in profile.paiements.all %}
+                                                        <div class="d-flex flex-row comment-row m-t-0">
+                                                            <div class="p-2">
+                                                                
+                                                            </div>
+                                                            <div class="comment-text w-100">
+                                                                <h6 class="font-medium">{{ paie.montant }}</h6>
+                                                               
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        {% empty %}
+                                                        <div class="d-flex flex-row comment-row">
+                                                            <div class="comment-text w-100">
+                                                                <span>Aucun montant pour ce user</span>
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                            </div>
+
+                            {% include 'partials/pagination.html' %}
+                        </div>
+
+                    </div>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End PAge Content -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- Right sidebar -->
+                <!-- ============================================================== -->
+                <!-- .right-sidebar -->
+                <!-- ============================================================== -->
+                <!-- End Right sidebar -->
+                <!-- ============================================================== -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            {% include 'partials/footer.html' %}
+            <!-- ============================================================== -->
+            <!-- End footer -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- customizer Panel -->
+    <!-- ============================================================== -->
+
+    <div class="chat-windows"></div>
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'assets/libs/popper.js/dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- apps -->
+    <script src="{% static 'dist/js/app.min.js' %}"></script>
+    <script src="{% static 'dist/js/app.init.iconbar.js' %}"></script>
+    <script src="{% static 'dist/js/app-style-switcher.js' %}"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="{% static 'assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/sparkline/sparkline.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'dist/js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'dist/js/custom.min.js' %}"></script>
+    <!--This page JavaScript -->
+    <script src="{% static 'dist/js/pages/tables/js-grid-db.js' %}"></script>
+    <script src="{% static 'assets/libs/jsgrid/dist/jsgrid.min.js' %}"></script>
+    <script src="{% static 'dist/js/pages/tables/js-grid-init.js' %}"></script>
+</body>
+
+</html>

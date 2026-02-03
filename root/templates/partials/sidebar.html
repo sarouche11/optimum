@@ -1,0 +1,188 @@
+{% load static %}
+{% load group_tags %}
+
+
+{% if user|has_group:'reseller' %}
+  <aside class="left-sidebar">
+            <!-- Sidebar scroll-->
+            <div class="scroll-sidebar">
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+
+                 
+                        <li class="nav-small-cap">
+                            
+                            <span class="hide-menu"></span>
+                        </li>
+
+                      
+                     
+                        <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table-jsgrid.html"
+                                aria-expanded="false">
+                                <i class="mdi mdi-format-list-bulleted"></i>
+                                <span class="hide-menu">List / قائمة</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table-responsive.html"
+                                aria-expanded="false">
+                                <i class="mdi mdi-plus-box-outline"></i>
+                                <span class="hide-menu">Add / إضافة</span>
+                            </a>
+                        </li>
+                       
+                       
+                        <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="authentication-login1.html" aria-expanded="false">
+                                <i class="mdi mdi-logout"></i>
+                                <span class="hide-menu">Log Out</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+        </aside>
+{% endif %}        
+      
+
+
+{% if user|has_group:'admin' %}
+  <aside class="left-sidebar">
+            <!-- Sidebar scroll-->
+            <div class="scroll-sidebar">
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+
+                 
+                        <li class="nav-small-cap">
+                            
+                            <span class="hide-menu"></span>
+                        </li>
+
+                      
+                     
+                        <li class="sidebar-item {% if '/list_user/' in request.path %}active{% endif %}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_user' %}"
+                                aria-expanded="false">
+                                <i class="mdi mdi-format-list-bulleted"></i>
+                                <span class="hide-menu">List User</span>
+                            </a>
+                        </li>
+
+                         <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
+                                <i class="mdi mdi-tune"></i>
+                                <span class="hide-menu">Category </span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse  first-level">
+                                <li class="sidebar-item {% if '/list_category/' in request.path %}active{% endif %}" >
+                                    <a href="{% url 'list_category' %}" class="sidebar-link">
+                                        <i class="mdi mdi-view-quilt"></i>
+                                        <span class="hide-menu"> List Category </span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item {% if '/add_category/' in request.path %}active{% endif %}">
+                                    <a href="{% url 'add_category' %}" class="sidebar-link">
+                                        <i class="mdi mdi-view-parallel"></i>
+                                        <span class="hide-menu"> Add Category </span>
+                                    </a>
+                                </li>
+                              
+                            </ul>
+                        </li>
+                        
+                       
+                         <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
+                                <i class="mdi mdi-tune"></i>
+                                <span class="hide-menu"> SubCategory </span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse  first-level">
+                                <li class="sidebar-item {% if '/list_subcategory/' in request.path %}active{% endif %}" >
+                                    <a href="{% url 'list_subcategory' %}" class="sidebar-link">
+                                        <i class="mdi mdi-view-quilt"></i>
+                                        <span class="hide-menu"> List SubCategory </span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item {% if '/add_subcategory/' in request.path %}active{% endif %}">
+                                    <a href="{% url 'add_subcategory' %}" class="sidebar-link">
+                                        <i class="mdi mdi-view-parallel"></i>
+                                        <span class="hide-menu"> Add SubCategory </span>
+                                    </a>
+                                </li>
+                              
+                            </ul>
+                        </li>
+                        
+                         <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
+                                <i class="mdi mdi-tune"></i>
+                                <span class="hide-menu"> Product </span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse  first-level">
+                                <li class="sidebar-item {% if '/list_product/' in request.path %}active{% endif %}" >
+                                    <a href="{% url 'list_product' %}" class="sidebar-link">
+                                        <i class="mdi mdi-view-quilt"></i>
+                                        <span class="hide-menu"> List Product </span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item {% if '/add_product/' in request.path %}active{% endif %}">
+                                    <a href="{% url 'add_product' %}" class="sidebar-link">
+                                        <i class="mdi mdi-view-parallel"></i>
+                                        <span class="hide-menu"> Add Product </span>
+                                    </a>
+                                </li>
+                              
+                            </ul>
+                        </li>
+                        
+                       
+                        
+                         <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
+                                <i class="mdi mdi-tune"></i>
+                                <span class="hide-menu"> Activation Code </span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse  first-level">
+                                <li class="sidebar-item {% if '/list_activation/' in request.path %}active{% endif %}" >
+                                    <a href="{% url 'list_activation' %}" class="sidebar-link">
+                                        <i class="mdi mdi-view-quilt"></i>
+                                        <span class="hide-menu"> List  </span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item {% if '/add_activation/' in request.path %}active{% endif %}">
+                                    <a href="{% url 'add_activation' %}" class="sidebar-link">
+                                        <i class="mdi mdi-view-parallel"></i>
+                                        <span class="hide-menu"> Add  </span>
+                                    </a>
+                                </li>
+                              
+                            </ul>
+                        </li>
+                        
+                       
+                       
+                      
+                       
+                      
+                       
+                        
+                       
+                       
+                      
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+  </aside>
+{% endif %} 
+
+
+      
