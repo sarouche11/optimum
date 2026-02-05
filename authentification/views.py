@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import User,Group
 from django.contrib.auth import authenticate, login, logout
@@ -82,11 +82,12 @@ def verify_otp(request):
 
     user_id = request.session.get('pre_2fa_user')
 
+    # ➜ Si pas de session : on reste propre
     if not user_id:
         messages.error(request, "Session expirée ou connexion non initiée.")
-        return redirect('login')
+        return render(request, "verify_otp.html")
 
-    user = User.objects.get(id=user_id)
+    user = get_object_or_404(User, id=user_id)
 
     if request.method == "POST":
 
@@ -101,23 +102,22 @@ def verify_otp(request):
 
             login(request, user)
 
-            del request.session['pre_2fa_user']
+            # ➜ Suppression sécurisée SANS KeyError
+            request.session.pop('pre_2fa_user', None)
 
-            # 👉 redirection groupes
+            # 👉 redirection selon groupe
             if user.groups.filter(name="reseller").exists():
-                return redirect('list')
-            
+                return redirect('list_category')
+
             if user.groups.filter(name="admin").exists():
                 return redirect('list_user')
 
             return redirect('list')
 
+        # ➜ Ici on reste sur la page et on affiche juste le message
         messages.error(request, "Code invalide ou expiré")
 
     return render(request, "verify_otp.html")
-
-
-
 
 
 

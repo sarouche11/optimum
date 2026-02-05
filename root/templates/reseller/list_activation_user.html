@@ -6,32 +6,32 @@
 {% include 'partials/head.html' %}
 
 <body>
-   
+
     <div class="preloader">
         <div class="lds-ripple">
             <div class="lds-pos"></div>
             <div class="lds-pos"></div>
         </div>
     </div>
-  
+
     <div id="main-wrapper">
-  
+
         <!-- Topbar header - style you can find in pages.scss -->
-      
+
         {% include 'partials/header.html' %}
-        
+
         <!-- End Topbar header -->
 
 
         <!--sidebar-->
 
-      {% include 'partials/sidebar.html' %}
+        {% include 'partials/sidebar.html' %}
         <!-- End Left Sidebar - style you can find in sidebar.scss  -->
-    
+
         <!-- Page wrapper  -->
-      
+
         <div class="page-wrapper">
-        
+
             <!-- Container fluid  -->
             <!-- ============================================================== -->
             <div class="container-fluid">
@@ -42,36 +42,29 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title">Product</h4>
+                                <h4 class="card-title">List Code </h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
-                                
+
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
+                                    {% include 'messages.html' %}
                                     <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
                                         data-page-size="10">
                                         <thead>
                                             <tr>
-                                                 <th>Subcategory</th>
-                                                <th>Name</th>
-                                                <th>Price (DA)</th>
-                                                <th>Stock</th>
-                                            
+                                                <th>Code d'activation</th>
+                                                <th>Product</th>
                                                 
-                                            
-                                                
+                                              
                                             </tr>
                                         </thead>
-                                        <tbody>  
-                                            {% for product in page_obj %}                                  
+                                        <tbody>
+                                            {% for code in page_obj %}
                                             <tr>
-                                                <td><img src="{{ product.image.url }}" alt="" width="40" class="rounded-circle"> {{ product.subcategory }}</td>
-                                                <td>{{ product.name }}</td>
-                                                <td>{{ product.price }}</td>
-                                                <td>{{ product.stock }}</td>
-                                               
-  
-        
+                                                <td>{{ code.activation_code }}</td>
+                                                <td>{{ code.activation_code.product.name }}</td>
+               
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -102,7 +95,7 @@
             <!-- ============================================================== -->
             <!-- footer -->
             <!-- ============================================================== -->
-           {% include 'partials/footer.html' %}
+            {% include 'partials/footer.html' %}
             <!-- ============================================================== -->
             <!-- End footer -->
             <!-- ============================================================== -->
@@ -117,7 +110,7 @@
     <!-- ============================================================== -->
     <!-- customizer Panel -->
     <!-- ============================================================== -->
-    
+
     <div class="chat-windows"></div>
     <!-- ============================================================== -->
     <!-- All Jquery -->
@@ -143,6 +136,10 @@
     <script src="{% static 'dist/js/pages/tables/js-grid-db.js' %}"></script>
     <script src="{% static 'assets/libs/jsgrid/dist/jsgrid.min.js' %}"></script>
     <script src="{% static 'dist/js/pages/tables/js-grid-init.js' %}"></script>
+
+
+
+
 </body>
 
 </html>

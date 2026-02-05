@@ -10,7 +10,7 @@ class CategoryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Name'}),
             'image': forms.ClearableFileInput(attrs={'class':"custom-file-input", 'id':"inputGroupFile01", 'type':"file"}),
-            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+           
         }
 
 
@@ -24,7 +24,7 @@ class SubCategoryForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom sous-catégorie'}),
             'image': forms.ClearableFileInput(attrs={'class':"custom-file-input", 'id':"inputGroupFile01", 'type':"file"}),
-            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            
         }      
 
 class ProductForm(forms.ModelForm):
@@ -38,7 +38,7 @@ class ProductForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom sous-catégorie'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Nom sous-catégorie'}),
             'image': forms.ClearableFileInput(attrs={'class':"custom-file-input", 'id':"inputGroupFile01", 'type':"file"}),
-            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+           
         }      
 
 class ActivationCodeForm(forms.ModelForm):

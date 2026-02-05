@@ -3,7 +3,7 @@
 
 
 {% if user|has_group:'reseller' %}
-  <aside class="left-sidebar">
+   <aside class="left-sidebar">
             <!-- Sidebar scroll-->
             <div class="scroll-sidebar">
                 <!-- Sidebar navigation-->
@@ -18,35 +18,43 @@
 
                       
                      
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table-jsgrid.html"
+                        <li class="sidebar-item {% if '/list_category/' in request.path %}active{% endif %}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_category' %}"
                                 aria-expanded="false">
                                 <i class="mdi mdi-format-list-bulleted"></i>
-                                <span class="hide-menu">List / قائمة</span>
+                                <span class="hide-menu">List Category</span>
                             </a>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table-responsive.html"
+                     
+                        <li class="sidebar-item {% if '/list_activation_user/' in request.path %}active{% endif %}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_activation_user' %}"
                                 aria-expanded="false">
-                                <i class="mdi mdi-plus-box-outline"></i>
-                                <span class="hide-menu">Add / إضافة</span>
+                                <i class="mdi mdi-format-list-bulleted"></i>
+                                <span class="hide-menu">List Codes</span>
                             </a>
                         </li>
+
+                         
                        
                        
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                href="authentication-login1.html" aria-expanded="false">
-                                <i class="mdi mdi-logout"></i>
-                                <span class="hide-menu">Log Out</span>
-                            </a>
-                        </li>
+                     
+                       
+                     
+                       
+                      
+                       
+                      
+                       
+                        
+                       
+                       
+                      
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
             </div>
             <!-- End Sidebar scroll-->
-        </aside>
+  </aside>
 {% endif %}        
       
 

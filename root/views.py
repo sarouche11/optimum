@@ -1,13 +1,17 @@
 from django.shortcuts import render
 from authentification.decorators import user_is_in_group
 from authentification.models import Profile
-from .models import Category,SubCategory,Product,ActivationCode,Paiement
+from .models import Category,SubCategory,Product,ActivationCode,Paiement,CodePurchase
 from .forms import CategoryForm, SubCategoryForm, ProductForm, ActivationCodeForm,PaiementForm
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
+from decimal import Decimal
+from django.db.models import Sum,Prefetch
+
+
 
 
 
@@ -83,7 +87,9 @@ def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST, request.FILES)  
         if form.is_valid():
-            form.save()
+            category = form.save(commit=False)
+            category.active = True  # <-- forcer active à True
+            category.save()
             return redirect('list_category')  
     else:
         form = CategoryForm()
@@ -94,6 +100,8 @@ def add_category(request):
     
     return render(request, 'admin/add_category.html', context)
 
+
+@user_is_in_group('admin','reseller')
 def list_category(request):
     category = Category.objects.all().order_by('created_at')
     context = {
@@ -104,7 +112,7 @@ def list_category(request):
 
 
 
-
+@user_is_in_group('admin')
 def add_subcategory(request):
     form = SubCategoryForm()
 
@@ -112,7 +120,9 @@ def add_subcategory(request):
         
         form = SubCategoryForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            subcategory = form.save(commit=False)
+            subcategory.active = True  # <-- forcer active à True
+            subcategory.save()
             return redirect('list_subcategory')   
         else :
             form = SubCategoryForm()
@@ -123,7 +133,7 @@ def add_subcategory(request):
     return render(request, 'admin/add_subcategory.html', context)
 
 
-
+@user_is_in_group('admin')
 def list_subcategory(request):
     subcategory = SubCategory.objects.all().order_by('created_at')
     context = {
@@ -133,7 +143,7 @@ def list_subcategory(request):
     return render(request, 'admin/list_subcategory.html',context)
 
 
-
+@user_is_in_group('admin')
 def add_product(request):
     form = ProductForm()
 
@@ -141,7 +151,9 @@ def add_product(request):
         form = ProductForm(request.POST, request.FILES)
 
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            product.active = True  # <-- forcer active à True
+            product.save()
             return redirect('list_product')
         else : 
             form = ProductForm()
@@ -167,7 +179,7 @@ def list_product(request):
         per_page = 10
 
 
-    product = Product.objects.all().order_by('created_at')
+    product = Product.objects.all().filter('active').order_by('created_at')
 
 
     # -----------------------------------------
@@ -203,14 +215,21 @@ def list_product(request):
 
 
 
-
+@user_is_in_group('admin')
 def add_activation_code(request):
     form = ActivationCodeForm()
 
     if request.method == "POST":
         form = ActivationCodeForm(request.POST)
         if form.is_valid():
+            activation_code = form.save(commit=False)  # on ne sauvegarde pas encore
+            activation_code.save()  # on sauvegarde le code
             form.save()
+
+             # Recalcul du stock à partir de tous les codes non utilisés
+            product = activation_code.product
+            product.stock = product.activation_codes.filter(used=False).count()
+            product.save()
             return redirect('list_activation')   # à adapter selon ta route
 
     context = {
@@ -334,7 +353,176 @@ def list_montant(request):
     return render(request, 'admin/list_paiment.html', context)
 
 
+
+@user_is_in_group('admin', 'reseller')
+def subcategory_list_by_id(request, cat_id):
+    category = Category.objects.get(id=cat_id)
+    subcategory = category.subcategories.all()
+
+    context = {
+        'category': category,
+        'subcategory': subcategory
+    }
+
+    return render(request, 'admin/list_subcategory.html', context)
+
+
+@user_is_in_group('admin', 'reseller')
+def product_list_by_id(request, cat_id):
+      #-------------------  search -----------
+    search = request.GET.get('search', '')
+
+    #----------------- récupération du per_page --------
+    per_page = request.GET.get('per_page', 10) 
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
+    subcategory = SubCategory.objects.get(id=cat_id)
+    product = subcategory.plans.all()
+
+    # -----------------------------------------
+    if search:
+        product = product.filter(
+           Q(name__icontains=search)
+        )
+
+    
+    # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode() 
+
+   
+    paginator = Paginator(product, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)     
+
+
+    context = {
+         'page_obj': page_obj,
+        'search': search,
+        'querystring': querystring,
+        'per_page': per_page,
+        'subcategory': subcategory
+    }
+
+    return render(request, 'reseller/list_productid.html', context)
+
+
+
 @user_is_in_group('reseller')
-def list(request):
-    return render(request,'reseller/list.html')
+def buy_product(request):
+    if request.method == "POST":
+
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity'))
+
+        product = get_object_or_404(Product, id=product_id)
+        profil = request.user.profile
+
+        total_price = product.price * quantity
+
+        # ===== CALCUL SOLDE =====
+        solde = profil.paiements.filter(active=True).aggregate(
+            total=Sum('montant')
+        )['total']
+
+        if solde is None:
+            solde = Decimal('0')
+
+        # ===== 1. VERIF STOCK =====
+        if quantity > product.stock:
+            messages.error(request, "Stock insuffisant pour ce produit.")
+            
+
+        # ===== 2. VERIF SOLDE → ICI EST TON PROBLÈME =====
+        if solde < total_price:
+            messages.error(
+                request,
+                f"Solde insuffisant : votre solde est de {solde} DA alors que l'achat coûte {total_price} DA."
+            )
+            return redirect('list_activation_user')
+
+        # ===== 3. VERIF CODES =====
+        codes = ActivationCode.objects.filter(
+            product=product,
+            used=False
+        )[:quantity]
+
+        if len(codes) < quantity:
+            messages.error(request, "Pas assez de codes d'activation disponibles.")
+            return redirect('list_activation_user')
+
+        # ===== TOUT EST OK → ON FAIT L’ACHAT =====
+
+        for code in codes:
+            code.used = True
+            code.save()
+
+               # Lier le code acheté au profil
+            CodePurchase.objects.create(
+            profil=profil,
+            activation_code=code
+        )
+
+        product.stock -= quantity
+        product.save()
+
+        Paiement.objects.create(
+            profil=profil,
+            montant=-Decimal(total_price),
+            active=True
+        )
+
+        messages.success(
+            request,
+            f"Achat réussi : {quantity} code(s) pour {total_price} DA."
+        )
+
+        return redirect('list_activation_user')
+
+    return redirect('list_activation_user')
+
+
+
+
+
+@user_is_in_group('reseller')
+def list_activation_user(request):
+    search = request.GET.get('search', '')  # Recherche par code
+    per_page = request.GET.get('per_page', 10)
+
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
+    # Récupérer tous les codes achetés par le revendeur connecté
+    codes = CodePurchase.objects.filter(
+        profil=request.user.profile
+    ).select_related('activation_code', 'activation_code__product')
+
+    # Filtrer si une recherche est saisie
+    if search:
+        codes = codes.filter(
+            activation_code__code__icontains=search
+        )
+
+    # Pagination
+    paginator = Paginator(codes.order_by('-created_at'), per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'search': search,
+        'per_page': per_page,
+    }
+
+    return render(request, 'reseller/list_activation_user.html', context)
 

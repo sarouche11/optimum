@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import (list_user, list ,toggle_profile_status,add_category,
+from .views import (list_user ,toggle_profile_status,add_category,
                     list_category,add_subcategory,list_subcategory,add_product,list_product,
-                    list_activation,add_activation_code,add_montant,list_montant)
+                    list_activation,add_activation_code,add_montant,list_montant,
+                    subcategory_list_by_id,product_list_by_id,
+                    buy_product,list_activation_user)
 
 urlpatterns = [
 
@@ -25,10 +27,17 @@ urlpatterns = [
     path('add_montant/', add_montant, name='add_montant'),
     path('list_montant/', list_montant, name='list_montant'),
 
+    path('subcategory/<int:cat_id>/', subcategory_list_by_id, name='subcategory_list'),
+    path('product/<int:cat_id>/', product_list_by_id, name='product_list'),
+
+   
+
 
 
 
 #    reseller 
-    path('list/', list, name='list'),
+    path('buy-product/', buy_product, name='buy_product'),
+    path('list_activation_user/', list_activation_user, name='list_activation_user'),
+
     
     ]

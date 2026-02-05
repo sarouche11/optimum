@@ -44,6 +44,7 @@
             
 
             <div class="container-fluid">
+                 
                 <div class="row gx-1 gy-1">
                     {% for cat in category %}
                     <div class="col-lg-3 col-md-6 mb-2 ">
@@ -60,7 +61,8 @@
 
                             <div class="card-body d-flex flex-column">
                                 <h4 class="card-title">{{ cat.name }}</h4>
-                                <a href="#" class="btn btn-primary mt-auto">Go somewhere</a>
+                                     <!-- LE LIEN QUI REND TOUTE LA CARD CLIQUABLE -->
+                                  <a href="{% url 'subcategory_list' cat.id %}" class="stretched-link"></a>
                             </div>
 
                         </div>

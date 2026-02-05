@@ -39,6 +39,7 @@ class Product(models.Model):
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name="plans")
     name = models.CharField(max_length=150)       
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.PositiveIntegerField(default=0) 
     image = models.ImageField(upload_to='products/')
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -57,7 +58,7 @@ class ActivationCode(models.Model):
     used_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.code} ({'Utilisé' if self.used else 'Disponible'})"
+        return f"{self.code} "
 
 
 
@@ -71,3 +72,16 @@ class Paiement(models.Model):
 
     def __str__(self):
         return f"{self.profil.user.username}"
+    
+
+class CodePurchase(models.Model):
+    codeCP = models.CharField(max_length=100, unique=True, default=generate_code)
+    profil = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="code_purchases")
+    activation_code = models.OneToOneField(ActivationCode, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.profil.user.username} → {self.activation_code.code}"    
