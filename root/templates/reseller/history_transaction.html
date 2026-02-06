@@ -42,53 +42,35 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-
-                                <h4 class="card-title"><i class="fa fa-box"></i> Product</h4>
+                                <h4 class="card-title">
+                                    <i class="fa fa-credit-card"></i>  History Transactions
+                                </h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
 
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
 
+                                    {% include 'message.html' %}
+                                    
                                     <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
                                         data-page-size="10">
                                         <thead>
                                             <tr>
-                                                <th>Subcategory</th>
-                                                <th>Name</th>
-                                                <th>Price (DA)</th>
-                                                {% if user|has_group:'reseller' %}
-                                                <th>Action</th>
-                                                {% endif %}
+                                                <th>Montant (DA)</th>
+                                                <th>Date</th>
+
 
 
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for product in page_obj %}
+                                            {% for paiment in page_obj %}
                                             <tr>
-                                                <td><img src="{{ product.image.url }}" alt="" width="40"
-                                                        class="rounded-circle"> {{ product.subcategory }}</td>
-                                                <td>{{ product.name }}</td>
-                                                <td>{{ product.price }}</td>
-                                                {% if user|has_group:'reseller' %}
-                                                {% if product.stock > 0 %}
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-success buy-btn"
-                                                        data-id="{{ product.id }}"
-                                                        data-name="{{ product.name|escapejs }}"
-                                                        data-price="{{ product.price }}"
-                                                        data-stock="{{ product.stock }}">
-                                                        <i class="fa fa-shopping-cart m-r-10"></i> BUY
-                                                    </button>
-                                                </td>
-                                                {% else %}
-                                                <td>
-                                                    <span class="label label-danger">Stock out</span>
-                                                </td>
-                                                {% endif %}
-                                                {% endif %}
 
+                                                <td>{{ paiment.montant }}</td>
+
+                                                <td>{{ paiment.created_at|date:'d-m-Y' }}</td>
 
 
                                             </tr>
@@ -162,10 +144,6 @@
     <script src="{% static 'dist/js/pages/tables/js-grid-db.js' %}"></script>
     <script src="{% static 'assets/libs/jsgrid/dist/jsgrid.min.js' %}"></script>
     <script src="{% static 'dist/js/pages/tables/js-grid-init.js' %}"></script>
-    <script src="{% static 'dist/js/buy.js' %}"></script>
 </body>
-
-
-{% include 'reseller/buy.html' %}
 
 </html>

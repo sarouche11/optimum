@@ -42,60 +42,73 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-
-                                <h4 class="card-title"><i class="fa fa-box"></i> Product</h4>
+                                <h4 class="card-title"><i class="fa fa-key"></i> Activation Code</h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
 
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
-
-                                    <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
-                                        data-page-size="10">
+                                    <table class="table table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Subcategory</th>
-                                                <th>Name</th>
-                                                <th>Price (DA)</th>
-                                                {% if user|has_group:'reseller' %}
-                                                <th>Action</th>
-                                                {% endif %}
-
-
+                                                <th>Produit</th>
+                                                <th>Prix (DA)</th>
+                                                <th>Codes</th>
                                             </tr>
                                         </thead>
+
                                         <tbody>
                                             {% for product in page_obj %}
                                             <tr>
-                                                <td><img src="{{ product.image.url }}" alt="" width="40"
-                                                        class="rounded-circle"> {{ product.subcategory }}</td>
-                                                <td>{{ product.name }}</td>
+                                                <td><strong>{{ product.name }}</strong></td>
                                                 <td>{{ product.price }}</td>
-                                                {% if user|has_group:'reseller' %}
-                                                {% if product.stock > 0 %}
+
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-success buy-btn"
-                                                        data-id="{{ product.id }}"
-                                                        data-name="{{ product.name|escapejs }}"
-                                                        data-price="{{ product.price }}"
-                                                        data-stock="{{ product.stock }}">
-                                                        <i class="fa fa-shopping-cart m-r-10"></i> BUY
-                                                    </button>
+                                                    <!-- Bloc scrollable comme Recent Comments -->
+                                                    <div class="comment-widgets scrollable"
+                                                        style="height: 430px; overflow-y:auto;">
+
+                                                        {% for code in product.activation_codes.all %}
+                                                        <div class="d-flex flex-row comment-row m-t-0">
+                                                            <div class="p-2">
+                                                                <i class="ti-key" style="font-size:24px"></i>
+                                                            </div>
+                                                            <div class="comment-text w-100">
+                                                                <h6 class="font-medium">{{ code.code }}</h6>
+                                                                <span class="m-b-15 d-block">
+                                                                    Statut :
+                                                                    {% if code.used %}
+                                                                    <span class="label label-danger">Utilisé</span>
+                                                                    {% else %}
+                                                                    <span class="label label-success">Disponible</span>
+                                                                    {% endif %}
+                                                                </span>
+                                                                <div class="comment-footer">
+                                                                    
+                                                                    <span class="action-icons">
+                                                                        <a href="#"><i
+                                                                                class="ti-pencil-alt"></i></a>
+                                                                        
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% empty %}
+                                                        <div class="d-flex flex-row comment-row">
+                                                            <div class="comment-text w-100">
+                                                                <span>Aucun code pour ce produit</span>
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
+
+                                                    </div>
                                                 </td>
-                                                {% else %}
-                                                <td>
-                                                    <span class="label label-danger">Stock out</span>
-                                                </td>
-                                                {% endif %}
-                                                {% endif %}
-
-
-
                                             </tr>
                                             {% endfor %}
                                         </tbody>
-
                                     </table>
+
+
                                 </div>
                             </div>
 
@@ -162,10 +175,6 @@
     <script src="{% static 'dist/js/pages/tables/js-grid-db.js' %}"></script>
     <script src="{% static 'assets/libs/jsgrid/dist/jsgrid.min.js' %}"></script>
     <script src="{% static 'dist/js/pages/tables/js-grid-init.js' %}"></script>
-    <script src="{% static 'dist/js/buy.js' %}"></script>
 </body>
-
-
-{% include 'reseller/buy.html' %}
 
 </html>

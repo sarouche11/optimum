@@ -3,11 +3,13 @@ from django.contrib import messages
 from django.contrib.auth.models import User,Group
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
-from .forms import CaptchaForm,ProfileForm
+from .forms import CaptchaForm,ProfileForm,ProfileEditForm,CustomPasswordChangeForm
 from django.contrib.auth.hashers import make_password   
 from django.db import transaction
 from .models import OTP, Profile
-import re
+
+from django.contrib.auth import update_session_auth_hash
+
 # Create your views here.
 
 
@@ -219,6 +221,53 @@ def register_view(request):
     }    
 
     return render(request, 'register.html', context)
+
+
+
+
+def edit_profile(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = ProfileEditForm(request.POST, instance=profile, user=request.user)
+        if form.is_valid():
+            # Mise à jour User
+            request.user.first_name = form.cleaned_data['first_name']
+            request.user.last_name = form.cleaned_data['last_name']
+
+            request.user.save()
+
+            # Mise à jour Profile
+            form.save()
+
+            messages.success(request, "Profile successfully updated.")
+            return redirect('profile')
+    else:
+        form = ProfileEditForm(instance=profile, user=request.user)
+
+    context = {
+         'form': form
+    }    
+
+    return render(request, 'profile.html',context)
+
+
+def change_password(request):
+    if request.method == 'POST':
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()  # sauvegarde le nouveau mot de passe
+            update_session_auth_hash(request, user)  # garde l'utilisateur connecté
+            messages.success(request, "Mot de passe mis à jour avec succès !")
+            return redirect('profile')
+        else:
+            messages.error(request, "Erreur dans le formulaire, veuillez corriger les champs ci-dessous.")
+    else:
+        form = CustomPasswordChangeForm(user=request.user)
+
+    return render(request, 'change_password.html', {'form': form})
+
+
 
 def success (request):
     return render(request,'partials/success.html')

@@ -21341,8 +21341,8 @@ fieldset:disabled a.btn {
 .btn-success {
     color: #fff;
     background-color: #20b093;
-    border-color: #20b093;
-    border-radius: 10px !important;
+    border-color: #1c8d78;
+    border-radius: 3px !important;
 }
 
 .btn-success:hover {
@@ -21454,7 +21454,7 @@ fieldset:disabled a.btn {
     color: #fff;
     background-color: #cb1b1b;
     border-color: #cb1b1b;
-    border-radius: 10px !important; 
+    border-radius: 3px !important; 
 }
 
 .btn-danger:hover {

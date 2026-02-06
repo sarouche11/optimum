@@ -11,7 +11,7 @@ def generate_code():
 class Profile(models.Model):
     phone_validator = RegexValidator(
         regex=r'^0\d{9}$',
-        message="Le numéro doit commencer par 0 et contenir exactement 10 chiffres"
+        message="The phone number must start with 0 and contain exactly 10 digits."
     )
 
     codeU = models.CharField(max_length=100, unique=True, default=generate_code)

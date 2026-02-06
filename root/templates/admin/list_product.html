@@ -42,7 +42,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title">Product</h4>
+                                <h4 class="card-title"><i class="fa fa-box"></i> Product</h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
                                 
@@ -56,6 +56,7 @@
                                                 <th>Name</th>
                                                 <th>Price (DA)</th>
                                                 <th>Stock</th>
+                                                <th>Action</th>
                                             
                                                 
                                             
@@ -69,6 +70,11 @@
                                                 <td>{{ product.name }}</td>
                                                 <td>{{ product.price }}</td>
                                                 <td>{{ product.stock }}</td>
+                                                <td>
+                                                    <a href="{% url 'list_activation_code' product.id %}" class="btn btn-sm btn-success">
+                                                        <i class="ti-key me-1"></i> Code
+                                                    </a>
+                                                </td>
                                                
   
         

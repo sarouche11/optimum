@@ -42,12 +42,16 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title">Liste User </h4>
+                                <h4 class="card-title">
+                                    <i class="fa fa-users"></i> List User
+                                </h4>
+
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
 
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
+                                     {% include 'messages.html' %}
                                     <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
                                         data-page-size="10">
                                         <thead>
@@ -58,9 +62,10 @@
                                                 <th>Email</th>
                                                 <th>Phone</th>
                                                 <th>Username</th>
-                                                <th>Montant</th>
-                                                <th>Etat</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
+                                                <th>Transaction</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -76,21 +81,36 @@
                                                     <a href="#" class="btn btn-sm btn-success btn-add-montant"
                                                         data-bs-toggle="modal" data-bs-target="#addMontantModal"
                                                         data-profil="{{ profil.id }}">
-                                                        <i class="fa-solid fa-plus me-1"></i> Ajouter
+                                                        <i class="fa fa-plus-circle"></i>
+                                                        <i class="fa fa-money-bill-wave"></i>
+
                                                     </a>
                                                 </td>
 
                                                 {% if profil.active %}
-                                                <td><span class="label label-success">{{ profil.active }}</span></td>
+                                                <td><span class="label label-success">Activated</span></td>
                                                 {% else %}
-                                                <td><span class="label label-danger">{{ profil.active }}</span></td>
+                                                <td><span class="label label-danger">Deactivated</span></td>
                                                 {% endif %}
 
 
                                                 <td>
                                                     <a href="{% url 'toggle_profile_status' profil.id %}"
                                                         class="btn btn-sm {% if profil.active %}btn-danger{% else %}btn-success{% endif %}">
-                                                        {% if profil.active %}Désactiver{% else %}Activer{% endif %}
+
+                                                        {% if profil.active %}
+                                                        <i class="fa fa-user-times"></i>
+                                                        {% else %}
+                                                        <i class="fa fa-user-check"></i>
+                                                        {% endif %}
+
+                                                    </a>
+                                                </td>
+
+                                                <td>
+                                                    <a href="{% url 'list_transaction' profil.id %}"
+                                                        class="btn btn-sm btn-success">
+                                                        <i class="fa fa-credit-card"></i>
                                                     </a>
                                                 </td>
                                             </tr>
