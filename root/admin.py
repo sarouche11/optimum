@@ -1,6 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
-from .models import Category,SubCategory,Product,ActivationCode, Paiement , CodePurchase
+from .models import Category,SubCategory,Product,ActivationCode, Paiement , ProductAchat,PurchaseCode
 
 @admin.register(Category)
 class CategoryImportExport(ImportExportModelAdmin):
@@ -119,11 +119,15 @@ class PaiementImportExport(ImportExportModelAdmin):
     list_filter = ['active']
 
 
-@admin.register(CodePurchase)
-class CodePurchaseImportExport(ImportExportModelAdmin):
+@admin.register(ProductAchat)
+class ProductAchatImportExport(ImportExportModelAdmin):
     fields = [
         'profil',
-        'activation_code',
+    
+        'product',
+        'quantity',
+        'total_price',
+        'note',
         'active',
        
     ]
@@ -131,6 +135,34 @@ class CodePurchaseImportExport(ImportExportModelAdmin):
     list_display = [
         'codeCP',
         'profil',
+
+        'product',
+        'quantity',
+        'total_price',
+        'note',
+        'active',
+        'created_at',
+        'updated_at',
+        
+       
+    ]
+
+    search_fields = ['codeCP']
+    list_filter = ['active']
+
+
+@admin.register(PurchaseCode)
+class PurchaseCodeImportExport(ImportExportModelAdmin):
+    fields = [
+        'purchase',
+        'activation_code',
+        'active',
+       
+    ]
+
+    list_display = [
+        'codePur',
+        'purchase',
         'activation_code',
         'active',
         'created_at',

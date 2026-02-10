@@ -43,7 +43,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title">
-                                    <i class="fa fa-credit-card"></i>  History Transactions
+                                    <i class="fa fa-shopping-cart"></i>  List achat
                                 </h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
@@ -57,20 +57,28 @@
                                         data-page-size="10">
                                         <thead>
                                             <tr>
-                                                <th>Montant (DA)</th>
                                                 <th>Date</th>
+                                                <th>Produit</th>
+                                                <th>Note</th>
+                                                <th>Quantité</th>
+                                                <th>Total (DA)</th>
+                                                
+                                                
 
 
 
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for paiment in page_obj %}
+                                            {% for produit in page_obj %}
                                             <tr>
-
-                                                <td>{{ paiment.montant }}</td>
-
-                                                <td>{{ paiment.created_at|date:'d-m-Y' }}</td>
+                                                <td>{{ produit.created_at|date:'d-m-Y' }}</td>
+                                                <td>{{ produit.product.name }}</td>
+                                                <td>{{ produit.note }}</td>
+                                                <td>{{ produit.quantity }}</td>
+                                                <td>{{ produit.total_price }}</td>
+                                                
+                                                
 
 
                                             </tr>

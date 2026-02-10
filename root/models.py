@@ -74,14 +74,28 @@ class Paiement(models.Model):
         return f"{self.profil.user.username}"
     
 
-class CodePurchase(models.Model):
+class ProductAchat(models.Model):
     codeCP = models.CharField(max_length=100, unique=True, default=generate_code)
     profil = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="code_purchases")
-    activation_code = models.OneToOneField(ActivationCode, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    active = models.BooleanField(default=True)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="purchases")
+    quantity = models.PositiveIntegerField(default=1)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    note = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.profil.user.username} → {self.activation_code.code}"    
+        return f"{self.profil.user.username} → {self.product.name} ({self.quantity})"
+
+
+class PurchaseCode(models.Model):
+    codePur = models.CharField(max_length=100, unique=True, default=generate_code)
+    purchase = models.ForeignKey(ProductAchat, on_delete=models.CASCADE, related_name="codes")
+    activation_code = models.OneToOneField(ActivationCode, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.activation_code.code

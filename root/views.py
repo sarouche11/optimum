@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from authentification.decorators import user_is_in_group
 from authentification.models import Profile
-from .models import Category,SubCategory,Product,ActivationCode,Paiement,CodePurchase
+from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat,PurchaseCode
 from .forms import CategoryForm, SubCategoryForm, ProductForm, ActivationCodeForm,PaiementForm
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from decimal import Decimal
 from django.db.models import Sum,Prefetch
+from django.utils import timezone
 
 
 
@@ -503,78 +504,69 @@ def product_list_by_id(request, cat_id):
 # buy code 
 @user_is_in_group('reseller')
 def buy_product(request):
-    if request.method == "POST":
+    if request.method != "POST":
+        return redirect('list_activation_user')
 
-        product_id = request.POST.get('product_id')
-        quantity = int(request.POST.get('quantity'))
+    product_id = request.POST.get('product_id')
+    quantity = int(request.POST.get('quantity'))
+    note = request.POST.get('note', '')
 
-        product = get_object_or_404(Product, id=product_id)
-        profil = request.user.profile
+    product = get_object_or_404(Product, id=product_id)
+    profil = request.user.profile
+    total_price = product.price * quantity
 
-        total_price = product.price * quantity
+    # ===== CALCUL SOLDE =====
+    solde = profil.paiements.filter(active=True).aggregate(total=Sum('montant'))['total'] or Decimal('0')
 
-        # ===== CALCUL SOLDE =====
-        solde = profil.paiements.filter(active=True).aggregate(
-            total=Sum('montant')
-        )['total']
+    # ===== 1. VERIF STOCK =====
+    if quantity > product.stock:
+        messages.error(request, "Stock insuffisant pour ce produit.")
+        return redirect('list_activation_user')
 
-        if solde is None:
-            solde = Decimal('0')
+    # ===== 2. VERIF SOLDE =====
+    if solde < total_price:
+        messages.error(request, f"Solde insuffisant : votre solde est de {solde} DA alors que l'achat coûte {total_price} DA.")
+        return redirect('list_activation_user')
 
-        # ===== 1. VERIF STOCK =====
-        if quantity > product.stock:
-            messages.error(request, "Stock insuffisant pour ce produit.")
-            
+    # ===== 3. VERIF CODES DISPONIBLES =====
+    codes = list(ActivationCode.objects.filter(product=product, used=False)[:quantity])
+    if len(codes) < quantity:
+        messages.error(request, "Pas assez de codes d'activation disponibles.")
+        return redirect('list_activation_user')
 
-        # ===== 2. VERIF SOLDE → ICI EST TON PROBLÈME =====
-        if solde < total_price:
-            messages.error(
-                request,
-                f"Solde insuffisant : votre solde est de {solde} DA alors que l'achat coûte {total_price} DA."
-            )
-            return redirect('list_activation_user')
+    # ===== 4. CREER L'ACHAT =====
+    purchase = ProductAchat.objects.create(
+        profil=profil,
+        product=product,
+        quantity=quantity,
+        total_price=total_price,
+        note=note
+    )
 
-        # ===== 3. VERIF CODES =====
-        codes = ActivationCode.objects.filter(
-            product=product,
-            used=False
-        )[:quantity]
+    # ===== 5. Lier les codes à l'achat =====
+    for code in codes:
+        code.used = True
+        code.used_at = timezone.now()
+        code.save()
 
-        if len(codes) < quantity:
-            messages.error(request, "Pas assez de codes d'activation disponibles.")
-            return redirect('list_activation_user')
-
-        # ===== TOUT EST OK → ON FAIT L’ACHAT =====
-
-        for code in codes:
-            code.used = True
-            code.save()
-
-               # Lier le code acheté au profil
-            CodePurchase.objects.create(
-            profil=profil,
+        PurchaseCode.objects.create(
+            purchase=purchase,
             activation_code=code
         )
 
-        product.stock -= quantity
-        product.save()
+    # ===== 6. REDUIRE LE STOCK =====
+    product.stock -= quantity
+    product.save()
 
-        Paiement.objects.create(
-            profil=profil,
-            montant=-Decimal(total_price),
-            active=True
-        )
+    # ===== 7. CREER LE PAIEMENT =====
+    Paiement.objects.create(
+        profil=profil,
+        montant=-total_price,
+        active=True
+    )
 
-        messages.success(
-            request,
-            f"Achat réussi : {quantity} code(s) pour {total_price} DA."
-        )
-
-        return redirect('list_activation_user')
-
+    messages.success(request, f"Achat réussi : {quantity} code(s) pour {total_price} DA.")
     return redirect('list_activation_user')
-
-
 
 # list activation user
 @user_is_in_group('reseller')
@@ -587,16 +579,14 @@ def list_activation_user(request):
     except:
         per_page = 10
 
-    # Récupérer tous les codes achetés par le revendeur connecté
-    codes = CodePurchase.objects.filter(
-        profil=request.user.profile
-    ).select_related('activation_code', 'activation_code__product')
+    # Tous les codes achetés par le revendeur connecté
+    codes = PurchaseCode.objects.filter(
+        purchase__profil=request.user.profile
+    ).select_related('activation_code', 'purchase', 'purchase__product')
 
-    # Filtrer si une recherche est saisie
+    # Filtrer si recherche
     if search:
-        codes = codes.filter(
-            activation_code__code__icontains=search
-        )
+        codes = codes.filter(activation_code__code__icontains=search)
 
     # Pagination
     paginator = Paginator(codes.order_by('-created_at'), per_page)
@@ -612,8 +602,7 @@ def list_activation_user(request):
     return render(request, 'reseller/list_activation_user.html', context)
 
 
-
-
+# transaction 
 @user_is_in_group('reseller')
 def history_transaction(request):
     search = request.GET.get('search', '')  # Recherche par code
@@ -648,5 +637,36 @@ def history_transaction(request):
 
     return render(request, 'reseller/history_transaction.html', context)
 
+
+
+# list achat user
+@user_is_in_group('reseller')
+def list_achat_user(request):
+    search = request.GET.get('search', '')  
+    per_page = request.GET.get('per_page', 10)
+
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
+    # produit +quantité 
+    product = ProductAchat.objects.all()
+    # Filtrer si recherche
+    if search:
+        product = product.filter(product__name__icontains=search)
+
+    # Pagination
+    paginator = Paginator(product.order_by('-created_at'), per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'search': search,
+        'per_page': per_page,
+    }
+
+    return render(request, 'reseller/list_achat.html', context)
 
 

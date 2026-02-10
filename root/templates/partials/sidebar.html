@@ -45,6 +45,14 @@
                     </a>
                 </li>
 
+                <li class="sidebar-item {% if '/list_achat/' in request.path %}active{% endif %}">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_achat' %}"
+                        aria-expanded="false">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="hide-menu">List Achats</span>
+                    </a>
+                </li>
+
                 <li class="sidebar-item {% if '/history_transaction/' in request.path %}active{% endif %}">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'history_transaction' %}"
                         aria-expanded="false">

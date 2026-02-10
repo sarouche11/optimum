@@ -4,7 +4,8 @@ from .views import (list_user ,toggle_profile_status,add_category,
                     list_activation_by_product,add_activation_code,add_montant,list_montant,
                     subcategory_list_by_id,product_list_by_id,
                     buy_product,list_activation_user,list_activation_code,
-                    list_transaction_by_code, edit_activation_code,history_transaction)
+                    list_transaction_by_code, edit_activation_code,history_transaction,
+                    list_achat_user)
 
 urlpatterns = [
 
@@ -43,6 +44,7 @@ urlpatterns = [
 #    reseller 
     path('buy-product/', buy_product, name='buy_product'),
     path('list_activation_user/', list_activation_user, name='list_activation_user'),
+    path('list_achat/', list_achat_user, name='list_achat'),
     path('history_transaction/', history_transaction, name='history_transaction'),
 
     
