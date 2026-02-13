@@ -10,7 +10,7 @@
         <nav class="sidebar-nav">
             <ul id="sidebarnav">
 
-                   <li class="sidebar-item user-profile" style="border: 10;">
+                <li class="sidebar-item user-profile" style="border: 10;">
                     <a href="javascript:void(0)" class="sidebar-link waves-effect waves-dark" aria-expanded="false">
                         <i class="fa fa-user-circle"></i>
                         <span class="hide-menu" style="font-size: 16px;">
@@ -27,7 +27,7 @@
                 </li>
 
 
-            
+
 
                 <li class="sidebar-item {% if '/list_category/' in request.path %}active{% endif %}">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_category' %}"
@@ -61,7 +61,7 @@
                     </a>
                 </li>
 
-                
+
                 <li class="sidebar-item {% if '/profile/' in request.path %}active{% endif %}">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'profile' %}"
                         aria-expanded="false">
@@ -141,6 +141,14 @@
                         aria-expanded="false">
                         <i class="fa fa-credit-card"></i>
                         <span class="hide-menu">List Transaction</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item {% if '/list_achat_user/' in request.path %}active{% endif %}">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_achat_user' %}"
+                        aria-expanded="false">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="hide-menu">List Achats</span>
                     </a>
                 </li>
 

@@ -75,12 +75,33 @@ def toggle_profile_status(request, profil_id):
     profil.active = not profil.active
     profil.save()
 
+    # ✅ Si le compte vient d’être activé → envoyer email
+    if profil.active:
+        profil.user.email_user(
+            "Activation de votre compte",
+            f"Bonjour {profil.user.username},\n\n"
+            "Votre compte a été activé par l’administrateur.\n"
+            "Vous pouvez maintenant vous connecter à la plateforme.\n\n"
+            "Cordialement."
+        )
+    else : 
+         profil.user.email_user(
+            "Désactivation de votre compte",
+            f"Bonjour {profil.user.username},\n\n"
+            "Votre compte a été désactivé.\n"
+            "Veuillez contactez votre administrateur pour plus d'information.\n\n"
+            "Cordialement."
+        )
+
+
     messages.success(
         request,
-        f"Le profil de {profil.user.username} a été {'activé' if profil.active else 'désactivé'}."
+        f"Le profil de {profil.user.username} a été "
+        f"{'activé' if profil.active else 'désactivé'}."
     )
 
     return redirect('list_user')
+
 
 
 # add category 
@@ -499,6 +520,41 @@ def product_list_by_id(request, cat_id):
 
 
 
+
+
+# list achat all user 
+@user_is_in_group('admin')
+def list_achat_user(request):
+    search = request.GET.get('search', '')  
+    per_page = request.GET.get('per_page', 10)
+
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
+    # produit +quantité 
+    product = ProductAchat.objects.all()
+    # Filtrer si recherche
+    if search:
+        product = product.filter(product__name__icontains=search)
+
+    # Pagination
+    paginator = Paginator(product.order_by('-created_at'), per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'search': search,
+        'per_page': per_page,
+    }
+
+    return render(request, 'admin/list_achat_user.html', context)
+
+
+
+
 # ================================ reseller ==========================
 
 # buy code 
@@ -639,9 +695,9 @@ def history_transaction(request):
 
 
 
-# list achat user
-@user_is_in_group('reseller')
-def list_achat_user(request):
+# list achat all user 
+@user_is_in_group('reseller')  # ⚠️ attention ici, je t’explique dessous
+def list_achat(request):
     search = request.GET.get('search', '')  
     per_page = request.GET.get('per_page', 10)
 
@@ -650,9 +706,10 @@ def list_achat_user(request):
     except:
         per_page = 10
 
-    # produit +quantité 
-    product = ProductAchat.objects.all()
-    # Filtrer si recherche
+    # ✅ seulement les achats du user connecté
+    product = ProductAchat.objects.filter(profil__user=request.user)
+
+    # Recherche
     if search:
         product = product.filter(product__name__icontains=search)
 
@@ -668,5 +725,6 @@ def list_achat_user(request):
     }
 
     return render(request, 'reseller/list_achat.html', context)
+
 
 

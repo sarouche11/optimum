@@ -5,7 +5,7 @@ from .views import (list_user ,toggle_profile_status,add_category,
                     subcategory_list_by_id,product_list_by_id,
                     buy_product,list_activation_user,list_activation_code,
                     list_transaction_by_code, edit_activation_code,history_transaction,
-                    list_achat_user)
+                    list_achat_user,list_achat)
 
 urlpatterns = [
 
@@ -36,6 +36,8 @@ urlpatterns = [
     path('subcategory/<int:cat_id>/', subcategory_list_by_id, name='subcategory_list'),
     path('product/<int:cat_id>/', product_list_by_id, name='product_list'),
 
+    path('list_achat_user/', list_achat_user, name='list_achat_user'),
+
    
 
 
@@ -44,7 +46,7 @@ urlpatterns = [
 #    reseller 
     path('buy-product/', buy_product, name='buy_product'),
     path('list_activation_user/', list_activation_user, name='list_activation_user'),
-    path('list_achat/', list_achat_user, name='list_achat'),
+    path('list_achat/', list_achat, name='list_achat'),
     path('history_transaction/', history_transaction, name='history_transaction'),
 
     

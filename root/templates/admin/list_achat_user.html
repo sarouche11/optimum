@@ -58,6 +58,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Order ID </th>
+                                                <th>Username </th>
                                                 <th>Date</th>
                                                 <th>Produit</th>
                                                 <th>Note</th>
@@ -74,7 +75,9 @@
                                             {% for produit in page_obj %}
                                             <tr>
                                                 <td>{{ produit.codeCP }}</td>
+                                                <td>{{ produit.profil.user.username }}</td>
                                                 <td>{{ produit.created_at|date:'d-m-Y' }}</td>
+                                                
                                                 <td>{{ produit.product.name }}</td>
                                                 <td>{{ produit.note }}</td>
                                                 <td>{{ produit.quantity }}</td>

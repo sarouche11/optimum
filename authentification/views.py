@@ -53,6 +53,10 @@ def login_view(request):
 
         if user is not None:
 
+            if not user.profile.active:
+                messages.error(request, "Compte non actif. Veuillez contactez votre administrateur")
+                return redirect("login")
+
             # 👉 Création OTP
             otp = OTP.objects.create(user=user)
 

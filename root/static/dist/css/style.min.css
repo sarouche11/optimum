@@ -21339,8 +21339,8 @@ fieldset:disabled a.btn {
 }
 
 .btn-success {
-    color: #fff;
-    background-color: #20b093;
+    color: #20b093;
+    background-color: #fff;
     border-color: #1c8d78;
     border-radius: 3px !important;
 }
@@ -21451,8 +21451,8 @@ fieldset:disabled a.btn {
 }
 
 .btn-danger {
-    color: #fff;
-    background-color: #cb1b1b;
+    color: #cb1b1b;
+    background-color:#fff ;
     border-color: #cb1b1b;
     border-radius: 3px !important; 
 }
