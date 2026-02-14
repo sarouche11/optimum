@@ -62,9 +62,10 @@
                                                 <th>Email</th>
                                                 <th>Phone</th>
                                                 <th>Username</th>
+                                                <th>Solde (DA)</th>
                                                 <th>Amount</th>
                                                 <th>Status</th>
-                                                <th>Action</th>
+                                                <th>Account</th>
                                                 <th>Transaction</th>
                                             </tr>
                                         </thead>
@@ -77,6 +78,7 @@
                                                 <td>{{ profil.user.email }}</td>
                                                 <td>{{ profil.phone }}</td>
                                                 <td>{{ profil.user.username }}</td>
+                                                <td>{{ profil.solde_total|default:0|floatformat:2 }}</td>
                                                 <td>
                                                     <a href="#" class="btn btn-sm btn-success btn-add-montant"
                                                         data-bs-toggle="modal" data-bs-target="#addMontantModal"

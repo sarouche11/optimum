@@ -13,3 +13,5 @@ def solde_revendeur(request):
     return {
         'solde_revendeur': solde
     }
+
+

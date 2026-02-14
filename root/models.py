@@ -1,6 +1,8 @@
 from django.db import models
 import random
 from authentification.models import Profile
+from django.db.models import Sum
+from decimal import Decimal
 
 def generate_code():
     return ''.join(random.choices('AZERTYUIOPQSDFGHJKLMWXCVBN123456789', k=10))
@@ -81,10 +83,13 @@ class ProductAchat(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     note = models.TextField(null=True, blank=True)
+    reste_after_purchase = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
 
+
+   
     def __str__(self):
         return f"{self.profil.user.username} → {self.product.name} ({self.quantity})"
 

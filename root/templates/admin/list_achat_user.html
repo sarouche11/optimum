@@ -43,7 +43,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title">
-                                    <i class="fa fa-shopping-cart"></i>  List achat
+                                    <i class="fa fa-shopping-cart"></i> List achat
                                 </h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
@@ -52,7 +52,7 @@
                                     {% include 'partials/search_mode.html' %}
 
                                     {% include 'messages.html' %}
-                                    
+
                                     <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
                                         data-page-size="10">
                                         <thead>
@@ -60,12 +60,12 @@
                                                 <th>Order ID </th>
                                                 <th>Username </th>
                                                 <th>Date</th>
-                                                <th>Produit</th>
+                                                <th>Product</th>
                                                 <th>Note</th>
-                                                <th>Quantité</th>
+                                                <th>Quantity</th>
                                                 <th>Total (DA)</th>
-                                                
-                                                
+
+
 
 
 
@@ -74,16 +74,20 @@
                                         <tbody>
                                             {% for produit in page_obj %}
                                             <tr>
-                                                <td>{{ produit.codeCP }}</td>
+                                                <td>
+                                                    <a href="{% url 'detail_achat_user' produit.codeCP %}">
+                                                        {{ produit.codeCP }}
+                                                    </a>
+                                                </td>
                                                 <td>{{ produit.profil.user.username }}</td>
-                                                <td>{{ produit.created_at|date:'d-m-Y' }}</td>
-                                                
+                                                <td>{{ produit.created_at|date:'d-m-Y à H:i' }}</td>
+
                                                 <td>{{ produit.product.name }}</td>
                                                 <td>{{ produit.note }}</td>
                                                 <td>{{ produit.quantity }}</td>
                                                 <td>{{ produit.total_price }}</td>
-                                                
-                                                
+
+
 
 
                                             </tr>

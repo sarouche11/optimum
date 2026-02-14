@@ -32,7 +32,12 @@ def list_user(request):
         per_page = 10
 
 
-    profile = Profile.objects.all().order_by('created_at')
+    profile = Profile.objects.annotate(
+    solde_total=Sum(
+        'paiements__montant',
+        filter=Q(paiements__active=True)
+    )
+).order_by('created_at')
 
 
     # -----------------------------------------
@@ -554,6 +559,22 @@ def list_achat_user(request):
 
 
 
+# affiche details achat 
+@user_is_in_group('admin')
+def admin_detail_achats(request, codeCP):
+    # Récupère l'achat correspondant au codeCP
+    purchase = get_object_or_404(ProductAchat, codeCP=codeCP)
+    
+    # Codes liés à cet achat
+    codes = purchase.codes.all()
+
+    context = {
+        'purchase': purchase,
+        'codes': codes,
+    }
+
+    return render(request, 'admin/detail_achat_user.html', context)
+
 
 # ================================ reseller ==========================
 
@@ -589,14 +610,18 @@ def buy_product(request):
     if len(codes) < quantity:
         messages.error(request, "Pas assez de codes d'activation disponibles.")
         return redirect('list_activation_user')
+    
 
+    
+    reste = solde - total_price
     # ===== 4. CREER L'ACHAT =====
     purchase = ProductAchat.objects.create(
         profil=profil,
         product=product,
         quantity=quantity,
         total_price=total_price,
-        note=note
+        note=note,
+        reste_after_purchase=reste
     )
 
     # ===== 5. Lier les codes à l'achat =====
@@ -696,7 +721,7 @@ def history_transaction(request):
 
 
 # list achat all user 
-@user_is_in_group('reseller')  # ⚠️ attention ici, je t’explique dessous
+@user_is_in_group('reseller')  
 def list_achat(request):
     search = request.GET.get('search', '')  
     per_page = request.GET.get('per_page', 10)
@@ -727,4 +752,16 @@ def list_achat(request):
     return render(request, 'reseller/list_achat.html', context)
 
 
+@user_is_in_group('reseller')
+def detail_achat(request, codeCP):
+    profil = request.user.profile
+    purchase = get_object_or_404(ProductAchat, codeCP=codeCP, profil=profil)
+    codes = purchase.codes.all()
 
+    context = {
+        'purchase': purchase,
+        'codes': codes,
+        'reste': purchase.reste_after_purchase  # reste fixe au moment de l'achat
+    }
+
+    return render(request, 'reseller/detail_achat.html', context)

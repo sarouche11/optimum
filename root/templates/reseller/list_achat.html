@@ -73,7 +73,11 @@
                                         <tbody>
                                             {% for produit in page_obj %}
                                             <tr>
-                                                <td>{{ produit.codeCP }}</td>
+                                                 <td>
+                                                    <a href="{% url 'detail_achat' produit.codeCP %}">
+                                                        {{ produit.codeCP }}
+                                                    </a>
+                                                </td>
                                                 <td>{{ produit.created_at|date:'d-m-Y' }}</td>
                                                 <td>{{ produit.product.name }}</td>
                                                 <td>{{ produit.note }}</td>
