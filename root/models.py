@@ -3,6 +3,8 @@ import random
 from authentification.models import Profile
 from django.db.models import Sum
 from decimal import Decimal
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 def generate_code():
     return ''.join(random.choices('AZERTYUIOPQSDFGHJKLMWXCVBN123456789', k=10))
@@ -61,6 +63,14 @@ class ActivationCode(models.Model):
 
     def __str__(self):
         return f"{self.code} "
+    
+# Signal pour diminuer le stock à la suppression d'un code
+@receiver(pre_delete, sender=ActivationCode)
+def decrease_product_stock(sender, instance, **kwargs):
+    product = instance.product
+    if product.stock > 0:
+        product.stock -= 1
+        product.save()  
 
 
 

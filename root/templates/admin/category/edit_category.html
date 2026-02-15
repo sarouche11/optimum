@@ -8,7 +8,7 @@
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
- 
+
     <!-- ============================================================== -->
     <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
@@ -34,44 +34,56 @@
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
-     
-      
+
+
 
             <div class="container-fluid">
-            
-              
+
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="card card-body">
-                            <h4 class="card-title"><i class="fa fa-plus"></i> Add Activation Code</h4>
-                            
+                            <h4 class="card-title"><i class="fa fa-edit"></i> Edit </h4>
+
                             <form class="form-horizontal m-t-30" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div class="form-group">
-                                    <label>Product </label>
-                                   {{ form.product }}
+
+                                <div class="form-group mb-3">
+                                    <label >Name</label>
+                                    {{ form.name }}
                                 </div>
 
-                                <div class="form-group">
-                                    <label>Code </label>
-                                   {{ form.code }}
-                                </div>
-          
+                               
                               
-                         
-                                  <button class="btn btn-primary">
-                                    Enregistrer
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.image.id_for_label }}">Image Upload</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Upload</span>
+                                        </div>
+                                        <div class="custom-file">
+                                            {{ form.image }}
+                                            <label class="custom-file-label" >Choisir
+                                                un fichier</label>
+                                        </div>
+                                    </div>
+                                    {% if category.image %}
+                                    <small class="text-muted">Image actuelle : {{ category.image.url }}</small>
+                                    {% endif %}
+                                </div>
+
+                                <button type="submit" class="btn btn-success">
+                                    Edit
                                 </button>
-                                            
+                                <a href="{% url 'list_category' %}" class="btn btn-secondary">Annuler</a>
                             </form>
+
                         </div>
                     </div>
                 </div>
-               
-              
-              
-             
-          
+
+
+
+
             </div>
             <!-- ============================================================== -->
             <!-- End Container fluid  -->
@@ -94,7 +106,7 @@
     <!-- ============================================================== -->
     <!-- customizer Panel -->
     <!-- ============================================================== -->
-   
+
     <div class="chat-windows"></div>
     <!-- ============================================================== -->
     <!-- All Jquery -->

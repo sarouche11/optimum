@@ -21418,19 +21418,22 @@ fieldset:disabled a.btn {
 }
 
 .btn-warning {
-    background-color: #ffbc34;
-    border-color: #ffbc34
+    color:#ffbc34 !important ;
+    background-color: #fff;
+    border-color: #ffbc34;
+    border-radius: 3px !important;
 }
 
 .btn-warning:hover {
+    color: #fff !important; 
     background-color: #ffaf0e;
     border-color: #ffab01
 }
 
 .btn-warning.disabled,
 .btn-warning:disabled {
-    color: #212529;
-    background-color: #ffbc34;
+    color: #ffbc34;
+    background-color: #fff;
     border-color: #ffbc34
 }
 

@@ -6,7 +6,7 @@ from .models import Category,SubCategory,Product,ActivationCode,Paiement
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ['name','image', 'active']
+        fields = ['name','image']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Name'}),
             'image': forms.ClearableFileInput(attrs={'class':"custom-file-input", 'id':"inputGroupFile01", 'type':"file"}),
@@ -18,7 +18,7 @@ class CategoryForm(forms.ModelForm):
 class SubCategoryForm(forms.ModelForm):
     class Meta:
         model = SubCategory
-        fields = ['category', 'name', 'image', 'active']
+        fields = ['category', 'name', 'image']
 
         widgets = {
             'category': forms.Select(attrs={'class': 'form-control'}),
@@ -34,9 +34,9 @@ class ProductForm(forms.ModelForm):
 
         widgets = {
             'subcategory': forms.Select(attrs={'class': 'form-control'}),
-            'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Nom sous-catégorie'}),
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom sous-catégorie'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Nom sous-catégorie'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
             'image': forms.ClearableFileInput(attrs={'class':"custom-file-input", 'id':"inputGroupFile01", 'type':"file"}),
            
         }      
@@ -48,7 +48,7 @@ class ActivationCodeForm(forms.ModelForm):
 
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control'}),
-            'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom sous-catégorie'}),
+            'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Code'}),
             
         }    
 
@@ -57,6 +57,6 @@ class PaiementForm(forms.ModelForm):
         model = Paiement
         fields = ['montant']
         widgets = {
-            'montant': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Montant'}),
+            'montant': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Amount'}),
             
         }  

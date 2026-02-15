@@ -6,32 +6,32 @@
 {% include 'partials/head.html' %}
 
 <body>
-   
+
     <div class="preloader">
         <div class="lds-ripple">
             <div class="lds-pos"></div>
             <div class="lds-pos"></div>
         </div>
     </div>
-  
+
     <div id="main-wrapper">
-  
+
         <!-- Topbar header - style you can find in pages.scss -->
-      
+
         {% include 'partials/header.html' %}
-        
+
         <!-- End Topbar header -->
 
 
         <!--sidebar-->
 
-      {% include 'partials/sidebar.html' %}
+        {% include 'partials/sidebar.html' %}
         <!-- End Left Sidebar - style you can find in sidebar.scss  -->
-    
+
         <!-- Page wrapper  -->
-      
+
         <div class="page-wrapper">
-        
+
             <!-- Container fluid  -->
             <!-- ============================================================== -->
             <div class="container-fluid">
@@ -42,45 +42,60 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title"><i class="fa fa-box"></i> Product</h4>
+                                <h4 class="card-title">
+                                    <i class="fa fa-shopping-cart"></i> Orders list
+                                </h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
-                                
+
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
+
+                                    {% include 'messages.html' %}
+
                                     <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
                                         data-page-size="10">
                                         <thead>
                                             <tr>
-                                                 <th>Subcategory</th>
-                                                <th>Name</th>
-                                                <th>Price (DA)</th>
-                                                <th>Stock</th>
-                                                <th>Action</th>
-                                            
-                                                
-                                            
-                                                
+                                                <th>Order ID </th>
+                                                <th>Username </th>
+                                                <th>Date</th>
+                                                <th>Item</th>
+                                                <th>Details</th>
+                                                <th>Note</th>
+                                                <th>Quantity</th>
+                                                <th>Total (DA)</th>
+
+
+
+
+
                                             </tr>
                                         </thead>
-                                        <tbody>  
-                                            {% for product in page_obj %}                                  
-                                            <tr>
-                                                <td><img src="{{ product.image.url }}" alt="" width="40" class="rounded-circle"> {{ product.subcategory }}</td>
-                                                <td>{{ product.name }}</td>
-                                                <td>{{ product.price }}</td>
-                                                <td>{{ product.stock }}</td>
-                                                <td>
-                                                    <a href="{% url 'list_activation_code' product.id %}" class="btn btn-sm btn-success">
-                                                        <i class="ti-key me-1"></i> Code
-                                                    </a>
-                                                </td>
-                                               
-  
-        
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
+                                    <tbody>
+{% for produit in page_obj %}
+<tr>
+    <td>
+        <a href="{% url 'detail_achat_user' produit.codeCP %}" style="color: #20b093;">
+            {{ produit.codeCP }}
+        </a>
+    </td>
+    <td>{{ produit.profil.user.username }}</td>
+    <td>{{ produit.created_at|date:'d-m-Y à H:i' }}</td>
+    <td>{{ produit.product.name }}</td>
+    <td>
+        {% for code in produit.codes.all %}
+            {{ code.activation_code.code }}{% if not forloop.last %}, {% endif %}
+        {% empty %}
+            Aucun code
+        {% endfor %}
+    </td>
+    <td>{{ produit.note }}</td>
+    <td>{{ produit.quantity }}</td>
+    <td>{{ produit.total_price }}</td>
+</tr>
+{% endfor %}
+</tbody>
 
                                     </table>
                                 </div>
@@ -108,7 +123,7 @@
             <!-- ============================================================== -->
             <!-- footer -->
             <!-- ============================================================== -->
-           {% include 'partials/footer.html' %}
+            {% include 'partials/footer.html' %}
             <!-- ============================================================== -->
             <!-- End footer -->
             <!-- ============================================================== -->
@@ -123,7 +138,7 @@
     <!-- ============================================================== -->
     <!-- customizer Panel -->
     <!-- ============================================================== -->
-    
+
     <div class="chat-windows"></div>
     <!-- ============================================================== -->
     <!-- All Jquery -->

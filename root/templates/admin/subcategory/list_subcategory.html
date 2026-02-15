@@ -1,0 +1,128 @@
+{% load static %}
+{% load group_tags %}
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+{% include 'partials/head.html' %}
+
+<body>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div id="main-wrapper">
+        <!-- ============================================================== -->
+        <!-- Topbar header - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        {% include 'partials/header.html' %}
+        <!-- ============================================================== -->
+        <!-- End Topbar header -->
+       
+        <!-- Left Sidebar - style you can find in sidebar.scss  -->
+     
+        {% include 'partials/sidebar.html' %}
+       
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-5 align-self-center">
+                        <h4 class="page-title"><i class="fa fa-folder"></i> SubCategory</h4>
+                    </div>
+                   
+                </div>
+            </div>
+            
+
+            <div class="container-fluid">
+                 {% include 'messages.html' %}
+                <div class="row gx-1 gy-1">
+                    {% for subcat in subcategory %}
+                    <div class="col-lg-3 col-md-6 mb-2 ">
+                        <div class="card">
+
+                            <!-- Wrapper pour image -->
+                            <div class="card-img-wrapper">
+                                {% if subcat.image %}
+                                <img src="{{ subcat.image.url }}" alt="{{ subcat.name }}">
+                                {% else %}
+                                <img src="{% static 'images/default.jpg' %}" alt="Default">
+                                {% endif %}
+                            </div>
+                            {% if user|has_group:'admin' %}
+                             <!-- Bouton Edit en overlay -->
+                            <a href="{% url 'edit_subcategory' subcat.id %}" class="btn btn-sm btn-success position-absolute"
+                                style="top:10px; right:10px; z-index:10;">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            {% endif %}
+
+                            <div class="card-body">
+                                <h4 class="card-title">{{ subcat.name }}</h4>
+                                 <a href="{% url 'product_list' subcat.id %}" class="stretched-link"></a>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            {% include 'partials/footer.html' %}
+            <!-- ============================================================== -->
+            <!-- End footer -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- customizer Panel -->
+    <!-- ============================================================== -->
+
+    <div class="chat-windows"></div>
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'assets/libs/popper.js/dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- apps -->
+    <script src="{% static 'dist/js/app.min.js' %}"></script>
+    <script src="{% static 'dist/js/app.init.iconbar.js' %}"></script>
+    <script src="{% static 'dist/js/app-style-switcher.js' %}"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="{% static 'assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/sparkline/sparkline.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'dist/js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'dist/js/custom.min.js' %}"></script>
+    <!-- This Page JS -->
+    <script src="{% static 'assets/extra-libs/prism/prism.js' %}"></script>
+</body>
+
+</html>

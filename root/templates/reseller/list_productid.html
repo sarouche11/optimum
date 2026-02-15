@@ -144,7 +144,7 @@
     <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
     <!-- Bootstrap tether Core JavaScript -->
     <script src="{% static 'assets/libs/popper.js/dist/umd/popper.min.js' %}"></script>
-    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script> -->
     <!-- apps -->
     <script src="{% static 'dist/js/app.min.js' %}"></script>
     <script src="{% static 'dist/js/app.init.iconbar.js' %}"></script>
@@ -163,9 +163,21 @@
     <script src="{% static 'assets/libs/jsgrid/dist/jsgrid.min.js' %}"></script>
     <script src="{% static 'dist/js/pages/tables/js-grid-init.js' %}"></script>
     <script src="{% static 'dist/js/buy.js' %}"></script>
+    <script src="{% static 'dist/js/result_buy.js' %}"></script>
+    
+
+
+
+
+    {% include 'reseller/buy.html' %}
+    {% include 'reseller/result_buy.html' %}
+
+
+
 </body>
 
 
-{% include 'reseller/buy.html' %}
+
+
 
 </html>

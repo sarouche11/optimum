@@ -6,32 +6,32 @@
 {% include 'partials/head.html' %}
 
 <body>
-   
+
     <div class="preloader">
         <div class="lds-ripple">
             <div class="lds-pos"></div>
             <div class="lds-pos"></div>
         </div>
     </div>
-  
+
     <div id="main-wrapper">
-  
+
         <!-- Topbar header - style you can find in pages.scss -->
-      
+
         {% include 'partials/header.html' %}
-        
+
         <!-- End Topbar header -->
 
 
         <!--sidebar-->
 
-      {% include 'partials/sidebar.html' %}
+        {% include 'partials/sidebar.html' %}
         <!-- End Left Sidebar - style you can find in sidebar.scss  -->
-    
+
         <!-- Page wrapper  -->
-      
+
         <div class="page-wrapper">
-        
+
             <!-- Container fluid  -->
             <!-- ============================================================== -->
             <div class="container-fluid">
@@ -42,52 +42,66 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title"><i class="fa fa-key"></i> Codes d'activation</h4>
+                                <h4 class="card-title"><i class="fa fa-key"></i> Activation Code</h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
-                                
+
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
-                                    <h5>Codes du produit : {{ product.name }}</h5>
-                                    <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
-                                        data-page-size="10">
+                                    <table class="table table-hover">
                                         <thead>
                                             <tr>
-                                                 <th>Code</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                                
-
-                                                
+                                                <th>Produit</th>
+                                                <th>Prix (DA)</th>
+                                                <th>Codes</th>
                                             </tr>
                                         </thead>
-                                        <tbody>  
-                                            {% for code in page_obj %}                                  
+
+                                        <tbody>
+                                            {% for product in page_obj %}
                                             <tr>
-                                                
-                                                <td>{{ code.code }}</td>
-                                                {% if code.used %}
-                                                <td ><span class="label label-danger">Utilisé</span></td>
-                                                {% else %}
-                                                <td ><span class="label label-success">Disponible</span></td>
-                                                {% endif %}
+                                                <td><strong>{{ product.name }}</strong></td>
+                                                <td>{{ product.price }}</td>
 
                                                 <td>
-                                                    <a href="{% url 'edit_activation_code' code.pk %}"
-                                                        class="btn btn-sm btn-success">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
+                                                    <!-- Bloc scrollable comme Recent Comments -->
+                                                    <div class="comment-widgets scrollable"
+                                                        style="height: 430px; overflow-y:auto;">
+
+                                                        {% for code in product.activation_codes.all %}
+                                                        <div class="d-flex flex-row comment-row m-t-0">
+                                                            <div class="p-2">
+                                                                <i class="ti-key" style="font-size:24px"></i>
+                                                            </div>
+                                                            <div class="comment-text w-100">
+                                                                <h6 class="font-medium">{{ code.code }}</h6>
+                                                                <span class="m-b-15 d-block">
+                                                                    Statut :
+                                                                    {% if code.used %}
+                                                                    <span class="label label-danger">Utilisé</span>
+                                                                    {% else %}
+                                                                    <span class="label label-success">Disponible</span>
+                                                                    {% endif %}
+                                                                </span>
+                                                               
+                                                            </div>
+                                                        </div>
+                                                        {% empty %}
+                                                        <div class="d-flex flex-row comment-row">
+                                                            <div class="comment-text w-100">
+                                                                <span>Aucun code pour ce produit</span>
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
+
+                                                    </div>
                                                 </td>
-                                               
-                                               
-                                               
-  
-        
                                             </tr>
                                             {% endfor %}
                                         </tbody>
-
                                     </table>
+
+
                                 </div>
                             </div>
 
@@ -113,7 +127,7 @@
             <!-- ============================================================== -->
             <!-- footer -->
             <!-- ============================================================== -->
-           {% include 'partials/footer.html' %}
+            {% include 'partials/footer.html' %}
             <!-- ============================================================== -->
             <!-- End footer -->
             <!-- ============================================================== -->
@@ -128,7 +142,7 @@
     <!-- ============================================================== -->
     <!-- customizer Panel -->
     <!-- ============================================================== -->
-    
+
     <div class="chat-windows"></div>
     <!-- ============================================================== -->
     <!-- All Jquery -->

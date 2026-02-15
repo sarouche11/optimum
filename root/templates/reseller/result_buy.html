@@ -1,0 +1,49 @@
+{% load static %}
+<!-- Modal Result Buy - Bootstrap 4 -->
+<div class="modal fade" id="resultBuyModal" tabindex="-1" role="dialog" aria-labelledby="resultBuyModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title text-white" id="resultBuyModalLabel" >
+          <i class="mdi mdi-check-circle mr-2"></i>
+          Codes achetés avec succès
+        </h5>
+        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+
+        <div class="alert alert-success text-center ">
+          Achat effectué avec succès 
+        </div>
+
+        <!-- Conteneur des codes -->
+        <div id="codesContainer" class="list-group mb-3">
+          <!-- Chaque code ajouté par JS doit avoir la classe "code-item" -->
+        </div>
+
+        <!-- Bouton copier -->
+        <div class="text-center">
+           <button class="btn btn-success" style="width: 100%;" onclick="copyAllCodes()">
+               Just Copy
+           </button>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="location.reload()">
+          Fermer
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Script pour copier les codes -->
+ <script src="{% static 'dist/js/btn_copy_pop_up.js' %}"></script>
