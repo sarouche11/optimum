@@ -69,7 +69,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            
                                             {% for product in page_obj %}
+                                            {% if product.subcategory.category.type_category == 'code' %}
                                             <tr>
                                                 <td><img src="{{ product.image.url }}" alt="" width="40"
                                                         class="rounded-circle"> {{ product.subcategory }}</td>
@@ -102,7 +104,43 @@
 
 
                                             </tr>
+
+                                             {% else %}
+                                               <tr>
+                                                <td><img src="{{ product.image.url }}" alt="" width="40"
+                                                        class="rounded-circle"> {{ product.subcategory }}</td>
+                                                <td>{{ product.name }}</td>
+                                                <td>{{ product.price }}</td>
+                                                <td>-</td>
+                                                <td>
+                                                    <a href=""
+                                                        class="btn btn-sm btn-secondary">
+                                                        <i class="ti-key me-1"></i>
+                                                    </a>
+
+
+                                                </td>
+                                                <td>
+
+
+                                                    <a href="{% url 'duplicate_product' product.id %}"
+                                                        class="btn btn-sm btn-warning">
+                                                        <i class="fa fa-copy"></i>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'edit_product' product.id %}"
+                                                        class="btn btn-sm btn-success">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                </td>
+
+
+
+                                            </tr>
+                                            {% endif %}
                                             {% endfor %}
+                                            
                                         </tbody>
 
                                     </table>

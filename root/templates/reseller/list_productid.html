@@ -72,23 +72,33 @@
                                                 <td>{{ product.name }}</td>
                                                 <td>{{ product.price }}</td>
                                                 {% if user|has_group:'reseller' %}
-                                                {% if product.stock > 0 %}
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-success buy-btn"
-                                                        data-id="{{ product.id }}"
-                                                        data-name="{{ product.name|escapejs }}"
-                                                        data-price="{{ product.price }}"
-                                                        data-stock="{{ product.stock }}">
-                                                        <i class="fa fa-shopping-cart m-r-10"></i> BUY
-                                                    </button>
-                                                </td>
+                                                {% with subcategory.category.type_category as type_category %}
+                                                {% if type_category == 'code' %}
+                                                    {% if product.stock > 0 %}
+                                                        <td>
+                                                            <button type="button" class="btn btn-sm btn-success buy-btn"
+                                                                data-id="{{ product.id }}"
+                                                                data-name="{{ product.name|escapejs }}"
+                                                                data-price="{{ product.price }}"
+                                                                data-stock="{{ product.stock }}">
+                                                                <i class="fa fa-shopping-cart m-r-10"></i> BUY
+                                                            </button>
+                                                        </td>
+                                                    {% else %}
+                                                    <td><span class="label label-danger">Stock out</span></td>
+                                                    {% endif %}
                                                 {% else %}
                                                 <td>
-                                                    <span class="label label-danger">Stock out</span>
+                                                    <button type="button" class="btn btn-sm btn-success buy-btn-request"
+                                                        data-id="{{ product.id }}"
+                                                        data-name="{{ product.name|escapejs }}"
+                                                        data-price="{{ product.price }}">
+                                                        <i class="fa fa-shopping-cart m-r-10"></i> REQUEST
+                                                    </button>
                                                 </td>
                                                 {% endif %}
+                                                {% endwith %}
                                                 {% endif %}
-
 
 
                                             </tr>
@@ -163,13 +173,15 @@
     <script src="{% static 'assets/libs/jsgrid/dist/jsgrid.min.js' %}"></script>
     <script src="{% static 'dist/js/pages/tables/js-grid-init.js' %}"></script>
     <script src="{% static 'dist/js/buy.js' %}"></script>
+    <script src="{% static 'dist/js/buy_request.js' %}"></script>
     <script src="{% static 'dist/js/result_buy.js' %}"></script>
-    
+
 
 
 
 
     {% include 'reseller/buy.html' %}
+    {% include 'reseller/buy_request.html' %}
     {% include 'reseller/result_buy.html' %}
 
 

@@ -6,6 +6,7 @@ from .models import Category,SubCategory,Product,ActivationCode, Paiement , Prod
 class CategoryImportExport(ImportExportModelAdmin):
     fields = [
         'name',
+        'type_category',
         'image',
         'active',
     ]
@@ -13,6 +14,7 @@ class CategoryImportExport(ImportExportModelAdmin):
     list_display = [
         'code_cat',
         'name',
+        'type_category',
         'image',
         'active',
         'created_at',
@@ -123,11 +125,11 @@ class PaiementImportExport(ImportExportModelAdmin):
 class ProductAchatImportExport(ImportExportModelAdmin):
     fields = [
         'profil',
-    
         'product',
         'quantity',
         'total_price',
         'note',
+        'status',
         'active',
        
     ]
@@ -135,11 +137,11 @@ class ProductAchatImportExport(ImportExportModelAdmin):
     list_display = [
         'codeCP',
         'profil',
-
         'product',
         'quantity',
         'total_price',
         'note',
+        'status',
         'active',
         'created_at',
         'updated_at',

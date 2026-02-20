@@ -63,6 +63,7 @@
                                                 <th>Item</th>
                                                 <th>Details</th>
                                                 <th>Note</th>
+                                                <th>Status</th>
                                                 <th>Quantity</th>
                                                 <th>Total (DA)</th>
 
@@ -73,29 +74,30 @@
                                             </tr>
                                         </thead>
                                     <tbody>
-{% for produit in page_obj %}
-<tr>
-    <td>
-        <a href="{% url 'detail_achat_user' produit.codeCP %}" style="color: #20b093;">
-            {{ produit.codeCP }}
-        </a>
-    </td>
-    <td>{{ produit.profil.user.username }}</td>
-    <td>{{ produit.created_at|date:'d-m-Y à H:i' }}</td>
-    <td>{{ produit.product.name }}</td>
-    <td>
-        {% for code in produit.codes.all %}
-            {{ code.activation_code.code }}{% if not forloop.last %}, {% endif %}
-        {% empty %}
-            Aucun code
-        {% endfor %}
-    </td>
-    <td>{{ produit.note }}</td>
-    <td>{{ produit.quantity }}</td>
-    <td>{{ produit.total_price }}</td>
-</tr>
-{% endfor %}
-</tbody>
+                                    {% for produit in page_obj %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'detail_achat_user' produit.codeCP %}" style="color: #20b093;">
+                                                {{ produit.codeCP }}
+                                            </a>
+                                        </td>
+                                        <td>{{ produit.profil.user.username }}</td>
+                                        <td>{{ produit.created_at|date:'d-m-Y à H:i' }}</td>
+                                        <td>{{ produit.product.name }}</td>
+                                        <td>
+                                            {% for code in produit.codes.all %}
+                                                {{ code.activation_code.code }}{% if not forloop.last %}, {% endif %}
+                                            {% empty %}
+                                                Aucun code
+                                            {% endfor %}
+                                        </td>
+                                        <td>{{ produit.note }}</td>
+                                        <td>{{ produit.status }}</td>
+                                        <td>{{ produit.quantity }}</td>
+                                        <td>{{ produit.total_price }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
 
                                     </table>
                                 </div>

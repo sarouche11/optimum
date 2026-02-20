@@ -5,9 +5,17 @@ from django.db.models import Sum
 from decimal import Decimal
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 def generate_code():
     return ''.join(random.choices('AZERTYUIOPQSDFGHJKLMWXCVBN123456789', k=10))
+
+
+class CatgoryType(models.TextChoices):
+    
+    REQUEST   = 'request', _('Request')
+    CODE      = 'code', _('Code')    
+    
 
 
 # 1. Catégorie principale (IPTV, VOD, etc.)
@@ -15,6 +23,7 @@ class Category(models.Model):
     code_cat = models.CharField(max_length=100, unique=True, default=generate_code)
     name = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to='categories/')
+    type_category = models.CharField(choices=CatgoryType.choices, max_length=20,)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -86,6 +95,17 @@ class Paiement(models.Model):
         return f"{self.profil.user.username}"
     
 
+
+
+class StatusAchat(models.TextChoices):
+    
+    PENDING   = 'pending', _('Pending')
+    IN_PROGRESS      = 'in_progress', _('In_progress')    
+    COMPLETED      = 'completed', _('Completed')    
+    REJECTED      = 'rejected', _('Rejected')    
+    
+
+
 class ProductAchat(models.Model):
     codeCP = models.CharField(max_length=100, unique=True, default=generate_code)
     profil = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="code_purchases")
@@ -94,6 +114,8 @@ class ProductAchat(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     note = models.TextField(null=True, blank=True)
     reste_after_purchase = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    requirement = models.CharField(max_length=255, null=True, blank=True)
+    status = models.CharField(max_length=20, choices=StatusAchat.choices, default=StatusAchat.PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)

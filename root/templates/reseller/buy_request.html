@@ -1,7 +1,7 @@
   
 
 <!-- Modal Buy Product -->
-<div class="modal fade" id="buyModal" tabindex="-1" role="dialog" aria-labelledby="buyModalLabel" aria-hidden="true">
+<div class="modal fade" id="buy-requestModal" tabindex="-1" role="dialog" aria-labelledby="buyModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form id="buyForm" method="POST" action="{% url 'buy_product' %}">
@@ -10,15 +10,14 @@
                 <input type="hidden" name="product_id" id="product_id">
                 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="buyModalLabel"><i class="mdi mdi-cart-plus m-r-10"></i>BUY :  <strong id="productName">Name Item</strong></h5>
+                    <h5 class="modal-title" id="buyModalLabel"><i class="mdi mdi-cart-plus m-r-10"></i> Request:  <strong id="productName">Name Item</strong></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                </div>  
+                </div>
 
                 <div class="modal-body">
                   
-
                     <!-- Prix -->
                     <div class="mb-3">
                         <strong>Prix unitaire :</strong> <span id="productPrice">0</span> DA
@@ -31,10 +30,16 @@
                         <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1">
                     </div>
 
+                    <!-- Requirements -->
+                    <div class="mb-3">
+                        <label for="requirement">Requirements :</label>
+                        <textarea class="form-control" id="requirement" name="requirement" rows="2" placeholder="Requirement"></textarea>
+                    </div>
+
                     <!-- Note -->
                     <div class="mb-3">
                         <label for="note">Note :</label>
-                        <textarea class="form-control" id="note" name="note" rows="2" placeholder="Note (optionnel)"></textarea>
+                        <textarea class="form-control" id="note" name="note" rows="1" placeholder="Note"></textarea>
                     </div>
 
                     <!-- Total -->
@@ -44,8 +49,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success"><i class="mdi mdi-cart"></i> Confirm Purshase</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-success"><i class="mdi mdi-cart"></i> Send Request</button>
                 </div>
             </form>
         </div>
