@@ -60,7 +60,9 @@
                                                 <th>Order ID </th>
                                                 <th>Date</th>
                                                 <th>Item</th>
+                                                <th>Details</th>
                                                 <th>Note</th>
+                                                <th>Status</th>
                                                 <th>Quantity</th>
                                                 <th>Total (DA)</th>
                                                 
@@ -80,7 +82,48 @@
                                                 </td>
                                                 <td>{{ produit.created_at|date:'d-m-Y à H:i' }}</td>
                                                 <td>{{ produit.product.name }}</td>
+
+                                                 <td>
+
+                                            {% if produit.product.subcategory.category.type_category == "code" %}
+
+                                                {% with codes=produit.codes.all %}
+                                                    {% if codes %}
+                                                        {{ codes.0.activation_code.code }}{% if codes|length > 1 %} + {{ codes|length|add:"-1" }} ...{% endif %}
+                                                    {% else %}
+                                                        Aucun code
+                                                    {% endif %}
+                                                {% endwith %}
+
+                                            {% else %}
+
+                                            {{ produit.requirement|default:"Aucune demande" }}
+
+                                               {% if produit.answer %}
+
+                                                 <br> -- answer --  <br>{{ produit.answer }}
+
+                                               {% elif produit.reason %}
+                                               <br> -- reason -- <br>{{ produit.reason }}
+
+                                               {% endif %}
+
+                                            {% endif %}
+
+                                        </td>
                                                 <td>{{ produit.note }}</td>
+                                                  <td>
+                                                    {% if produit.status == 'pending' %}
+                                                    <span class="label label-warning "> <i class="bi bi-hourglass-split" style="color:#938c0b;margin-right: 5px;"></i>Pending</span>
+                                                    {% elif produit.status == 'completed' %}
+                                                    <span class="label label-success "> <i class="bi bi-check-circle-fill" style="color:#07E5BB;margin-right: 5px;"></i>Completed</span>
+                                                    {% elif produit.status == 'in_progress' %}
+                                                    <span class="label label-info "> <i class="bi bi-arrow-repeat" style="color:#07E5BB;margin-right: 5px;"></i>In progress</span>
+                                                    {% elif produit.status == 'rejected' %}
+                                                    <span class="label label-danger "> <i class="bi bi-x-circle-fill" style="color:#5e120a;margin-right: 5px;"></i> Rejected</span>
+                                                    {% endif %}
+                                                    </td>
+                                                    
                                                 <td>{{ produit.quantity }}</td>
                                                 <td>{{ produit.total_price }}</td>
                                                 

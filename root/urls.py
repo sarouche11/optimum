@@ -13,7 +13,7 @@ from .views import (list_user ,toggle_profile_status,
                     buy_product,list_activation_user,
                      history_transaction,
                    list_achat,
-                    detail_achat,)
+                    detail_achat,edit_request)
 
 urlpatterns = [
 
@@ -56,6 +56,8 @@ urlpatterns = [
     path('duplicate-product/<int:product_id>/', duplicate_product, name='duplicate_product'),
     
     path('edit-product/<int:product_id>/', edit_product, name='edit_product'),
+
+    path('purchase/edit/<int:pk>/', edit_request, name='edit_request'),
     
    
 

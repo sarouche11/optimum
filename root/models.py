@@ -115,6 +115,8 @@ class ProductAchat(models.Model):
     note = models.TextField(null=True, blank=True)
     reste_after_purchase = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     requirement = models.CharField(max_length=255, null=True, blank=True)
+    answer = models.CharField(max_length=255, null=True, blank=True)
+    reason = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=20, choices=StatusAchat.choices, default=StatusAchat.PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

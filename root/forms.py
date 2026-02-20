@@ -1,6 +1,6 @@
 
 from django import forms
-from .models import Category,SubCategory,Product,ActivationCode,Paiement
+from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat
 
 
 class CategoryForm(forms.ModelForm):
@@ -81,3 +81,17 @@ class PaiementForm(forms.ModelForm):
             'montant': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Amount'}),
             
         }  
+
+
+
+class ProductRequestUpdateForm(forms.ModelForm):
+    class Meta:
+        model = ProductAchat
+        fields = ['answer', 'status','reason']
+        widgets = {
+            'answer': forms.TextInput(attrs={'class': 'form-control'}),
+            'reason': forms.TextInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-select'})
+        }
+
+

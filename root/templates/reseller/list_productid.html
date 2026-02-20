@@ -92,8 +92,10 @@
                                                     <button type="button" class="btn btn-sm btn-success buy-btn-request"
                                                         data-id="{{ product.id }}"
                                                         data-name="{{ product.name|escapejs }}"
-                                                        data-price="{{ product.price }}">
-                                                        <i class="fa fa-shopping-cart m-r-10"></i> REQUEST
+                                                        data-price="{{ product.price }}"
+                                                        data-redirect-url="{% url 'list_achat' %}"
+                                                        >
+                                                        <i class="bi bi-send m-r-10"></i> REQUEST
                                                     </button>
                                                 </td>
                                                 {% endif %}

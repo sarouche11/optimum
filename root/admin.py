@@ -129,6 +129,8 @@ class ProductAchatImportExport(ImportExportModelAdmin):
         'quantity',
         'total_price',
         'note',
+        'answer',
+        'reason',
         'status',
         'active',
        
@@ -141,6 +143,8 @@ class ProductAchatImportExport(ImportExportModelAdmin):
         'quantity',
         'total_price',
         'note',
+        'answer',
+        'reason',
         'status',
         'active',
         'created_at',

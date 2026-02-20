@@ -2,7 +2,7 @@ from django.shortcuts import render
 from authentification.decorators import user_is_in_group
 from authentification.models import Profile
 from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat,PurchaseCode,CatgoryType,StatusAchat
-from .forms import CategoryForm, SubCategoryForm, ProductForm, ActivationCodeForm,PaiementForm
+from .forms import CategoryForm, SubCategoryForm, ProductForm, ActivationCodeForm,PaiementForm,ProductRequestUpdateForm
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, get_object_or_404
@@ -622,7 +622,8 @@ def product_list_by_id(request, cat_id):
 
 
 
-# list achat all user @user_is_in_group('admin')
+# list achat all user
+@user_is_in_group('admin')
 def list_achat_user(request):
     search = request.GET.get('search', '')  
     per_page = request.GET.get('per_page', 10)
@@ -640,8 +641,12 @@ def list_achat_user(request):
             Q(product__name__icontains=search) |
             Q(codeCP__icontains=search) |
             Q(profil__user__username__icontains=search) |
-            Q(created_at__icontains=search)
+            Q(created_at__icontains=search)|
+            Q (product__activation_codes__code__icontains=search)
         )
+
+
+       
 
     # Pagination
     paginator = Paginator(purchases.order_by('-created_at'), per_page)
@@ -652,6 +657,8 @@ def list_achat_user(request):
         'page_obj': page_obj,
         'search': search,
         'per_page': per_page,
+       
+
     }
 
     return render(request, 'admin/purchase/list_achat_user.html', context)
@@ -673,6 +680,29 @@ def admin_detail_achats(request, codeCP):
     }
 
     return render(request, 'admin/purchase/detail_achat_user.html', context)
+
+
+
+
+def edit_request(request, pk):
+    request_achat = get_object_or_404(ProductAchat, pk=pk)
+
+    if request.method == "POST":
+        form = ProductRequestUpdateForm(request.POST, instance=request_achat)
+        if form.is_valid():
+            form.save()
+            # Redirection vers la liste des achats après mise à jour
+            return redirect('list_achat_user')
+    else:
+        form = ProductRequestUpdateForm(instance=request_achat)
+
+    context = {
+        'form': form, 
+        'request_achat': request_achat
+    }    
+
+    return render(request, 'admin/purchase/edit_achat_request.html', context)
+
 
 
 # ================================ reseller ==========================
@@ -866,7 +896,9 @@ def list_achat(request):
 
     # Recherche
     if search:
-        product = product.filter(product__name__icontains=search)
+        product = product.filter(
+          Q(product__name__icontains=search) | Q (codeCP__icontains=search)| Q (product__activation_codes__code__icontains=search)
+          )
 
     # Pagination
     paginator = Paginator(product.order_by('-created_at'), per_page)
