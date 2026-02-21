@@ -356,7 +356,7 @@ def add_activation_code(request):
             product = activation_code.product
             product.stock = product.activation_codes.filter(used=False).count()
             product.save()
-            return redirect('list_activation')   # à adapter selon ta route
+            return redirect('list_activation')   
 
     context = {
         'form': form

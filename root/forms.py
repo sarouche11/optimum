@@ -19,7 +19,7 @@ class CategoryForm(forms.ModelForm):
         filtered_choices = [choice for choice in original_choices if choice[0] != '']
 
         # Ajoute ton propre choix vide personnalisé
-        self.fields['type_category'].choices = [('', '--- Veuillez sélectionner le type_category ---')] + filtered_choices
+        self.fields['type_category'].choices = [('', '--- Select the cateogry type ---')] + filtered_choices
        
         self.fields['type_category'].required = False
         self.fields['type_category'].widget.attrs.update({
@@ -62,12 +62,19 @@ class ProductForm(forms.ModelForm):
             filtered_choices = [choice for choice in original_choices if choice[0] != '']
 
             # Ajoute ton propre choix vide personnalisé
-            self.fields['type_product'].choices = [('', '--- Veuillez sélectionner le type_product ---')] + filtered_choices
+            self.fields['type_product'].choices = [('', '--- Select the product type ---')] + filtered_choices
         
             self.fields['type_product'].required = False
             self.fields['type_product'].widget.attrs.update({
                 'class': 'form-control placeholder-select'
             })
+
+             # --- Subcategory placeholder ---
+            original_sub_choices = list(self.fields['subcategory'].choices)
+            filtered_sub_choices = [choice for choice in original_sub_choices if choice[0] != '']
+            self.fields['subcategory'].choices = [('', '--- Select a subcategory ---')] + filtered_sub_choices
+            self.fields['subcategory'].required = True
+            self.fields['subcategory'].widget.attrs.update({'class': 'form-control'})
 
 
 

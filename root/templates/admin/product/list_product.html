@@ -48,6 +48,7 @@
 
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
+                                    {% include 'messages.html' %}
                                     <a href="{% url 'add_activation' %}" class="btn btn-sm btn-success">
                                         <i class="fa fa-plus">Add Code</i>
                                     </a>
@@ -119,7 +120,7 @@
                                                 <td>-</td>
                                                 <td>
                                                     <a href=""
-                                                        class="btn btn-sm btn-secondary">
+                                                        class="btn btn-sm btn-secondary disabled">
                                                         <i class="ti-key me-1"></i>
                                                     </a>
 
@@ -135,7 +136,7 @@
                                                 </td>
                                                 <td>
                                                     <a href="{% url 'edit_product' product.id %}"
-                                                        class="btn btn-sm btn-success">
+                                                        class="btn btn-sm btn-success ">
                                                         <i class="fa fa-edit"></i>
                                                     </a>
                                                 </td>

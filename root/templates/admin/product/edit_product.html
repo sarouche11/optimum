@@ -42,21 +42,39 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="card card-body">
-                            <h4 class="card-title"><i class="fa fa-edit"></i> Edit </h4>
+                            
+                            <h4 class="card-title"><i class="fa fa-edit"></i> Edit : <strong style="color: #2f2e2e;">{{ product.name }}</strong>  </h4>
 
                             <form class="form-horizontal m-t-30" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
 
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.subcategory.id_for_label }}">Subcategory</label>
-                                    {{ form.subcategory }}
+                              <div class="form-group">
+                                    <label>Subcategory </label>
+                                    <select name="{{ form.subcategory.name }}" id="id_subcategory" class="form-control">
+
+                                        <option value="" data-type="">--- Select a subcategory ---</option>
+
+                                        {% for sub in form.subcategory.field.queryset %}
+                                            <option value="{{ sub.id }}"
+                                                    data-type="{{ sub.category.type_category }}"
+                                                    {% if form.subcategory.value|stringformat:"s" == sub.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ sub.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
 
-                                <div class="form-group mb-3">
-                                    <label for="{{ form.subcategory.id_for_label }}">Type</label>
-                                    {{ form.type_product }}
+                                <div class="form-group">
+                                    <label>Type Product</label>
+                                    <select name="{{ form.type_product.name }}" id="type_product" class="form-control placeholder-select">
+                                        {% for value, label in form.type_product.field.choices %}
+                                            <option value="{{ value }}"
+                                                {% if form.type_product.value == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
-
                                 <div class="form-group mb-3">
                                     <label for="{{ form.name.id_for_label }}">Name</label>
                                     {{ form.name }}
@@ -141,6 +159,46 @@
     <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
     <!--Custom JavaScript -->
     <script src="{% static 'dist/js/custom.min.js' %}"></script>
+
+    <script>
+$(document).ready(function() {
+
+    function updateTypeProduct() {
+
+        let selectedOption = $('#id_subcategory option:selected');
+        let typeCategory = selectedOption.attr('data-type'); // 🔥 utiliser attr
+        let typeProductSelect = $('#type_product');
+
+        // 🔥 Sauvegarder la valeur actuelle (important pour EDIT)
+        let currentValue = typeProductSelect.val();
+
+        if (typeCategory === 'request') {
+
+            typeProductSelect.html('<option value="request">Request</option>');
+            typeProductSelect.val('request');
+
+        } else {
+
+            typeProductSelect.html(`
+                <option value="">--- Select the product type ---</option>
+                <option value="code">Code</option>
+                <option value="request">Request</option>
+            `);
+
+            // 🔥 Si on est en edit, on remet la valeur précédente
+            if (currentValue) {
+                typeProductSelect.val(currentValue);
+            }
+        }
+    }
+
+    $('#id_subcategory').on('change', updateTypeProduct);
+
+    // 🔥 IMPORTANT pour EDIT
+    updateTypeProduct();
+});
+</script>
+
 </body>
 
 </html>
