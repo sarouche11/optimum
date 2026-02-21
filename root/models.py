@@ -46,6 +46,12 @@ class SubCategory(models.Model):
         return f"{self.name}"
 
 
+
+class ProductType(models.TextChoices):
+    
+    REQUEST   = 'request', _('Request')
+    CODE      = 'code', _('Code') 
+
 # 3. Produit / Plan d’abonnement
 class Product(models.Model):
     code_product = models.CharField(max_length=100, unique=True, default=generate_code)
@@ -54,6 +60,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=0) 
     image = models.ImageField(upload_to='products/')
+    type_product = models.CharField(choices=ProductType.choices, max_length=20,)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

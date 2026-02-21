@@ -123,7 +123,7 @@
 
                     <!-- Codes achetés Carte 1 -->
 
-                     {% if purchase.product.subcategory.category.type_category == 'code' %}
+                     {% if purchase.product.subcategory.category.type_category == 'code' and purchase.product.type_product == 'code' %}
 
                      <div class="col-md-6">
                         <div class="card shadow-sm border-0">
@@ -159,7 +159,7 @@
                         </div>
                     </div>
 
-                    {% else %}
+                    {% elif  purchase.product.subcategory.category.type_category == 'request'  %}
 
                      <div class="col-md-6">
                         <div class="card shadow-sm border-0">
@@ -180,15 +180,44 @@
                         </div>
                     </div>
 
+                    {% elif purchase.product.subcategory.category.type_category == 'code' and purchase.product.type_product == 'request'  %}
+
+                      <div class="col-md-6" id="codesTable">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-success">
+                                <h5 class="mb-0" style="color: white;">Response</h5>
+                            </div>
+                            <div class="card-body ">
+                                 {% if purchase.answer %}
+                                   
+                                    <p  class="activation-code">{{ purchase.answer }}</p>
+
+                                    {% endif %}
+
+                               
+
+                            </div>
+                            <button id="copyCodesBtn" class="btn btn-success" style="width: 100%;">Just Copy</button>     
+                        </div>
+                    </div>
+
+
+
 
                     {% endif %}
 
 
 
+                
+
+
+
+
+
                    
 
-                    <!-- Codes achetés Carte 2 -->
-
+                    <!-- reponse -->
+                 {% if purchase.product.subcategory.category.type_category == 'request' %}
                      <div class="col-md-6">
                         <div class="card shadow-sm border-0">
                             <div class="card-header bg-success">
@@ -206,6 +235,7 @@
                             </div>
                         </div>
                     </div>
+                     {% endif %}
                    
                 </div>
 

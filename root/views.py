@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from authentification.decorators import user_is_in_group
 from authentification.models import Profile
-from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat,PurchaseCode,CatgoryType,StatusAchat
+from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType
 from .forms import CategoryForm, SubCategoryForm, ProductForm, ActivationCodeForm,PaiementForm,ProductRequestUpdateForm
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -12,6 +12,7 @@ from decimal import Decimal
 from django.db.models import Sum,Prefetch
 from django.utils import timezone
 from django.http import JsonResponse
+from django.db import transaction
 
 
 
@@ -713,21 +714,19 @@ def buy_product(request):
     if request.method != "POST":
         return JsonResponse({'success': False}, status=400)
 
-
-    # Récupération des données
     product_id = request.POST.get('product_id')
     quantity = int(request.POST.get('quantity'))
     note = request.POST.get('note', '')
-    requirement = request.POST.get('requirement', '')  # utile seulement pour REQUEST
-    
-    # Vérification produit et profil
+    requirement = request.POST.get('requirement', '')
+
     product = get_object_or_404(Product, id=product_id)
     profil = request.user.profile
 
     total_price = product.price * quantity
 
-    # Vérifier le solde
-    solde = profil.paiements.filter(active=True).aggregate(total=Sum('montant'))['total'] or Decimal('0')
+    solde = profil.paiements.filter(active=True).aggregate(
+        total=Sum('montant')
+    )['total'] or Decimal('0')
 
     if solde < total_price:
         return JsonResponse({
@@ -735,72 +734,74 @@ def buy_product(request):
             'error': f"Solde insuffisant : {solde} DA."
         })
 
-
-     # Vérifier stock uniquement si type CODE
     category_type = product.subcategory.category.type_category
+    product_type = product.type_product
 
-    if category_type == CatgoryType.CODE and quantity > product.stock:
+    if category_type == CatgoryType.CODE and product_type == ProductType.CODE and quantity > product.stock:
         return JsonResponse({
             'success': False,
             'error': "Stock insuffisant."
         })
-    
+
     reste = solde - total_price
 
-    
-    if category_type == CatgoryType.CODE:
-        status = StatusAchat.COMPLETED
-        # Récupérer les codes disponibles
-        codes = list(
-            ActivationCode.objects.filter(product=product, used=False)[:quantity]
-        )
-        if len(codes) < quantity:
-            return JsonResponse({'success': False,'error': "Pas assez de codes disponibles."})
-        
-    else :
-         status = StatusAchat.PENDING
-         codes = []  
+    with transaction.atomic():
 
+        if category_type == CatgoryType.CODE and product_type == ProductType.CODE:
 
+            status = StatusAchat.COMPLETED
 
-     # Créer l'achat
-    purchase = ProductAchat.objects.create(
-        profil=profil,
-        product=product,
-        quantity=quantity,
-        total_price=total_price,
-        note=note,
-        reste_after_purchase=reste,
-        status = status,
-        requirement=requirement if category_type == CatgoryType.REQUEST else None
-       
-    )
-
-    purchased_codes = []
-
-    if status == StatusAchat.COMPLETED:
-        for code in codes:
-            code.used = True
-            code.used_at = timezone.now()
-            code.save()
-
-            PurchaseCode.objects.create(
-                purchase=purchase,
-                activation_code=code
+            codes = list(
+                ActivationCode.objects
+                .select_for_update()
+                .filter(product=product, used=False)[:quantity]
             )
 
-            purchased_codes.append(code.code)
+            if len(codes) < quantity:
+                return JsonResponse({
+                    'success': False,
+                    'error': "Pas assez de codes disponibles."
+                })
 
-        # Décrémenter le stock
-        product.stock -= quantity
-        product.save()
-        
-# Créer le paiement
-    Paiement.objects.create(
-        profil=profil,
-        montant=-total_price,
-        active=True
-    )
+        else:
+            status = StatusAchat.PENDING
+            codes = []
+
+        purchase = ProductAchat.objects.create(
+            profil=profil,
+            product=product,
+            quantity=quantity,
+            total_price=total_price,
+            note=note,
+            reste_after_purchase=reste,
+            status=status,
+            requirement=requirement if product_type == ProductType.REQUEST 
+                        or category_type == CatgoryType.REQUEST else None
+        )
+
+        purchased_codes = []
+
+        if status == StatusAchat.COMPLETED:
+            for code in codes:
+                code.used = True
+                code.used_at = timezone.now()
+                code.save()
+
+                PurchaseCode.objects.create(
+                    purchase=purchase,
+                    activation_code=code
+                )
+
+                purchased_codes.append(code.code)
+
+            product.stock -= quantity
+            product.save()
+
+        Paiement.objects.create(
+            profil=profil,
+            montant=-total_price,
+            active=True
+        )
 
     return JsonResponse({
         'success': True,

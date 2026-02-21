@@ -56,6 +56,7 @@ class ProductImportExport(ImportExportModelAdmin):
         'price',
         'stock',
         'image',
+        'type_product',
         'active',
     ]
 
@@ -66,6 +67,7 @@ class ProductImportExport(ImportExportModelAdmin):
         'price',
         'stock',
         'image',
+        'type_product',
         'active',
         'created_at',
         'updated_at',

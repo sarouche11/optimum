@@ -121,72 +121,98 @@
 
                     <!-- Codes achetés Carte 1 -->
 
-                      {% if purchase.product.subcategory.category.type_category == 'code' %}
+                     {% if purchase.product.subcategory.category.type_category == 'code' and purchase.product.type_product == 'code' %}
 
                      <div class="col-md-6">
                         <div class="card shadow-sm border-0">
                             <div class="card-header bg-success text-white">
-                                <h5 class="mb-0" style="color: white;">Codes achetés</h5>
+                                <h5 class="mb-0" style="color: white;">Your Codes</h5>
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover mb-0">
+                                    <table class="table table-striped table-hover mb-0"  id="codesTable">
                                         <thead class="table-light">
                                             <tr>
-                                                <th>Code Activation</th>
+                                                <th>Code </th>
                                                 <th>Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for code in codes %}
                                             <tr>
-                                                <td>{{ code.activation_code.code }}</td>
+                                                <td class="activation-code">{{ code.activation_code.code }}</td>
                                                 <td>{{ code.created_at|date:'d-m-Y H:i' }}</td>
                                             </tr>
                                             {% empty %}
                                             <tr>
-                                                <td colspan="2" class="text-center">Aucun code trouvé</td>
+                                                <td colspan="2" class="text-center">No codes found</td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
                                     </table>
-                                  
+                                   
+                                    <button id="copyCodesBtn" class="btn btn-success" style="width: 100%;">Just Copy</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {% else %}
+                    {% elif  purchase.product.subcategory.category.type_category == 'request'  %}
 
-                    <div class="col-md-6">
+                     <div class="col-md-6">
                         <div class="card shadow-sm border-0">
                             <div class="card-header bg-warning">
                                 <h5 class="mb-0 text-white">Requirement</h5>
                             </div>
-                            <div class="card-body">
-                                
+                            <div class="card-body">   
+                                   
                                 {% if purchase.requirement %}
                                    
                                     <p class="">{{ purchase.requirement }}</p>
                                 {% else %}
                                     <p class="text-muted">no request</p>
                                 {% endif %}
+                               
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {% elif purchase.product.subcategory.category.type_category == 'code' and purchase.product.type_product == 'request'  %}
+
+                      <div class="col-md-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-success">
+                                <h5 class="mb-0" style="color: white;">Response</h5>
+                            </div>
+                            <div class="card-body ">
+                                 {% if purchase.answer %}
+                                   
+                                    <p class="">{{ purchase.answer }}</p>
+
+                                    {% endif %}
 
                             </div>
                         </div>
                     </div>
 
 
+
+
                     {% endif %}
+
+
+
+                
+
+
 
 
 
                    
 
-                    <!-- Reponse request -->
-
-                    {% if purchase.product.subcategory.category.type_category == 'request' %}
-
+                    <!-- reponse -->
+                 {% if purchase.product.subcategory.category.type_category == 'request' %}
                      <div class="col-md-6">
                         <div class="card shadow-sm border-0">
                             <div class="card-header bg-success">
@@ -196,18 +222,15 @@
                                  {% if purchase.answer %}
                                    
                                     <p class="">{{ purchase.answer }}</p>
+
                                 {% elif purchase.reason %}
                                     <p class="">{{ purchase.reason }}</p>
+                                    {% endif %}
 
-                              
-
-                                    
-                                {% endif %}
-                              
                             </div>
                         </div>
                     </div>
-                    {% endif %}
+                     {% endif %}
                    
                 </div>
 

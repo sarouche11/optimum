@@ -86,31 +86,42 @@
                                         <td>{{ produit.created_at|date:'d-m-Y à H:i' }}</td>
                                         <td>{{ produit.product.name }}</td>
 
-                                        <td>
+                                            <td>
 
-                                            {% if produit.product.subcategory.category.type_category == "code" %}
+                                                    {% if produit.product.subcategory.category.type_category == "code" and produit.product.type_product == 'code' %}
 
-                                                {% with codes=produit.codes.all %}
-                                                    {% if codes %}
-                                                        {{ codes.0.activation_code.code }}{% if codes|length > 1 %} + {{ codes|length|add:"-1" }} ...{% endif %}
-                                                    {% else %}
-                                                        Aucun code
+                                                        {% with codes=produit.codes.all %}
+                                                            {% if codes %}
+                                                                {{ codes.0.activation_code.code }}{% if codes|length > 1 %} + {{ codes|length|add:"-1" }} ...{% endif %}
+                                                            {% else %}
+                                                                -
+                                                            {% endif %}
+                                                        {% endwith %}
+
+                                                    {% elif produit.product.subcategory.category.type_category == "request" and produit.product.type_product == 'request' %}
+
+                                                        {{ produit.requirement|default:"-" }} 
+
+                                                        {% if produit.answer %}
+
+                                                        <br>  -- answer --  <br>{{ produit.answer }}
+
+                                                        {% elif produit.reason %}
+                                                        <br> -- reason -- <br>{{ produit.reason }}
+
+                                                        {% endif %}
+                                                    
+                                                    {% elif produit.product.subcategory.category.type_category == "code" and produit.product.type_product == 'request' %}  
+                                                        
+                                                        {% if produit.answer %}
+
+                                                            -- answer --  <br>{{ produit.answer|truncatechars:15 }}
+
+                                                        {% elif produit.reason %}
+                                                        <br> -- reason -- <br>{{ produit.reason }}
+
+                                                        {% endif %}
                                                     {% endif %}
-                                                {% endwith %}
-
-                                            {% else %}
-
-                                            {{ produit.requirement|default:"Aucune demande" }}
-                                               {% if produit.answer %}
-
-                                                 <br> -- answer --  <br>{{ produit.answer }}
-
-                                               {% elif produit.reason %}
-                                               <br> -- reason -- <br>{{ produit.reason }}
-
-                                               {% endif %}
-
-                                            {% endif %}
 
                                         </td>
                                         <td>{{ produit.note }}</td>
@@ -131,11 +142,18 @@
                                         <td>{{ produit.total_price }}</td>
 
                                          <td>
-                                            {% if produit.product.subcategory.category.type_category == "request" %}
+                                            {% if produit.product.subcategory.category.type_category == "request" or produit.type_product == "request" %}
                                             <a href="{% url 'edit_request' produit.id %}"
                                                 class="btn btn-sm btn-success">
                                                 <i class="fa fa-edit"></i>
                                             </a>
+
+                                            {% elif produit.product.subcategory.category.type_category == "code" and produit.product.type_product == "request" %}
+                                            <a href="{% url 'edit_request' produit.id %}"
+                                                class="btn btn-sm btn-success">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+
                                             {% else %}
 
                                              <a href="#"

@@ -10,7 +10,7 @@ class CategoryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Name'}),
             'image': forms.ClearableFileInput(attrs={'class':"custom-file-input", 'id':"inputGroupFile01", 'type':"file"}),
-            'type_category': forms.Select(attrs={ 'class':"form-control placeholder-select", 'name':"Status","id":"type_category" }),
+            'type_category': forms.Select(attrs={ 'class':"form-control placeholder-select", 'name':"type_category","id":"type_category" }),
         }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -43,16 +43,33 @@ class SubCategoryForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['subcategory', 'price','name', 'image', 'active']
+        fields = ['subcategory', 'price','name', 'image','type_product']
 
         widgets = {
             'subcategory': forms.Select(attrs={'class': 'form-control'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price'}),
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description','rows':"2"}),
             'image': forms.ClearableFileInput(attrs={'class':"custom-file-input", 'id':"inputGroupFile01", 'type':"file"}),
+            'type_product': forms.Select(attrs={ 'class':"form-control placeholder-select", 'name':"type_product","id":"type_product" , "required": "required"}),
            
         }      
+
+    def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+            original_choices = list(self.fields['type_product'].choices)
+            filtered_choices = [choice for choice in original_choices if choice[0] != '']
+
+            # Ajoute ton propre choix vide personnalisé
+            self.fields['type_product'].choices = [('', '--- Veuillez sélectionner le type_product ---')] + filtered_choices
+        
+            self.fields['type_product'].required = False
+            self.fields['type_product'].widget.attrs.update({
+                'class': 'form-control placeholder-select'
+            })
+
+
 
 class ActivationCodeForm(forms.ModelForm):
     class Meta:
@@ -89,7 +106,7 @@ class ProductRequestUpdateForm(forms.ModelForm):
         model = ProductAchat
         fields = ['answer', 'status','reason']
         widgets = {
-            'answer': forms.TextInput(attrs={'class': 'form-control'}),
+            'answer': forms.Textarea(attrs={'class': 'form-control'}),
             'reason': forms.TextInput(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-select'})
         }
