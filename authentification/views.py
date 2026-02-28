@@ -8,6 +8,9 @@ from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from .models import OTP, Profile
 
+from django.core.mail import send_mail
+from django.conf import settings
+
 from django.contrib.auth import update_session_auth_hash
 
 # Create your views here.
@@ -205,10 +208,24 @@ def register_view(request):
                     profile.active = False
                     profile.save()
 
-                    messages.success(
-                        request,
-                        "Votre compte a été créé ! Il sera activé par l'administrateur."
+                    # 4️⃣ Envoi email à l’admin
+                    send_mail(
+                        subject="Nouvelle inscription sur la plateforme",
+                        message=f"""
+                        Un nouvel utilisateur vient de s'inscrire.
+
+                        Nom: {first_name} {last_name}
+                        Username: {username}
+                        Email: {email}
+
+                        Veuillez activer son compte 
+                        """,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[settings.ADMIN_NOTIFICATION_EMAIL],
+                        fail_silently=False,
                     )
+
+                    
                     return redirect('success')
 
             except Exception as e:
@@ -275,3 +292,7 @@ def change_password(request):
 
 def success (request):
     return render(request,'partials/success.html')
+
+
+
+

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from authentification.decorators import user_is_in_group
 from authentification.models import Profile
-from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType
+from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType,Notification
 from .forms import CategoryForm, SubCategoryForm, ProductForm, ActivationCodeForm,PaiementForm,ProductRequestUpdateForm
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -14,6 +14,14 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.db import transaction
 
+from django.core.mail import send_mail
+from django.conf import settings
+
+
+from .utils import creer_notification_request
+from django.views.decorators.http import require_POST
+from .context_processors import get_notifications
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -767,6 +775,7 @@ def buy_product(request):
             status = StatusAchat.PENDING
             codes = []
 
+
         purchase = ProductAchat.objects.create(
             profil=profil,
             product=product,
@@ -802,6 +811,31 @@ def buy_product(request):
             montant=-total_price,
             active=True
         )
+
+         # 📩 Envoi email si REQUEST
+        if status == StatusAchat.PENDING:
+            send_mail(
+                subject="Nouvelle demande produit (REQUEST)",
+                message=f"""
+                    Une nouvelle demande a été effectuée.
+
+                    Utilisateur : {profil.user.first_name} {profil.user.last_name}
+                    Username : {profil.user.username}
+                    Email : {profil.user.email}
+
+                    Produit : {product.name}
+                    Quantité : {quantity}
+                    Prix total : {total_price} DA
+
+                    Note : {note}
+                    Requirement : {requirement}
+                    """,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.ADMIN_NOTIFICATION_EMAIL],
+                fail_silently=False,
+            )
+            
+            creer_notification_request(purchase)    
 
     return JsonResponse({
         'success': True,
@@ -928,3 +962,15 @@ def detail_achat(request, codeCP):
     }
 
     return render(request, 'reseller/detail_achat.html', context)
+
+
+
+
+@require_POST
+@login_required
+def mark_notifications_as_read(request):
+    if request.user.groups.filter(name='Admin').exists():
+        Notification.objects.filter(is_read=False).update(is_read=True)
+    else:
+        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    return JsonResponse({'status': 'ok'})

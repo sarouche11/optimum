@@ -1,5 +1,6 @@
 from django.db import models
 import random
+from django.contrib.auth.models import User
 from authentification.models import Profile
 from django.db.models import Sum
 from decimal import Decimal
@@ -145,3 +146,17 @@ class PurchaseCode(models.Model):
 
     def __str__(self):
         return self.activation_code.code
+    
+
+
+
+class Notification(models.Model):
+    codeN = models.CharField(default=generate_code, editable=False, unique=True,max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.message[:20]}"
+

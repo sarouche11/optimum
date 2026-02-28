@@ -1,5 +1,6 @@
 from django.db.models import Sum
 from .models import Profile
+from root.models import Notification
 
 def solde_revendeur(request):
     if request.user.is_authenticated:
@@ -15,3 +16,16 @@ def solde_revendeur(request):
     }
 
 
+
+
+
+def get_notifications(request):
+    if request.user.is_authenticated:
+        notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+    else:
+        notifications = []
+    print(any(not notif.is_read for notif in notifications))
+    return {
+        'notifications': notifications,
+        'has_unread': any(not notif.is_read for notif in notifications)
+    }

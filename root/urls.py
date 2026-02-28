@@ -13,7 +13,8 @@ from .views import (list_user ,toggle_profile_status,
                     buy_product,list_activation_user,
                      history_transaction,
                    list_achat,
-                    detail_achat,edit_request)
+                    detail_achat,edit_request,
+                    mark_notifications_as_read)
 
 urlpatterns = [
 
@@ -72,6 +73,13 @@ urlpatterns = [
     path('detail_achat/<str:codeCP>/', detail_achat, name='detail_achat'),
 
     path('history_transaction/', history_transaction, name='history_transaction'),
+
+
+    # notification 
+
+    path('notifications/read/', mark_notifications_as_read, name='notifications_lues'),
+
+
 
     
     ]

@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 
                 'root.context_processors.solde_revendeur',
+                'root.context_processors.get_notifications',
             
             ],
         },
@@ -162,4 +163,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sarouc11@gmail.com'
 EMAIL_HOST_PASSWORD = 'yuep khaa gytr ucqc'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+ADMIN_NOTIFICATION_EMAIL = 'sarouc11@gmail.com'
 

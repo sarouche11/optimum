@@ -37225,3 +37225,15 @@ html[dir=rtl] #main-wrapper[data-sidebartype=overlay].show-sidebar .left-sidebar
     display: block !important ;           
 }
 
+
+.notif-dot {
+    position: absolute;
+    top: 16px;     /* ajuste selon ton icône */
+    right: 4px;   /* ajuste selon ton icône */
+    width: 8px;
+    height: 8px;
+    background-color: #dc3545; /* rouge Bootstrap */
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
