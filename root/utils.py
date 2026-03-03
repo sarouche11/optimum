@@ -4,7 +4,7 @@ from authentification.decorators import user_is_in_group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-@user_is_in_group('admin')
+
 def creer_notification_request(purchase):
     """
     Crée des notifications pour une demande produit (REQUEST)

@@ -14,6 +14,7 @@ from .views import (list_user ,toggle_profile_status,
                      history_transaction,
                    list_achat,
                     detail_achat,edit_request,
+                    buy_ibo,
                     mark_notifications_as_read)
 
 urlpatterns = [
@@ -59,6 +60,8 @@ urlpatterns = [
     path('edit-product/<int:product_id>/', edit_product, name='edit_product'),
 
     path('purchase/edit/<int:pk>/', edit_request, name='edit_request'),
+
+
     
    
 
@@ -73,6 +76,11 @@ urlpatterns = [
     path('detail_achat/<str:codeCP>/', detail_achat, name='detail_achat'),
 
     path('history_transaction/', history_transaction, name='history_transaction'),
+    
+
+    path('buy/', buy_ibo, name='buy_ibo'),
+
+
 
 
     # notification 

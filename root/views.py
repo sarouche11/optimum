@@ -726,6 +726,7 @@ def buy_product(request):
     quantity = int(request.POST.get('quantity'))
     note = request.POST.get('note', '')
     requirement = request.POST.get('requirement', '')
+    type_vie = request.POST.get('type_vie')
 
     product = get_object_or_404(Product, id=product_id)
     profil = request.user.profile
@@ -771,9 +772,14 @@ def buy_product(request):
                     'error': "Pas assez de codes disponibles."
                 })
 
-        else:
+        elif category_type == CatgoryType.REQUEST:
             status = StatusAchat.PENDING
             codes = []
+
+        elif category_type == CatgoryType.IBO:
+            status = StatusAchat.PENDING
+            codes = []
+    
 
 
         purchase = ProductAchat.objects.create(
@@ -784,8 +790,8 @@ def buy_product(request):
             note=note,
             reste_after_purchase=reste,
             status=status,
-            requirement=requirement if product_type == ProductType.REQUEST 
-                        or category_type == CatgoryType.REQUEST else None
+            requirement=requirement if product_type == ProductType.REQUEST or category_type == CatgoryType.REQUEST else None,
+            type_vie=request.POST.get('type_vie') if category_type == CatgoryType.IBO else None            
         )
 
         purchased_codes = []
@@ -963,6 +969,10 @@ def detail_achat(request, codeCP):
 
     return render(request, 'reseller/detail_achat.html', context)
 
+
+@user_is_in_group('reseller')
+def buy_ibo(request):
+    return render(request,'reseller/buy_ibo.html')
 
 
 

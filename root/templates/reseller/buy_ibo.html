@@ -1,5 +1,4 @@
 {% load static %}
-{% load group_tags %}
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
@@ -9,12 +8,7 @@
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
-    <div class="preloader">
-        <div class="lds-ripple">
-            <div class="lds-pos"></div>
-            <div class="lds-pos"></div>
-        </div>
-    </div>
+ 
     <!-- ============================================================== -->
     <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
@@ -25,66 +19,63 @@
         {% include 'partials/header.html' %}
         <!-- ============================================================== -->
         <!-- End Topbar header -->
-       
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
         <!-- Left Sidebar - style you can find in sidebar.scss  -->
-     
+        <!-- ============================================================== -->
         {% include 'partials/sidebar.html' %}
-       
+        <!-- ============================================================== -->
+        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Page wrapper  -->
+        <!-- ============================================================== -->
         <div class="page-wrapper">
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
-            <div class="page-breadcrumb">
-                <div class="row">
-                    <div class="col-5 align-self-center">
-                        <h4 class="page-title"><i class="fa fa-folder"></i> SubCategory</h4>
-                    </div>
-                   
-                </div>
-            </div>
-            
+     
+      
 
             <div class="container-fluid">
-                 {% include 'messages.html' %}
-                <div class="row gx-1 gy-1">
-                    {% for subcat in subcategory %}
-                    <div class="col-lg-3 col-md-6 mb-2 ">
-                        <div class="card">
+            
+              
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card card-body">
+                            <h4 class="card-title"><i class="fa fa-plus"></i> Add Category</h4>
+                            
+                            <form class="form-horizontal m-t-30" method="POST" enctype="multipart/form-data" action="{% url 'buy_ibo' %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label>Adresse MAC : </label>
+                                    <input type="text" name="requirement" required>
+                                </div>
 
-                            <!-- Wrapper pour image -->
-                            <div class="card-img-wrapper">
-                                {% if subcat.image %}
-                                <img src="{{ subcat.image.url }}" alt="{{ subcat.name }}">
-                                {% else %}
-                                <img src="{% static 'images/default.jpg' %}" alt="Default">
-                                {% endif %}
-                            </div>
-                            {% if user|has_group:'admin' %}
-                             <!-- Bouton Edit en overlay -->
-                            <a href="{% url 'edit_subcategory' subcat.id %}" class="btn btn-sm btn-success position-absolute"
-                                style="top:10px; right:10px; z-index:10;">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            {% endif %}
-                             
-                            {% if subcat.category.type_category == 'ibo' %}
-                            <div class="card-body">
-                                <h4 class="card-title">{{ subcat.name }}</h4>
-                                 <a href="{% url 'buy_ibo' %}" class="stretched-link"></a>
-                            </div>
-                            {% else %}
-                             <div class="card-body">
-                                <h4 class="card-title">{{ subcat.name }}</h4>
-                                 <a href="{% url 'product_list' subcat.id %}" class="stretched-link"></a>
-                            </div>
-                            {% endif %}
-
+                                <div class="form-group">
+                                    <label>Type de vie : </label>
+                                   <select name="type_vie" required>
+                                        <option value="1_year">1 an</option>
+                                        <option value="lifetime">À vie</option>
+                                    </select>
+                                </div>
+          
+                              
+                            
+                                  <button class="btn btn-success">
+                                    Envoyer la demande
+                                </button>
+                                            
+                            </form>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
+               
+              
+              
+             
+          
             </div>
-
             <!-- ============================================================== -->
             <!-- End Container fluid  -->
             <!-- ============================================================== -->
@@ -106,7 +97,7 @@
     <!-- ============================================================== -->
     <!-- customizer Panel -->
     <!-- ============================================================== -->
-
+   
     <div class="chat-windows"></div>
     <!-- ============================================================== -->
     <!-- All Jquery -->
@@ -128,8 +119,6 @@
     <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
     <!--Custom JavaScript -->
     <script src="{% static 'dist/js/custom.min.js' %}"></script>
-    <!-- This Page JS -->
-    <script src="{% static 'assets/extra-libs/prism/prism.js' %}"></script>
 </body>
 
 </html>
