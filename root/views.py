@@ -726,7 +726,7 @@ def buy_product(request):
     quantity = int(request.POST.get('quantity'))
     note = request.POST.get('note', '')
     requirement = request.POST.get('requirement', '')
-    type_vie = request.POST.get('type_vie')
+    
 
     product = get_object_or_404(Product, id=product_id)
     profil = request.user.profile
@@ -776,10 +776,7 @@ def buy_product(request):
             status = StatusAchat.PENDING
             codes = []
 
-        elif category_type == CatgoryType.IBO:
-            status = StatusAchat.PENDING
-            codes = []
-    
+      
 
 
         purchase = ProductAchat.objects.create(
@@ -791,7 +788,7 @@ def buy_product(request):
             reste_after_purchase=reste,
             status=status,
             requirement=requirement if product_type == ProductType.REQUEST or category_type == CatgoryType.REQUEST else None,
-            type_vie=request.POST.get('type_vie') if category_type == CatgoryType.IBO else None            
+               
         )
 
         purchased_codes = []
@@ -971,8 +968,77 @@ def detail_achat(request, codeCP):
 
 
 @user_is_in_group('reseller')
-def buy_ibo(request):
-    return render(request,'reseller/buy_ibo.html')
+def buy_ibo(request, subcat_id):
+    # Récupération de la sous-catégorie IBO
+    subcategory = get_object_or_404(SubCategory, id=subcat_id)
+    category_type = subcategory.category.type_category
+
+    profil = request.user.profile
+
+    if request.method == "POST":
+        requirement = request.POST.get('requirement', '')  # Adresse MAC
+        type_vie = request.POST.get('type_vie')  # 1_year ou lifetime
+
+        # Ici tu peux définir le prix IBO si nécessaire
+        total_price = 0  # Gratuit ou fixe selon ton système
+
+        # Vérifier le solde si le prix est > 0
+        if total_price > 0:
+            solde = profil.paiements.filter(active=True).aggregate(
+                total=Sum('montant')
+            )['total'] or Decimal('0')
+            if solde < total_price:
+                return JsonResponse({
+                    'success': False,
+                    'error': f"Solde insuffisant : {solde} DA."
+                })
+
+        # Créer l'achat IBO
+        purchase = ProductAchat.objects.create(
+            profil=profil,
+            product=None,  # pas de produit réel pour IBO
+            quantity=1,
+            total_price=total_price,
+            requirement=requirement,
+            type_vie=type_vie,
+            status=StatusAchat.PENDING,
+        )
+
+        # Déduction du montant si nécessaire
+        if total_price > 0:
+            Paiement.objects.create(
+                profil=profil,
+                montant=-total_price,
+                active=True
+            )
+
+        # Envoi notification/admin
+        send_mail(
+            subject="Nouvelle demande IBO",
+            message=f"""
+Une nouvelle demande IBO a été effectuée.
+
+Utilisateur : {profil.user.first_name} {profil.user.last_name}
+Username : {profil.user.username}
+Email : {profil.user.email}
+
+Requirement (MAC) : {requirement}
+Type de vie : {type_vie}
+""",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.ADMIN_NOTIFICATION_EMAIL],
+            fail_silently=False,
+        )
+
+        
+
+        return JsonResponse({
+            'success': True,
+            'message': "Demande IBO envoyée avec succès !"
+        })
+
+    # GET : affichage du formulaire IBO
+    return render(request, 'reseller/buy_ibo.html', {'subcategory': subcategory})
 
 
 

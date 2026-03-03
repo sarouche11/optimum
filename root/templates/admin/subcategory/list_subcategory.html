@@ -70,7 +70,7 @@
                             {% if subcat.category.type_category == 'ibo' %}
                             <div class="card-body">
                                 <h4 class="card-title">{{ subcat.name }}</h4>
-                                 <a href="{% url 'buy_ibo' %}" class="stretched-link"></a>
+                                 <a href="{% url 'buy_ibo'  subcat.id %}" class="stretched-link"></a>
                             </div>
                             {% else %}
                              <div class="card-body">

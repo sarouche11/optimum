@@ -122,7 +122,7 @@ class TypeVie(models.TextChoices):
 class ProductAchat(models.Model):
     codeCP = models.CharField(max_length=100, unique=True, default=generate_code)
     profil = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="code_purchases")
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="purchases")
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="purchases",null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     note = models.TextField(null=True, blank=True)

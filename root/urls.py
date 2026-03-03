@@ -78,7 +78,7 @@ urlpatterns = [
     path('history_transaction/', history_transaction, name='history_transaction'),
     
 
-    path('buy/', buy_ibo, name='buy_ibo'),
+    path('buy/<str:subcat_id>', buy_ibo, name='buy_ibo'),
 
 
 

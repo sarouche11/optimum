@@ -45,28 +45,27 @@
                         <div class="card card-body">
                             <h4 class="card-title"><i class="fa fa-plus"></i> Add Category</h4>
                             
-                            <form class="form-horizontal m-t-30" method="POST" enctype="multipart/form-data" action="{% url 'buy_ibo' %}">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <label>Adresse MAC : </label>
-                                    <input type="text" name="requirement" required>
-                                </div>
+                      <form class="form-horizontal m-t-30" method="POST" enctype="multipart/form-data"
+      action="{% url 'buy_ibo' subcat_id=subcategory.id %}">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label>Adresse MAC :</label>
+        <input type="text" name="requirement" required>
+    </div>
 
-                                <div class="form-group">
-                                    <label>Type de vie : </label>
-                                   <select name="type_vie" required>
-                                        <option value="1_year">1 an</option>
-                                        <option value="lifetime">À vie</option>
-                                    </select>
-                                </div>
-          
-                              
-                            
-                                  <button class="btn btn-success">
-                                    Envoyer la demande
-                                </button>
-                                            
-                            </form>
+    <div class="form-group">
+        <label>Type de vie :</label>
+        <select name="type_vie" required>
+            <option value="1_year">1 an</option>
+            <option value="lifetime">À vie</option>
+        </select>
+    </div>
+
+    <button class="btn btn-success">
+        Envoyer la demande
+    </button>
+</form>
                         </div>
                     </div>
                 </div>
