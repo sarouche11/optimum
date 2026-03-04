@@ -142,7 +142,11 @@
                                         <td>{{ produit.total_price }}</td>
 
                                          <td>
-                                            {% if produit.product.subcategory.category.type_category == "request" or produit.type_product == "request" %}
+                                             {% if produit.status == 'rejected' %}
+                                             <a href="#" class="btn btn-sm btn-secondary disabled">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            {% elif produit.product.subcategory.category.type_category == "request" or produit.type_product == "request" %}
                                             <a href="{% url 'edit_request' produit.id %}"
                                                 class="btn btn-sm btn-success">
                                                 <i class="fa fa-edit"></i>
@@ -154,10 +158,13 @@
                                                 <i class="fa fa-edit"></i>
                                             </a>
 
-                                            {% else %}
+                                            {% elif produit.product.subcategory.category.type_category == "code" and produit.product.type_product == "code" %}
+                                            <a href="#" class="btn btn-sm btn-secondary disabled">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
 
-                                             <a href="#"
-                                                class="btn btn-sm btn-secondary disabled">
+                                            {% elif produit.status == 'rejected' %}
+                                             <a href="#" class="btn btn-sm btn-secondary disabled">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                             {% endif %}

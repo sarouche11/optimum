@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from authentification.decorators import user_is_in_group
 from authentification.models import Profile
-from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType,Notification
-from .forms import CategoryForm, SubCategoryForm, ProductForm, ActivationCodeForm,PaiementForm,ProductRequestUpdateForm
+from .models import (Category,SubCategory,Product,ActivationCode,Paiement,
+                     ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType,Notification)
+from .forms import (CategoryForm, SubCategoryForm, 
+                    ProductForm, ActivationCodeForm,ProductRequestUpdateForm)
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, get_object_or_404
@@ -967,78 +969,6 @@ def detail_achat(request, codeCP):
     return render(request, 'reseller/detail_achat.html', context)
 
 
-@user_is_in_group('reseller')
-def buy_ibo(request, subcat_id):
-    # Récupération de la sous-catégorie IBO
-    subcategory = get_object_or_404(SubCategory, id=subcat_id)
-    category_type = subcategory.category.type_category
-
-    profil = request.user.profile
-
-    if request.method == "POST":
-        requirement = request.POST.get('requirement', '')  # Adresse MAC
-        type_vie = request.POST.get('type_vie')  # 1_year ou lifetime
-
-        # Ici tu peux définir le prix IBO si nécessaire
-        total_price = 0  # Gratuit ou fixe selon ton système
-
-        # Vérifier le solde si le prix est > 0
-        if total_price > 0:
-            solde = profil.paiements.filter(active=True).aggregate(
-                total=Sum('montant')
-            )['total'] or Decimal('0')
-            if solde < total_price:
-                return JsonResponse({
-                    'success': False,
-                    'error': f"Solde insuffisant : {solde} DA."
-                })
-
-        # Créer l'achat IBO
-        purchase = ProductAchat.objects.create(
-            profil=profil,
-            product=None,  # pas de produit réel pour IBO
-            quantity=1,
-            total_price=total_price,
-            requirement=requirement,
-            type_vie=type_vie,
-            status=StatusAchat.PENDING,
-        )
-
-        # Déduction du montant si nécessaire
-        if total_price > 0:
-            Paiement.objects.create(
-                profil=profil,
-                montant=-total_price,
-                active=True
-            )
-
-        # Envoi notification/admin
-        send_mail(
-            subject="Nouvelle demande IBO",
-            message=f"""
-Une nouvelle demande IBO a été effectuée.
-
-Utilisateur : {profil.user.first_name} {profil.user.last_name}
-Username : {profil.user.username}
-Email : {profil.user.email}
-
-Requirement (MAC) : {requirement}
-Type de vie : {type_vie}
-""",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.ADMIN_NOTIFICATION_EMAIL],
-            fail_silently=False,
-        )
-
-        
-
-        return JsonResponse({
-            'success': True,
-            'message': "Demande IBO envoyée avec succès !"
-        })
-
-    # GET : affichage du formulaire IBO
-    return render(request, 'reseller/buy_ibo.html', {'subcategory': subcategory})
 
 
 

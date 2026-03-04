@@ -118,4 +118,3 @@ class ProductRequestUpdateForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-select'})
         }
 
-

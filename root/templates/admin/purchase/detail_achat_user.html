@@ -38,22 +38,7 @@
         <!-- ============================================================== -->
         <div class="page-wrapper">
             <!-- ============================================================== -->
-            <!-- Bread crumb and right sidebar toggle -->
-            <!-- ============================================================== -->
-            <div class="page-breadcrumb">
-                <div class="row">
-                    <div class="col-5 align-self-center">
-                        <h4 class="page-title">View Order ID : {{ purchase.codeCP }}</h4>
-                        <p> {{ purchase.created_at|date:'d-m-Y H:i' }}</p>
-                    </div>
-
-                </div>
-            </div>
-            <!-- ============================================================== -->
-            <!-- End Bread crumb and right sidebar toggle -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- Container fluid  -->
+          
             <!-- ============================================================== -->
             <div class="container-fluid">
                 <!-- ============================================================== -->
@@ -67,6 +52,24 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-body">
+                                 <div class="d-flex align-items-center mb-3 p-3 bg-light rounded shadow-sm">
+                                    <div>
+                                        <h4 class="page-title mb-1 ">View Order ID : <strong>{{ purchase.codeCP }}</strong></h4>
+                                        <small class="text-muted">{{ purchase.created_at|date:'d-m-Y H:i' }}</small>
+                                    </div>
+                                    <div class="ms-3">
+                                        {% if purchase.status == 'pending' %}
+                                         <span class="label label-warning px-3 py-1 fs-6"> <i class="bi bi-hourglass-split" style="color:#938c0b;margin-right: 5px;"></i>Pending</span>
+                                        {% elif purchase.status == 'completed' %}
+                                         <span class="label label-success px-3 py-1 fs-6 "> <i class="bi bi-check-circle-fill" style="color:#07E5BB;margin-right: 5px;"></i>Completed</span>
+                                        {% elif purchase.status == 'in_progress' %}
+                                         <span class="label label-info px-3 py-1 fs-6 "> <i class="bi bi-arrow-repeat" style="color:#07E5BB;margin-right: 5px;"></i>In progress</span>
+                                        {% elif purchase.status == 'rejected' %}
+                                        <span class="label label-danger px-3 py-1 fs-6 "> <i class="bi bi-x-circle-fill" style="color:#5e120a;margin-right: 5px;"></i> Rejected</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <br>
                                 <h5 class="card-title">Details: </h5>
                                 <div class="table-responsive">
                                     <table class="table table-bordered">

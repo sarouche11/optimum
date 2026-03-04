@@ -14,7 +14,7 @@ from .views import (list_user ,toggle_profile_status,
                      history_transaction,
                    list_achat,
                     detail_achat,edit_request,
-                    buy_ibo,
+                  
                     mark_notifications_as_read)
 
 urlpatterns = [
@@ -78,7 +78,7 @@ urlpatterns = [
     path('history_transaction/', history_transaction, name='history_transaction'),
     
 
-    path('buy/<str:subcat_id>', buy_ibo, name='buy_ibo'),
+
 
 
 
