@@ -18,6 +18,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     adresse = models.CharField(max_length=200, blank=False, null=False)
     phone = models.CharField(max_length=10, blank=False, null=False,validators=[phone_validator],)
+    use_2fa = models.BooleanField(default=True)
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

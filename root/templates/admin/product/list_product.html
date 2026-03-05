@@ -56,9 +56,9 @@
                                         data-page-size="10">
                                         <thead>
                                             <tr>
-                                                <th>Subcategory</th>
-                                                <th>Type</th>
                                                 <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Subcategory</th>
                                                 <th>Price (DA)</th>
                                                 <th>Stock</th>
                                                 <th>Code</th>
@@ -73,14 +73,16 @@
                                         <tbody>
                                             
                                             {% for product in page_obj %}
-                                            {% if product.subcategory.category.type_category == 'code' %}
+                                            {% if product.subcategory.category.type_category == 'code' and product.type_product == 'code' %}
                                             <tr>
+                                                 <td>{{ product.name }}</td>
+                                                  <td>{{ product.type_product }}</td> 
                                                 <td><img src="{{ product.image.url }}" alt="" width="40"
                                                         class="rounded-circle"> {{ product.subcategory }}</td>
                                                 
-                                                <td>{{ product.type_product }}</td>        
+                                                      
 
-                                                <td>{{ product.name }}</td>
+                                               
                                                 <td>{{ product.price }}</td>
                                                 <td>{{ product.stock }}</td>
                                                 <td>
@@ -112,10 +114,12 @@
 
                                              {% else %}
                                                <tr>
+                                                <td>{{ product.name }}</td>
+                                                 <td>{{ product.type_product }}</td>  
                                                 <td><img src="{{ product.image.url }}" alt="" width="40"
                                                         class="rounded-circle"> {{ product.subcategory }}</td>
-                                                <td>{{ product.type_product }}</td>         
-                                                <td>{{ product.name }}</td>
+                                                      
+                                                
                                                 <td>{{ product.price }}</td>
                                                 <td>-</td>
                                                 <td>

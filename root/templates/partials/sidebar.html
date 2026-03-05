@@ -8,26 +8,27 @@
     <div class="scroll-sidebar">
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
-            <ul id="sidebarnav">
 
-                <li class="sidebar-item user-profile" style="border: 10;">
-                    <a href="javascript:void(0)" class="sidebar-link waves-effect waves-dark" aria-expanded="false">
+            <div class="sidebar-item user-profile">
+                <a href="javascript:void(0)" class="sidebar-link waves-effect waves-dark">
+                    <div class="user-avatar">
                         <i class="fa fa-user-circle"></i>
-                        <span class="hide-menu" style="font-size: 16px;">
-                            {{ request.user.first_name }} {{ request.user.last_name }}<br>
-                            <small class="label label-success" style="font-size: 16px; margin-top: 10px;">
-                                {% for group in request.user.groups.all %}
-                                {{ group.name }}{% if not forloop.last %}, {% endif %}
-                                {% empty %}
-                                No Group
-                                {% endfor %}
-                            </small>
-                        </span>
-                    </a>
-                </li>
+                    </div>
+                    <span class="hide-menu">
+                        {{ request.user.first_name }} {{ request.user.last_name }}<br>
+                        <small class="label label-success">
+                            {% for group in request.user.groups.all %}
+                            {{ group.name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                            No Group
+                            {% endfor %}
+                        </small>
+                    </span>
+                </a>
+            </div>
 
 
-
+            <ul id="sidebarnav">
 
                 <li class="sidebar-item {% if '/list_category/' in request.path %}active{% endif %}">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_category' %}"
@@ -49,7 +50,7 @@
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_achat' %}"
                         aria-expanded="false">
                         <i class="fa fa-shopping-cart"></i>
-                        <span class="hide-menu">List Achats</span>
+                        <span class="hide-menu">Orders List</span>
                     </a>
                 </li>
 
@@ -102,23 +103,25 @@
     <div class="scroll-sidebar">
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
-            <ul id="sidebarnav">
 
-                <li class="sidebar-item user-profile" style="border: 10;">
-                    <a href="javascript:void(0)" class="sidebar-link waves-effect waves-dark" aria-expanded="false">
+              <div class="sidebar-item user-profile">
+                <a href="javascript:void(0)" class="sidebar-link waves-effect waves-dark">
+                    <div class="user-avatar">
                         <i class="fa fa-user-circle"></i>
-                        <span class="hide-menu" style="font-size: 16px;">
-                            {{ request.user.first_name }} {{ request.user.last_name }}<br>
-                            <small class="label label-success" style="font-size: 16px; margin-top: 10px;">
-                                {% for group in request.user.groups.all %}
-                                {{ group.name }}{% if not forloop.last %}, {% endif %}
-                                {% empty %}
-                                No Group
-                                {% endfor %}
-                            </small>
-                        </span>
-                    </a>
-                </li>
+                    </div>
+                    <span class="hide-menu">
+                        {{ request.user.first_name }} {{ request.user.last_name }}<br>
+                        <small class="label label-success">
+                            {% for group in request.user.groups.all %}
+                            {{ group.name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                            No Group
+                            {% endfor %}
+                        </small>
+                    </span>
+                </a>
+            </div>
+            <ul id="sidebarnav">
 
 
                 <li class="nav-small-cap">
@@ -136,19 +139,19 @@
                     </a>
                 </li>
 
-                <li class="sidebar-item {% if '/list_montant/' in request.path %}active{% endif %}">
+                <!-- <li class="sidebar-item {% if '/list_montant/' in request.path %}active{% endif %}">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_montant' %}"
                         aria-expanded="false">
                         <i class="fa fa-credit-card"></i>
                         <span class="hide-menu">List Transaction</span>
                     </a>
-                </li>
+                </li> -->
 
                 <li class="sidebar-item {% if '/list_achat_user/' in request.path %}active{% endif %}">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list_achat_user' %}"
                         aria-expanded="false">
                         <i class="fa fa-shopping-cart"></i>
-                        <span class="hide-menu">List Achats</span>
+                        <span class="hide-menu">Orders List</span>
                     </a>
                 </li>
 
@@ -205,10 +208,11 @@
                         <i class="fa fa-box"></i>
                         <span class="hide-menu"> Product </span>
                     </a>
-                    <ul aria-expanded="false" class="collapse  first-level">
+
+                    <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item {% if '/list_product/' in request.path %}active{% endif %}">
                             <a href="{% url 'list_product' %}" class="sidebar-link">
-                                <i class="fa fa-plus"></i>
+                                <i class="fa fa-list"></i>
                                 <span class="hide-menu"> List </span>
                             </a>
                         </li>
@@ -223,28 +227,12 @@
                 </li>
 
 
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
+                 <li class="sidebar-item {% if '/add_activation/' in request.path %}active{% endif %}">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'add_activation' %}"
                         aria-expanded="false">
                         <i class="fa fa-key"></i>
-                        <span class="hide-menu"> Activation Code </span>
+                        <span class="hide-menu">Code</span>
                     </a>
-                    <ul aria-expanded="false" class="collapse  first-level">
-                        <li class="sidebar-item {% if '/list_activation/' in request.path %}active{% endif %}">
-                            <a href="{% url 'list_activation' %}" class="sidebar-link">
-                                <i class="fa fa-list"></i>
-                                <span class="hide-menu"> List </span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {% if '/add_activation/' in request.path %}active{% endif %}">
-                            <a href="{% url 'add_activation' %}" class="sidebar-link">
-                                <i class="fa fa-plus"></i>
-                                <span class="hide-menu"> Add </span>
-                            </a>
-                        </li>
-
-                    </ul>
                 </li>
 
 

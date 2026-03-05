@@ -167,3 +167,8 @@ EMAIL_HOST_PASSWORD = 'yuep khaa gytr ucqc'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 ADMIN_NOTIFICATION_EMAIL = 'sarouc11@gmail.com'
 
+
+
+USE_TZ = True  # doit être activé pour gérer les fuseaux horaires
+TIME_ZONE = 'Africa/Algiers'  # fuseau horaire de l'Algérie (UTC+1)
+

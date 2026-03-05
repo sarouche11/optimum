@@ -16,7 +16,6 @@ from django.contrib.auth import update_session_auth_hash
 # Create your views here.
 
 
-
 def login_view(request):
 
     if request.method == 'POST':
@@ -24,13 +23,8 @@ def login_view(request):
         username_or_email = request.POST.get('username')
         password = request.POST.get('password')
 
-        print("=== TENTATIVE LOGIN ===")
-        print("Identifiant saisi :", username_or_email)
-        print("Mot de passe saisi :", password)
-
         captchaForm = CaptchaForm(request.POST)
         if not captchaForm.is_valid():
-            print("❌ Captcha invalide")
             messages.error(request, "Captcha invalide.")
             return redirect("login")
 
@@ -40,16 +34,11 @@ def login_view(request):
                 Q(email=username_or_email)
             )
 
-            print("✅ Utilisateur trouvé :", user_obj.username)
-            print("Email :", user_obj.email)
-            print("Actif :", user_obj.is_active)
-
             user = authenticate(
                 request,
                 username=user_obj.username,
                 password=password
             )
-            print("Résultat authenticate :", user)
 
         except User.DoesNotExist:
             user = None
@@ -57,22 +46,29 @@ def login_view(request):
         if user is not None:
 
             if not user.profile.active:
-                messages.error(request, "Compte non actif. Veuillez contactez votre administrateur")
+                messages.error(request, "Compte non actif. Veuillez contacter votre administrateur")
                 return redirect("login")
 
-            # 👉 Création OTP
-            otp = OTP.objects.create(user=user)
+            # ✅ Vérification si l'utilisateur a activé la 2FA
+            if user.profile.use_2fa:
+                # Création OTP
+                otp = OTP.objects.create(user=user)
 
-            # 👉 Envoi EMAIL
-            user.email_user(
-                "Code de vérification",
-                f"Votre code de connexion est : {otp.code}"
-            )
+                # Envoi EMAIL
+                user.email_user(
+                    "Code de vérification",
+                    f"Votre code de connexion est : {otp.code}"
+                )
 
-            # 👉 session temporaire
-            request.session['pre_2fa_user'] = user.id
+                # Session temporaire
+                request.session['pre_2fa_user'] = user.id
 
-            return redirect('verify_otp')
+                return redirect('verify_otp')
+
+            else:
+                # Login direct
+                login(request, user)
+                return redirect('list_user')  # page après login
 
         else:
             messages.error(request, "Identifiants invalides")
@@ -80,13 +76,8 @@ def login_view(request):
     else:
         captchaForm = CaptchaForm()
 
-    context = {
-            'captchaForm': captchaForm
-    }    
-
+    context = {'captchaForm': captchaForm}    
     return render(request, 'login.html', context)
-
-
 def verify_otp(request):
 
     user_id = request.session.get('pre_2fa_user')

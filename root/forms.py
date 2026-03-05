@@ -81,11 +81,11 @@ class ProductForm(forms.ModelForm):
 class ActivationCodeForm(forms.ModelForm):
     class Meta:
         model = ActivationCode
-        fields = ['code', 'product']
+        fields = [ 'product']
 
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control'}),
-            'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Code'}),
+          
             
         }    
 
@@ -94,6 +94,7 @@ class ActivationCodeForm(forms.ModelForm):
         # On filtre les produits pour ne garder que ceux de type CODE
         self.fields['product'].queryset = Product.objects.filter(
             subcategory__category__type_category='code',
+            type_product='code',
             active=True
         )
 

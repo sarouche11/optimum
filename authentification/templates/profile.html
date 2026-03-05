@@ -94,6 +94,8 @@
                                 Change Password
                             </a>
                         </div>
+
+                       
                     </div>
                     <!-- Column -->
                     <!-- Column -->
@@ -135,6 +137,12 @@
                                                     {{ form.adresse }}
                                                 </div>
                                             </div>
+
+                                             <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="use_2fa" name="use_2fa"
+                                {% if form.use_2fa.value %}checked{% endif %}>
+                            <label class="form-check-label" for="use_2fa">Activer la vérification par e-mail (2FA)</label>
+                        </div>
 
                                             <div class="form-group">
                                                 <div class="col-sm-12">

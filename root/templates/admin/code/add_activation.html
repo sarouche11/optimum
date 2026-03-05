@@ -8,7 +8,7 @@
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
- 
+
     <!-- ============================================================== -->
     <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
@@ -34,44 +34,70 @@
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
-     
-      
+
+
 
             <div class="container-fluid">
-            
-              
+                {% include 'messages.html' %}
+
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="card card-body">
                             <h4 class="card-title"><i class="fa fa-plus"></i> Add Activation Code</h4>
-                            
+
                             <form class="form-horizontal m-t-30" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div class="form-group">
-                                    <label>Product </label>
-                                   {{ form.product }}
-                                </div>
 
                                 <div class="form-group">
-                                    <label>Code </label>
-                                   {{ form.code }}
+                                    <label>Product</label>
+                                    <div class="col-md-6">
+                                        {{ form.product }}
+
+                                    </div>
+                                    
                                 </div>
-          
-                              
-                         
-                                  <button class="btn btn-success">
+
+
+                                <div class="form-group">
+                                    <label>Codes</label>
+
+                                    <div id="codes-container">
+
+                                        <div class="row mb-2 code-row">
+
+                                            <div class="col-md-6">
+                                                <input type="text" name="codes[]" class="form-control"
+                                                    placeholder="Code">
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <button type="button" class="btn btn-plus add-code">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+
+
+                                <button class="btn btn-success">
                                     Enregistrer
                                 </button>
-                                            
+
                             </form>
                         </div>
                     </div>
                 </div>
-               
-              
-              
-             
-          
+
+
+
+
+
             </div>
             <!-- ============================================================== -->
             <!-- End Container fluid  -->
@@ -94,7 +120,7 @@
     <!-- ============================================================== -->
     <!-- customizer Panel -->
     <!-- ============================================================== -->
-   
+
     <div class="chat-windows"></div>
     <!-- ============================================================== -->
     <!-- All Jquery -->
@@ -116,6 +142,51 @@
     <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
     <!--Custom JavaScript -->
     <script src="{% static 'dist/js/custom.min.js' %}"></script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.getElementById("codes-container");
+
+            // Fonction pour créer une nouvelle ligne de code
+            function createCodeRow() {
+                const newRow = document.createElement("div");
+                newRow.className = "row mb-2 code-row";
+
+                newRow.innerHTML = `
+            <div class="col-md-6">
+                <input type="text" name="codes[]" class="form-control" placeholder="Code">
+            </div>
+
+            <div class="col-auto">
+                <button type="button" class="btn btn-minus remove-code">
+                    <i class="fa fa-minus"></i>
+                </button>
+            </div>
+        `;
+
+                return newRow;
+            }
+
+            // Ajouter un code quand on clique sur le bouton +
+            container.addEventListener("click", function (e) {
+                if (e.target.closest(".add-code")) {
+                    const row = createCodeRow();
+                    container.appendChild(row);
+                }
+            });
+
+            // Supprimer un code quand on clique sur le bouton -
+            container.addEventListener("click", function (e) {
+                if (e.target.closest(".remove-code")) {
+                    const row = e.target.closest(".code-row");
+                    if (container.children.length > 1) { // toujours garder au moins une ligne
+                        row.remove();
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

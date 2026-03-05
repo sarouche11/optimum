@@ -9,28 +9,23 @@
             </a>
 
             <div class="navbar-brand">
+
                 <a href="index.html" class="logo">
                     <!-- Logo icon -->
                     <b class="logo-icon">
                         <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                         <!-- Dark Logo icon -->
-                        <img src="{% static 'assets/images/logom.png' %}" alt="logo" class="dark-logo" />
+                        <img src="{% static 'assets/images/logo.jpeg' %}" alt="logo" class="dark-logo" />
                         <!-- Light Logo icon -->
 
                     </b>
                     <!--End Logo icon -->
                     <!-- Logo text -->
                     <span class="logo-text">
-                        <!-- dark Logo text -->
-                        <img src="{% static 'assets/images/logom.png' %}" alt="homepage" class="dark-logo" />
-                        <!-- Light Logo text -->
-                        <img src="{% static 'assets/images/logom.png' %}" class="light-logo" alt="logo"
-                            style="width: 90px; height: 60px;" />
+
                     </span>
                 </a>
-                <a class="sidebartoggler d-none d-md-block" href="javascript:void(0)" data-sidebartype="mini-sidebar">
-                    <i class="mdi mdi-toggle-switch mdi-toggle-switch-off font-20"></i>
-                </a>
+
             </div>
             <!-- ============================================================== -->
             <!-- End Logo -->
@@ -46,17 +41,27 @@
 
 
 
+
+
         </div>
+
+
         <!-- ============================================================== -->
         <!-- End Logo -->
         <!-- ============================================================== -->
         <div class="navbar-collapse collapse" id="navbarSupportedContent">
+
+
             <!-- ============================================================== -->
             <!-- toggle and nav items -->
             <!-- ============================================================== -->
 
 
+            <a class="sidebartoggler d-none d-md-block" href="javascript:void(0)" data-sidebartype="mini-sidebar">
+                <i class="mdi mdi-menu font-20" style="color: rgb(190, 187, 187); margin-left: 15px;"></i>
+            </a>
             <ul class="navbar-nav float-left mr-auto">
+
 
 
                 <!-- <li class="nav-item d-none d-md-block">
@@ -69,6 +74,9 @@
                 <!-- ============================================================== -->
 
             </ul>
+
+
+
 
             <!-- ============================================================== -->
             <!-- Right side toggle and nav items -->
@@ -85,9 +93,9 @@
                     <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
                         data-toggle="dropdown" data-url="{% url 'notifications_lues' %}">
                         <i class="fa fa-bell"></i>
-                        
+
                         {% if has_unread %}
-                            <span class="notif-dot"></span>
+                        <span class="notif-dot"></span>
                         {% endif %}
 
                     </a>
@@ -121,8 +129,8 @@
                     <a class="nav-link dropdown-toggle waves-effect waves-dark pro-pic" href="" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
 
-                        <span class="m-l-5 font-medium d-none d-sm-inline-block">{{ request.user.username }} <i
-                                class="mdi mdi-chevron-down"></i></span>
+                        <span class="m-l-5 font-medium d-none d-sm-inline-block">{{ request.user.username }}</span>
+                        <i class="mdi mdi-chevron-down d-inline d-sm-none"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right user-dd animated flipInY">
                         <span class="with-arrow">
@@ -130,8 +138,7 @@
                         </span>
                         <div class="d-flex no-block align-items-center p-15 bg-dropdown text-white m-b-10">
                             <div class="">
-                                <img src="{% static 'assets/images/user.png' %}" alt="user" 
-                                    width="30">
+                                <img src="{% static 'assets/images/user.png' %}" alt="user" width="30">
                             </div>
                             <div class="m-l-10">
                                 <h4 class="m-b-0">{{ request.user.username }}</h4>
@@ -141,15 +148,15 @@
                         <div class="profile-dis scrollable">
                             <a class="dropdown-item" href="{% url 'profile' %}">
                                 <i class="ti-user m-r-5 m-l-5"></i> My Profile</a>
-                           
-                           
-                          
-                           
-                           
+
+
+
+
+
                             <div class="dropdown-divider"></div>
                         </div>
                         <div class="p-l-30 p-10">
-                            <a href="javascript:void(0)" class="btn btn-sm btn-danger btn-rounded">Logout</a>
+                            <a href="{% url 'logout' %}" class="btn btn-sm btn-danger btn-rounded">Logout</a>
                         </div>
                     </div>
                 </li>

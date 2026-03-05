@@ -54,8 +54,9 @@
                                         data-page-size="10">
                                         <thead>
                                             <tr>
+                                                 <th>Name</th>
                                                 <th>Subcategory</th>
-                                                <th>Name</th>
+                                               
                                                 <th>Price (DA)</th>
                                                 {% if user|has_group:'reseller' %}
                                                 <th>Action</th>
@@ -67,9 +68,10 @@
                                         <tbody>
                                             {% for product in page_obj %}
                                             <tr>
+                                                <td>{{ product.name }}</td>
                                                 <td><img src="{{ product.image.url }}" alt="" width="40"
                                                         class="rounded-circle"> {{ product.subcategory }}</td>
-                                                <td>{{ product.name }}</td>
+                                                
                                                 <td>{{ product.price }}</td>
                                                 {% if user|has_group:'reseller' %}
                                                     {% with product.subcategory.category.type_category as type_category %}

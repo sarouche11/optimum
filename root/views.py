@@ -20,7 +20,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
-from .utils import creer_notification_request
+from .utils import creer_notification_request,creer_notification_refund
 from django.views.decorators.http import require_POST
 from .context_processors import get_notifications
 from django.contrib.auth.decorators import login_required
@@ -357,24 +357,40 @@ def add_activation_code(request):
 
     if request.method == "POST":
         form = ActivationCodeForm(request.POST)
-        if form.is_valid():
-            activation_code = form.save(commit=False)  # on ne sauvegarde pas encore
-            activation_code.save()  # on sauvegarde le code
-            form.save()
 
-             # Recalcul du stock à partir de tous les codes non utilisés
-            product = activation_code.product
+        if form.is_valid():
+            product = form.cleaned_data['product']
+            codes = request.POST.getlist('codes[]')
+            errors = []
+
+            for code in codes:
+                code = code.strip()
+                if code:  # éviter les champs vides
+                    # Vérifier si le code existe déjà pour ce produit
+                    if ActivationCode.objects.filter(product=product, code=code).exists():
+                        errors.append(f"Le code '{code}' existe déjà pour ce produit.")
+                    else:
+                        ActivationCode.objects.create(
+                            product=product,
+                            code=code
+                        )
+
+            # Recalcul du stock
             product.stock = product.activation_codes.filter(used=False).count()
             product.save()
-            return redirect('list_activation')   
+
+            if errors:
+                # Afficher les erreurs via messages framework
+                for err in errors:
+                    messages.error(request, err)
+            else:
+                messages.success(request, "Codes ajoutés avec succès !")
+                return redirect('list_product')
 
     context = {
         'form': form
     }
     return render(request, 'admin/code/add_activation.html', context)
-
-
-# add activation code 
 
 @user_is_in_group('admin')
 def edit_activation_code(request, pk):
@@ -438,37 +454,38 @@ def list_activation_code(request,id):
 
 
 # liste code by product 
-@user_is_in_group('admin')
-def list_activation_by_product(request):
+# @user_is_in_group('admin')
+# def list_activation_by_product(request):
 
-    search = request.GET.get('search', '')
+#     search = request.GET.get('search', '')
 
-    per_page = request.GET.get('per_page', 10)
-    try:
-        per_page = int(per_page)
-    except:
-        per_page = 10
+#     per_page = request.GET.get('per_page', 10)
+#     try:
+#         per_page = int(per_page)
+#     except:
+#         per_page = 10
 
-    # ➜ On récupère les produits AVEC leurs codes
-    products = Product.objects.prefetch_related('activation_codes')
+#     # ➜ On récupère les produits AVEC leurs codes
+#     products = Product.objects.prefetch_related('activation_codes')
 
-    # Recherche par code
-    if search:
-        products = products.filter(
-            activation_codes__code__icontains=search
-        ).distinct()
+#     # Recherche par code
+#     if search:
+#         products = products.filter(
+#             activation_codes__code__icontains=search
+#         ).distinct()
 
-    paginator = Paginator(products, per_page)
-    page_number = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_number)
+#     paginator = Paginator(products, per_page)
+#     page_number = request.GET.get('page', 1)
+#     page_obj = paginator.get_page(page_number)
 
-    context = {
-        'page_obj': page_obj,
-        'search': search,
-        'per_page': per_page,
-    }
+#     context = {
+#         'page_obj': page_obj,
+#         'search': search,
+#         'per_page': per_page,
+#     }
 
-    return render(request, 'admin/code/list_activation_by_product.html', context)
+#     return render(request, 'admin/code/list_activation_by_product.html', context)
+
 
 
 
@@ -698,19 +715,37 @@ def admin_detail_achats(request, codeCP):
 def edit_request(request, pk):
     request_achat = get_object_or_404(ProductAchat, pk=pk)
 
+    old_status = request_achat.status  # Sauvegarde l'ancien statut
+
     if request.method == "POST":
         form = ProductRequestUpdateForm(request.POST, instance=request_achat)
         if form.is_valid():
-            form.save()
+            updated_purchase = form.save(commit=False)  # Ne sauvegarde pas encore
+            new_status = updated_purchase.status
+
+            # Si le statut passe à rejected et qu'il était différent avant
+            if new_status == StatusAchat.REJECTED and old_status != StatusAchat.REJECTED:
+                profil = request_achat.profil
+
+                # Remboursement
+                Paiement.objects.create(
+                    profil=profil,
+                    montant=request_achat.total_price,  # positif pour remboursement
+                    active=True
+                )
+
+            updated_purchase.save()  # Enregistre les modifications
+            creer_notification_refund(updated_purchase)
+
             # Redirection vers la liste des achats après mise à jour
             return redirect('list_achat_user')
     else:
         form = ProductRequestUpdateForm(instance=request_achat)
 
     context = {
-        'form': form, 
+        'form': form,
         'request_achat': request_achat
-    }    
+    }
 
     return render(request, 'admin/purchase/edit_achat_request.html', context)
 
