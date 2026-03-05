@@ -774,6 +774,10 @@ def buy_product(request):
                     'error': "Pas assez de codes disponibles."
                 })
 
+        elif category_type == CatgoryType.CODE and product_type == ProductType.REQUEST:
+            status = StatusAchat.PENDING
+            codes = []
+
         elif category_type == CatgoryType.REQUEST:
             status = StatusAchat.PENDING
             codes = []
