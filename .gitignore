@@ -1,0 +1,21 @@
+# created by virtualenv automatically
+
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Django
+*.sqlite3
+*.log
+local_settings.py
+.env
+
+# Static & Media
+/staticfiles/
+/media/
+
+# IDEs / OS
+.vscode/
+.idea/
+.DS_Store
