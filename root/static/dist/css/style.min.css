@@ -25335,6 +25335,11 @@ button.bg-purple:hover {
     background-color: transparent !important
 }
 
+.bg-dropdown{
+    background-color: rgba(220, 220, 220, 0.95);
+    color: #fff;
+}
+
 .border {
     border: 1px solid rgba(0, 0, 0, .1) !important
 }
@@ -28855,7 +28860,8 @@ html[dir=ltr] body .p-l-0 {
 /* couleur header cote logo  */
 #main-wrapper[data-layout=vertical] .topbar .top-navbar .navbar-header[data-logobg=skin5],
 #main-wrapper[data-layout=horizontal] .topbar .top-navbar .navbar-header[data-logobg=skin5] {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(20, 20, 20, 0.8); /* gris/noir transparent */
+    color: #fff; /* texte blanc pour contraste */
 }
 
 #main-wrapper[data-layout=vertical] .topbar .top-navbar .navbar-header[data-logobg=skin6],
@@ -28925,8 +28931,11 @@ html[dir=ltr] body .p-l-0 {
 #main-wrapper[data-layout=vertical] .topbar[data-navbarbg=skin5],
 #main-wrapper[data-layout=horizontal] .topbar .navbar-collapse[data-navbarbg=skin5],
 #main-wrapper[data-layout=horizontal] .topbar[data-navbarbg=skin5] {
-    background: rgba(0, 0, 0, 0.5);
+
+    background: rgba(20, 20, 20, 0.8); /* gris/noir transparent */
+    color: #fff; /* texte blanc pour contraste */
 }
+
 
 #main-wrapper[data-layout=vertical] .topbar .navbar-collapse[data-navbarbg=skin6],
 #main-wrapper[data-layout=vertical] .topbar[data-navbarbg=skin6],
