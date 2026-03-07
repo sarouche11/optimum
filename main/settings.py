@@ -172,3 +172,7 @@ ADMIN_NOTIFICATION_EMAIL = 'sarouc11@gmail.com'
 USE_TZ = True  # doit être activé pour gérer les fuseaux horaires
 TIME_ZONE = 'Africa/Algiers'  # fuseau horaire de l'Algérie (UTC+1)
 
+SESSION_COOKIE_AGE = 900   # 900 secondes = 15 minutes
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
