@@ -28914,11 +28914,11 @@ html[dir=ltr] body .p-l-0 {
 #main-wrapper[data-layout=horizontal] .topbar .top-navbar .navbar-header[data-logobg=skin5] {
     /* background: rgba(20, 20, 20, 0.8); 
     color: #fff;  */
-    background-image: url('/static/assets/images/logo.jpeg');
-    background-size: 100% 100%;  /* prend toute la largeur et hauteur du header */
+    background-color: #F2F2F2;
+    background-image: url('/static/assets/images/logoB.png');
+    background-size: 90% 100%;  /* prend toute la largeur et hauteur du header */
     background-repeat: no-repeat;
     background-position: center;
-    width: 100%;
     height: 64px; 
     
   
