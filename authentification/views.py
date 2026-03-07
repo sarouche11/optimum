@@ -66,9 +66,15 @@ def login_view(request):
                 return redirect('verify_otp')
 
             else:
-                # Login direct
                 login(request, user)
-                return redirect('list_user')  # page après login
+                
+                if user.groups.filter(name="reseller").exists():
+                    return redirect('list_category')
+
+                if user.groups.filter(name="admin").exists():
+                    return redirect('list_user')
+                    
+                  # page après login
 
         else:
             messages.error(request, "Identifiants invalides")
