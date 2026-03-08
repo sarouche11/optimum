@@ -81,10 +81,11 @@ class ProductForm(forms.ModelForm):
 class ActivationCodeForm(forms.ModelForm):
     class Meta:
         model = ActivationCode
-        fields = [ 'product']
+        fields = [ 'product','code']
 
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control'}),
+            'code': forms.TextInput(attrs={'class': 'form-control'}),
           
             
         }    

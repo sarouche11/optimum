@@ -405,7 +405,7 @@ def edit_activation_code(request, pk):
         activation_code = form.save()
 
 
-        return redirect('list_activation')  # adapte selon ta route
+        return redirect('list_product')  # adapte selon ta route
 
     context = {
         'form': form,
