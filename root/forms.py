@@ -38,7 +38,16 @@ class SubCategoryForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom sous-catégorie'}),
             'image': forms.ClearableFileInput(attrs={'class':"custom-file-input", 'id':"inputGroupFile01", 'type':"file"}),
             
-        }      
+        }  
+
+    def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # On filtre les produits pour ne garder que ceux de type CODE
+            self.fields['category'].queryset = Category.objects.filter(
+                active=True
+            )
+      
+
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -75,6 +84,10 @@ class ProductForm(forms.ModelForm):
             self.fields['subcategory'].choices = [('', '--- Select a subcategory ---')] + filtered_sub_choices
             self.fields['subcategory'].required = True
             self.fields['subcategory'].widget.attrs.update({'class': 'form-control'})
+            self.fields['subcategory'].queryset = SubCategory.objects.filter(
+                active=True
+            )
+            
 
 
 

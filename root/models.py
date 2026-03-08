@@ -16,7 +16,7 @@ class CatgoryType(models.TextChoices):
     
     REQUEST   = 'request', _('Request')
     CODE      = 'code', _('Code')    
-    IBO      = 'ibo', _('Ibo')    
+       
     
 
 

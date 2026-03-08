@@ -143,12 +143,22 @@ def add_category(request):
 # list category
 @user_is_in_group('admin','reseller')
 def list_category(request):
-    category = Category.objects.all().filter(active=True).order_by('created_at')
+    category = Category.objects.filter(active=True).order_by('created_at')
     context = {
         'category':category
     }
 
     return render(request, 'admin/category/list_category.html',context)
+
+# list category
+@user_is_in_group('admin')
+def list_category_deactivate(request):
+    category = Category.objects.filter(active=False).order_by('created_at')
+    context = {
+        'category':category
+    }
+
+    return render(request, 'admin/category/list_category_deactivate.html',context)
 
 
 # edit category 
@@ -160,7 +170,11 @@ def edit_category(request, cat_id):
         form = CategoryForm(request.POST, request.FILES, instance=category)
         if form.is_valid():
             category = form.save(commit=False)
-            category.active = True
+            if category.active == True :
+             category.active = True
+            else :
+             category.active == False 
+
             category.save()
             messages.success(request, f"Produit '{category.name}' mis à jour avec succès !")
             return redirect('list_category')  # Redirige vers ta liste de produits
@@ -175,6 +189,19 @@ def edit_category(request, cat_id):
     }
     return render(request, 'admin/category/edit_category.html', context)
 
+@user_is_in_group('admin')
+def deactivate_category(request,code):
+    category = get_object_or_404(Category,id = code)
+    category.active = False
+    category.save()
+    return redirect ('list_category')
+
+@user_is_in_group('admin')
+def activate_category(request,code):
+    category = get_object_or_404(Category,id = code)
+    category.active = True
+    category.save()
+    return redirect ('list_category_deactivate')
 
 # add subcategory 
 @user_is_in_group('admin')
@@ -209,7 +236,91 @@ def list_subcategory(request):
 
 
 
-# edit subcategory 
+
+
+
+# list subcategory 
+@user_is_in_group('admin')
+def list_subcategory_deactivate(request):
+    subcategory = SubCategory.objects.all().filter(active=False).order_by('created_at')
+    context = {
+        'subcategory':subcategory
+    }
+
+    return render(request, 'admin/subcategory/list_subcategory_deactivate.html',context)
+
+
+
+
+@user_is_in_group('admin')
+def deactivate_subcategory(request,code):
+    subcategory = get_object_or_404(SubCategory,id = code)
+    subcategory.active = False
+    subcategory.save()
+    subcategory.plans.update(active=False)
+    return redirect ('list_subcategory')
+
+@user_is_in_group('admin')
+def activate_subcategory(request,code):
+    subcategory = get_object_or_404(SubCategory,id = code)
+    subcategory.active = True
+    subcategory.save()
+    subcategory.plans.update(active=True)
+    return redirect ('list_subcategory_deactivate')
+
+
+
+@user_is_in_group('admin', 'reseller')
+def product_list_by_id_deactivate(request, cat_id):
+      #-------------------  search -----------
+    search = request.GET.get('search', '')
+
+    #----------------- récupération du per_page --------
+    per_page = request.GET.get('per_page', 10) 
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
+    subcategory = SubCategory.objects.filter(active=False).get(id=cat_id)
+    product = subcategory.plans.filter(active=False)
+
+    # -----------------------------------------
+    if search:
+        product = product.filter(
+           Q(name__icontains=search)
+        )
+
+    
+    # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode() 
+
+   
+    paginator = Paginator(product, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)     
+
+
+    context = {
+         'page_obj': page_obj,
+        'search': search,
+        'querystring': querystring,
+        'per_page': per_page,
+        'subcategory': subcategory
+    }
+
+    return render(request, 'admin/product/list_productid_deactivate.html', context)
+
+
+
+
+
+# # edit subcategory 
 @user_is_in_group('admin')
 def edit_subcategory(request, subcat_id):
     subcategory = get_object_or_404(SubCategory, id=subcat_id)
@@ -256,6 +367,25 @@ def add_product(request):
     }        
     return render(request, 'admin/product/add_product.html', context)
 
+
+# deactive product 
+@user_is_in_group('admin')
+def deactivate_product(request,code):
+    product = get_object_or_404(Product,id = code)
+    product.active = False
+    product.save()
+    return redirect ('list_product')
+    
+    
+# active product 
+@user_is_in_group('admin')
+def activate_product(request,code):
+    product = get_object_or_404(Product,id = code)
+    product.active = True
+    product.save()
+    return redirect ('list_product_deactivate')
+    
+    
 
 # list product 
 @user_is_in_group('admin')
@@ -304,6 +434,55 @@ def list_product(request):
        'per_page': per_page,
     }
     return render(request,'admin/product/list_product.html',context)
+
+
+# list product desactivte
+@user_is_in_group('admin')
+def list_product_deactivate(request):
+    #-------------------  search -----------
+    search = request.GET.get('search', '')
+
+    #----------------- récupération du per_page --------
+    per_page = request.GET.get('per_page', 10) 
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
+    
+    product = Product.objects.all().filter(active=False).order_by('created_at')
+
+
+    # -----------------------------------------
+    if search:
+        product = product.filter(
+           Q(name__icontains=search)
+        )
+
+    
+
+    # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode() 
+
+   
+    paginator = Paginator(product, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number) 
+    
+    
+
+    context = {
+       'page_obj': page_obj,
+       'search': search,
+       'querystring': querystring,
+       'per_page': per_page,
+    }
+    return render(request,'admin/product/list_product_deactivate.html',context)
 
 
 
@@ -591,7 +770,7 @@ def list_transaction_by_code(request,id):
 @user_is_in_group('admin', 'reseller')
 def subcategory_list_by_id(request, cat_id):
     category = Category.objects.get(id=cat_id)
-    subcategory = category.subcategories.all()
+    subcategory = category.subcategories.filter(active = True)
 
     context = {
         'category': category,
@@ -614,8 +793,8 @@ def product_list_by_id(request, cat_id):
     except:
         per_page = 10
 
-    subcategory = SubCategory.objects.get(id=cat_id)
-    product = subcategory.plans.all()
+    subcategory = SubCategory.objects.filter(active=True).get(id=cat_id)
+    product = subcategory.plans.filter(active=True)
 
     # -----------------------------------------
     if search:

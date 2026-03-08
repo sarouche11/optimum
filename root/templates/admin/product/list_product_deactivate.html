@@ -49,9 +49,7 @@
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
                                     {% include 'messages.html' %}
-                                    <a href="{% url 'add_activation' %}" class="btn btn-sm btn-success">
-                                        <i class="fa fa-plus">Add Code</i>
-                                    </a>
+                                   
                                     <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
                                         data-page-size="10">
                                         <thead>
@@ -64,7 +62,7 @@
                                                 <th>Code</th>
                                                 <th>Duplicate</th>
                                                 <th>Edit</th>
-                                                <th>Deactivate</th>
+                                                <th>Activate</th>
 
 
 
@@ -110,9 +108,9 @@
                                                 </td>
 
                                                 <td>
-                                                    <a href="{% url 'deactivate_product' product.id %}"
-                                                        class="btn btn-sm btn-danger">
-                                                        <i class="fa fa-ban"></i>
+                                                    <a href="{% url 'activate_product' product.id %}"
+                                                        class="btn btn-sm btn-success">
+                                                        <i class="fas fa-undo"></i>
                                                     </a>
                                                 </td>
 
@@ -153,11 +151,10 @@
                                                     </a>
                                                 </td>
 
-
-                                                  <td>
-                                                    <a href="{% url 'deactivate_product' product.id %}"
-                                                        class="btn btn-sm btn-danger">
-                                                        <i class="fas fa-ban"></i>
+                                                 <td>
+                                                    <a href="{% url 'activate_product' product.id %}"
+                                                        class="btn btn-sm btn-success">
+                                                        <i class="fas fa-undo"></i>
                                                     </a>
                                                 </td>
 

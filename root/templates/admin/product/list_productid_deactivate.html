@@ -42,132 +42,90 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title"><i class="fa fa-box"></i> Items</h4>
+
+                                <h4 class="card-title"><i class="fa fa-box"></i> Product</h4>
                                 <!-- <button type="button" class="btn btn-login btn-rounded">Export Data / تصدير البيانات </button> -->
 
 
                                 <div class="table-responsive">
                                     {% include 'partials/search_mode.html' %}
-                                    {% include 'messages.html' %}
-                                    <a href="{% url 'add_activation' %}" class="btn btn-sm btn-success">
-                                        <i class="fa fa-plus">Add Code</i>
-                                    </a>
+
                                     <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
                                         data-page-size="10">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Type</th>
+                                                 <th>Name</th>
                                                 <th>Subcategory</th>
+                                               
                                                 <th>Price (DA)</th>
-                                                <th>Stock</th>
-                                                <th>Code</th>
-                                                <th>Duplicate</th>
-                                                <th>Edit</th>
-                                                <th>Deactivate</th>
-
-
+                                                {% if user|has_group:'reseller' %}
+                                                <th>Action</th>
+                                                {% endif %}
 
 
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
                                             {% for product in page_obj %}
-                                            {% if product.subcategory.category.type_category == 'code' and product.type_product == 'code' %}
                                             <tr>
-                                                 <td>{{ product.name }}</td>
-                                                  <td>{{ product.type_product }}</td> 
-                                                <td><img src="{{ product.image.url }}" alt="" width="40"
-                                                        class="rounded-circle"> {{ product.subcategory }}</td>
-                                                
-                                                      
-
-                                               
-                                                <td>{{ product.price }}</td>
-                                                <td>{{ product.stock }}</td>
-                                                <td>
-                                                    <a href="{% url 'list_activation_code' product.id %}"
-                                                        class="btn btn-sm btn-success">
-                                                        <i class="ti-key me-1"></i>
-                                                    </a>
-
-
-                                                </td>
-                                                <td>
-
-
-                                                    <a href="{% url 'duplicate_product' product.id %}"
-                                                        class="btn btn-sm btn-warning">
-                                                        <i class="fa fa-copy"></i>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a href="{% url 'edit_product' product.id %}"
-                                                        class="btn btn-sm btn-success">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
-                                                </td>
-
-                                                <td>
-                                                    <a href="{% url 'deactivate_product' product.id %}"
-                                                        class="btn btn-sm btn-danger">
-                                                        <i class="fa fa-ban"></i>
-                                                    </a>
-                                                </td>
-
-
-
-                                            </tr>
-
-                                             {% else %}
-                                               <tr>
                                                 <td>{{ product.name }}</td>
-                                                 <td>{{ product.type_product }}</td>  
                                                 <td><img src="{{ product.image.url }}" alt="" width="40"
                                                         class="rounded-circle"> {{ product.subcategory }}</td>
-                                                      
                                                 
                                                 <td>{{ product.price }}</td>
-                                                <td>-</td>
+                                                {% if user|has_group:'reseller' %}
+                                                    {% with product.subcategory.category.type_category as type_category %}
+
+                                                    {% if type_category == 'code' %}
+
+                                                        {% if product.type_product == 'code' %}
+
+                                                            {% if product.stock > 0 %}
+                                                            <td>
+                                                                <button type="button" class="btn btn-sm btn-success buy-btn"
+                                                                    data-id="{{ product.id }}"
+                                                                    data-name="{{ product.name|escapejs }}"
+                                                                    data-price="{{ product.price }}"
+                                                                    data-stock="{{ product.stock }}">
+                                                                    <i class="fa fa-shopping-cart m-r-10"></i> BUY
+                                                                </button>
+                                                            </td>
+                                                            {% else %}
+                                                            <td><span class="label label-danger">Stock out</span></td>
+                                                            {% endif %}
+
+                                                        {% elif product.type_product == 'request' %}
+
+                                                        <td>
+                                                            <button type="button" class="btn btn-sm btn-success buy-btn-code-request"
+                                                                data-id="{{ product.id }}"
+                                                                data-name="{{ product.name|escapejs }}"
+                                                                data-price="{{ product.price }}">
+                                                                <i class="bi bi-send m-r-10"></i> REQUEST
+                                                            </button>
+                                                        </td>
+
+                                                        {% endif %}
+
+                                                {% else %}
+
                                                 <td>
-                                                    <a href=""
-                                                        class="btn btn-sm btn-secondary disabled">
-                                                        <i class="ti-key me-1"></i>
-                                                    </a>
-
-
-                                                </td>
-                                                <td>
-
-
-                                                    <a href="{% url 'duplicate_product' product.id %}"
-                                                        class="btn btn-sm btn-warning">
-                                                        <i class="fa fa-copy"></i>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a href="{% url 'edit_product' product.id %}"
-                                                        class="btn btn-sm btn-success ">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-success buy-btn-request"
+                                                        data-id="{{ product.id }}"
+                                                        data-name="{{ product.name|escapejs }}"
+                                                        data-price="{{ product.price }}"
+                                                        data-redirect-url="{% url 'list_achat' %}">
+                                                        <i class="bi bi-send m-r-10"></i> REQUEST
+                                                    </button>
                                                 </td>
 
+                                                {% endif %}
 
-                                                  <td>
-                                                    <a href="{% url 'deactivate_product' product.id %}"
-                                                        class="btn btn-sm btn-danger">
-                                                        <i class="fas fa-ban"></i>
-                                                    </a>
-                                                </td>
-
-
-
+                                                {% endwith %}
+                                                {% endif %}
 
                                             </tr>
-                                            {% endif %}
                                             {% endfor %}
-                                            
                                         </tbody>
 
                                     </table>
@@ -219,7 +177,7 @@
     <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
     <!-- Bootstrap tether Core JavaScript -->
     <script src="{% static 'assets/libs/popper.js/dist/umd/popper.min.js' %}"></script>
-    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script> -->
     <!-- apps -->
     <script src="{% static 'dist/js/app.min.js' %}"></script>
     <script src="{% static 'dist/js/app.init.iconbar.js' %}"></script>
@@ -235,8 +193,38 @@
     <script src="{% static 'dist/js/custom.min.js' %}"></script>
     <!--This page JavaScript -->
     <script src="{% static 'dist/js/pages/tables/js-grid-db.js' %}"></script>
+
+             <!-- script pour faire disparaitre l icone rouge  -->
+  <script src="{% static 'dist/js/notifications_handler.js' %}"></script>
     <script src="{% static 'assets/libs/jsgrid/dist/jsgrid.min.js' %}"></script>
     <script src="{% static 'dist/js/pages/tables/js-grid-init.js' %}"></script>
+    
+
+
+    <script src="{% static 'dist/js/buy.js' %}"></script>
+    <script src="{% static 'dist/js/buy_request.js' %}"></script>
+    <script src="{% static 'dist/js/buy_code_request.js' %}"></script>
+    <script src="{% static 'dist/js/result_buy.js' %}"></script>
+
+
+
+
+
+
+
+
+
+    {% include 'reseller/buy.html' %}
+    {% include 'reseller/buy_request.html' %}
+    {% include 'reseller/buy_code_request.html' %}
+    {% include 'reseller/result_buy.html' %}
+
+
+
 </body>
+
+
+
+
 
 </html>

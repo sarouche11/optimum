@@ -66,16 +66,16 @@
                                 <i class="fa fa-edit"></i>
                             </a>
 
-                            <a href="{% url 'deactivate_subcategory' subcat.id %}" class="btn btn-sm btn-danger position-absolute"
+                            <a href="{% url 'activate_subcategory' subcat.id %}" class="btn btn-sm btn-success position-absolute"
                                 style="top:10px; right:10px; z-index:10;">
-                                <i class="fa fa-ban"></i>
+                                <i class="fa fa-undo"></i>
                             </a>
                             {% endif %}
                              
                             
                              <div class="card-body">
                                 <h4 class="card-title">{{ subcat.name }}</h4>
-                                 <a href="{% url 'product_list' subcat.id %}" class="stretched-link"></a>
+                                 <a href="{% url 'product_list_by_id_deactivate' subcat.id %}" class="stretched-link"></a>
                             </div>
                            
 

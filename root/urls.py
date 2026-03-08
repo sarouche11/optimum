@@ -1,18 +1,28 @@
 from django.urls import path
 from .views import (list_user ,toggle_profile_status,
-                    add_category,list_category,edit_category,
-                    add_subcategory,list_subcategory,edit_subcategory,
-                    add_product,list_product,
+                    add_category,list_category,edit_category,deactivate_category,activate_category,
+                    list_category_deactivate,
+                    
+                    add_subcategory,list_subcategory,edit_subcategory,deactivate_subcategory,activate_subcategory,
+                    list_subcategory_deactivate,
+
+                    add_product,list_product,list_product_deactivate,activate_product,
+                    duplicate_product,edit_product,deactivate_product,product_list_by_id_deactivate,
+
                     add_activation_code,edit_activation_code,list_activation_code,
+
                     add_montant,list_montant,list_transaction_by_code,
                     
                     subcategory_list_by_id,product_list_by_id,
-                    list_achat_user,admin_detail_achats,
-                    duplicate_product,edit_product,
 
-                    buy_product,list_activation_user,
-                     history_transaction,
+                    list_achat_user,admin_detail_achats,
+
+                    buy_product, list_activation_user,
+
+                    history_transaction,
+                     
                    list_achat,
+
                     detail_achat,edit_request,
                   
                     mark_notifications_as_read)
@@ -25,14 +35,26 @@ urlpatterns = [
 
     path('add_category/', add_category, name='add_category'),
     path('list_category/', list_category, name='list_category'),
+    path('list_category_deactivate/', list_category_deactivate, name='list_category_deactivate'),
     path('edit-category/<int:cat_id>/', edit_category, name='edit_category'),
+    path('deactivate_category/<int:code>', deactivate_category, name='deactivate_category'),
+    path('activate_category/<int:code>', activate_category, name='activate_category'),
 
     path('add_subcategory/', add_subcategory, name='add_subcategory'),
     path('list_subcategory/', list_subcategory, name='list_subcategory'),
+    path('list_subcategory_deactivate/', list_subcategory_deactivate, name='list_subcategory_deactivate'),
     path('edit-subcategory/<int:subcat_id>/', edit_subcategory, name='edit_subcategory'),
+    path('deactivate_subcategory/<int:code>', deactivate_subcategory, name='deactivate_subcategory'),
+    path('activate_subcategory/<int:code>', activate_subcategory, name='activate_subcategory'),
+
 
     path('add_product/', add_product, name='add_product'),
     path('list_product/', list_product, name='list_product'),
+    path('list_product_deactivate/', list_product_deactivate, name='list_product_deactivate'),
+    path('deactivate_product/<int:code>', deactivate_product, name='deactivate_product'),
+    path('activate_product/<int:code>', activate_product, name='activate_product'),
+
+    path('product_deactivate/<int:cat_id>/', product_list_by_id_deactivate, name='product_list_by_id_deactivate'),
 
 
     

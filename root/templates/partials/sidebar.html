@@ -175,6 +175,14 @@
                             </a>
                         </li>
 
+                          <li class="sidebar-item {% if '/list_product_deactivate/' in request.path %}active{% endif %}">
+                            <a href="{% url 'list_category_deactivate' %}" class="sidebar-link">
+                                <i class="fas fa-ban"></i>
+                                <span class="hide-menu"> Deactivate </span>
+                            </a>
+                        </li>
+
+
                     </ul>
                 </li>
 
@@ -199,6 +207,13 @@
                             </a>
                         </li>
 
+                        <li class="sidebar-item {% if '/list_subcategory_deactivate/' in request.path %}active{% endif %}">
+                            <a href="{% url 'list_subcategory_deactivate' %}" class="sidebar-link">
+                                <i class="fa fa-ban"></i>
+                                <span class="hide-menu"> Deactivate </span>
+                            </a>
+                        </li>
+
                     </ul>
                 </li>
 
@@ -220,6 +235,13 @@
                             <a href="{% url 'add_product' %}" class="sidebar-link">
                                 <i class="fa fa-plus"></i>
                                 <span class="hide-menu"> Add </span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item {% if '/list_product_deactivate/' in request.path %}active{% endif %}">
+                            <a href="{% url 'list_product_deactivate' %}" class="sidebar-link">
+                                <i class="fas fa-ban"></i>
+                                <span class="hide-menu"> Deactivate </span>
                             </a>
                         </li>
 

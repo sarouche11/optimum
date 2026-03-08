@@ -25,11 +25,11 @@
         {% include 'partials/header.html' %}
         <!-- ============================================================== -->
         <!-- End Topbar header -->
-       
+
         <!-- Left Sidebar - style you can find in sidebar.scss  -->
-     
+
         {% include 'partials/sidebar.html' %}
-       
+
         <div class="page-wrapper">
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
@@ -37,49 +37,49 @@
             <div class="page-breadcrumb">
                 <div class="row">
                     <div class="col-5 align-self-center">
-                        <h4 class="page-title"><i class="fa fa-folder"></i> SubCategory</h4>
+                        <h4 class="page-title"><i class="fa fa-folder"></i> Category</h4>
                     </div>
-                   
+
                 </div>
             </div>
-            
+
 
             <div class="container-fluid">
-                 {% include 'messages.html' %}
+                {% include 'messages.html' %}
                 <div class="row gx-1 gy-1">
-                    {% for subcat in subcategory %}
-                    <div class="col-lg-3 col-md-6 mb-2 ">
-                        <div class="card">
-
-                            <!-- Wrapper pour image -->
+                    {% for cat in category %}
+                    <div class="col-lg-3 col-md-6 mb-2">
+                        <div class="card position-relative">
+                            <!-- Image -->
                             <div class="card-img-wrapper">
-                                {% if subcat.image %}
-                                <img src="{{ subcat.image.url }}" alt="{{ subcat.name }}">
+                                {% if cat.image %}
+                                <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="card-img-top">
                                 {% else %}
-                                <img src="{% static 'images/default.jpg' %}" alt="Default">
+                                <img src="{% static 'images/default.jpg' %}" alt="Default" class="card-img-top">
                                 {% endif %}
                             </div>
-                            {% if user|has_group:'admin' %}
-                             <!-- Bouton Edit en overlay -->
-                            <a href="{% url 'edit_subcategory' subcat.id %}" class="btn btn-sm btn-success position-absolute"
+                           {% if user|has_group:'admin' %}
+                            <!-- Bouton Edit en overlay -->
+                            <!-- Bouton Edit en overlay -->
+                            <a href="{% url 'edit_category' cat.id %}" class="btn btn-sm btn-success position-absolute"
                                 style="top:10px; right:45px; z-index:10;">
                                 <i class="fa fa-edit"></i>
                             </a>
 
-                            <a href="{% url 'deactivate_subcategory' subcat.id %}" class="btn btn-sm btn-danger position-absolute"
+                            <a href="{% url 'activate_category' cat.id %}"
+                                class="btn btn-sm btn-success position-absolute"
                                 style="top:10px; right:10px; z-index:10;">
-                                <i class="fa fa-ban"></i>
+                                <i class="fa fa-undo"></i>
                             </a>
                             {% endif %}
-                             
-                            
-                             <div class="card-body">
-                                <h4 class="card-title">{{ subcat.name }}</h4>
-                                 <a href="{% url 'product_list' subcat.id %}" class="stretched-link"></a>
-                            </div>
-                           
 
+                            <div class="card-body">
+                                <h4 class="card-title">{{ cat.name }}</h4>
+                                <!-- Le reste du contenu -->
+                                <a href="{% url 'subcategory_list' cat.id %}" class="stretched-link"></a>
+                            </div>
                         </div>
+
                     </div>
                     {% endfor %}
                 </div>
