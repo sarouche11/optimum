@@ -4,7 +4,7 @@ from authentification.models import Profile
 from .models import (Category,SubCategory,Product,ActivationCode,Paiement,
                      ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType,Notification)
 from .forms import (CategoryForm, SubCategoryForm, 
-                    ProductForm, ActivationCodeForm,ProductRequestUpdateForm)
+                    ProductForm, ActivationCodeForm,EditActivationCodeForm,ProductRequestUpdateForm)
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, get_object_or_404
@@ -398,14 +398,15 @@ def edit_activation_code(request, pk):
     activation_code = get_object_or_404(ActivationCode, pk=pk)
 
     # Formulaire pré-rempli avec les données existantes
-    form = ActivationCodeForm(request.POST or None, instance=activation_code)
+    form = EditActivationCodeForm(request.POST or None, instance=activation_code)
 
     if request.method == "POST" and form.is_valid():
         # Sauvegarde les modifications
         activation_code = form.save()
+        messages.success(request,'code modifié avec succés')
 
 
-        return redirect('list_product')  # adapte selon ta route
+        return redirect('list_activation_code',  activation_code.product.id)  # adapte selon ta route
 
     context = {
         'form': form,
