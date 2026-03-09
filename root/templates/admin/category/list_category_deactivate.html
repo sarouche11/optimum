@@ -58,7 +58,7 @@
                                 <img src="{% static 'images/default.jpg' %}" alt="Default" class="card-img-top">
                                 {% endif %}
                             </div>
-                            {% if user|has_group:'admin' %}
+                           {% if user|has_group:'admin' %}
                             <!-- Bouton Edit en overlay -->
                             <!-- Bouton Edit en overlay -->
                             <a href="{% url 'edit_category' cat.id %}" class="btn btn-sm btn-success position-absolute"
@@ -80,59 +80,60 @@
                             </div>
                         </div>
 
-                        {% empty %}
-                        <div class="alert alert-info text-center mt-4">
-                            <i class="fa fa-info-circle"></i> Aucune catégorie désactivée
-                        </div>
-                        {% endfor %}
                     </div>
+                    {% empty %}
+                  <div class="alert alert-info text-center mt-4">
+                                                <i class="fa fa-info-circle"></i> Aucun produit ajouté
+                                            </div>
+                    {% endfor %}
                 </div>
-
-                <!-- ============================================================== -->
-                <!-- End Container fluid  -->
-                <!-- ============================================================== -->
-                <!-- ============================================================== -->
-                <!-- footer -->
-                <!-- ============================================================== -->
-                {% include 'partials/footer.html' %}
-                <!-- ============================================================== -->
-                <!-- End footer -->
-                <!-- ============================================================== -->
             </div>
+
             <!-- ============================================================== -->
-            <!-- End Page wrapper  -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            {% include 'partials/footer.html' %}
+            <!-- ============================================================== -->
+            <!-- End footer -->
             <!-- ============================================================== -->
         </div>
         <!-- ============================================================== -->
-        <!-- End Wrapper -->
+        <!-- End Page wrapper  -->
         <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- customizer Panel -->
-        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- customizer Panel -->
+    <!-- ============================================================== -->
 
-        <div class="chat-windows"></div>
-        <!-- ============================================================== -->
-        <!-- All Jquery -->
-        <!-- ============================================================== -->
-        <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
-        <!-- Bootstrap tether Core JavaScript -->
-        <script src="{% static 'assets/libs/popper.js/dist/umd/popper.min.js' %}"></script>
-        <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
-        <!-- apps -->
-        <script src="{% static 'dist/js/app.min.js' %}"></script>
-        <script src="{% static 'dist/js/app.init.iconbar.js' %}"></script>
-        <script src="{% static 'dist/js/app-style-switcher.js' %}"></script>
-        <!-- slimscrollbar scrollbar JavaScript -->
-        <script src="{% static 'assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js' %}"></script>
-        <script src="{% static 'assets/extra-libs/sparkline/sparkline.js' %}"></script>
-        <!--Wave Effects -->
-        <script src="{% static 'dist/js/waves.js' %}"></script>
-        <!--Menu sidebar -->
-        <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
-        <!--Custom JavaScript -->
-        <script src="{% static 'dist/js/custom.min.js' %}"></script>
-        <!-- This Page JS -->
-        <script src="{% static 'assets/extra-libs/prism/prism.js' %}"></script>
+    <div class="chat-windows"></div>
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'assets/libs/popper.js/dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- apps -->
+    <script src="{% static 'dist/js/app.min.js' %}"></script>
+    <script src="{% static 'dist/js/app.init.iconbar.js' %}"></script>
+    <script src="{% static 'dist/js/app-style-switcher.js' %}"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="{% static 'assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/sparkline/sparkline.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'dist/js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'dist/js/custom.min.js' %}"></script>
+    <!-- This Page JS -->
+    <script src="{% static 'assets/extra-libs/prism/prism.js' %}"></script>
 </body>
 
 </html>
