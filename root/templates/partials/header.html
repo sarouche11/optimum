@@ -106,7 +106,7 @@
                         {% for notif in notifications %}
                         <a class="dropdown-item preview-item {% if not notif.is_read %}font-weight-bold{% endif %}">
                             <div class="preview-item-content">
-                                <h6 class="preview-subject font-weight-normal">{{ notif.message }}</h6>
+                                <h6 class="preview-subject font-weight-normal">{{ notif.message|safe }}</h6>
                                 <p class="font-weight-light small-text text-muted mb-0">
                                     {{ notif.created_at|date:"d/m/Y H:i" }}
                                 </p>

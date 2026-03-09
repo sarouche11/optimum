@@ -46,7 +46,7 @@ def login_view(request):
         if user is not None:
 
             if not user.profile.active:
-                messages.error(request, "Compte non actif. Veuillez contacter votre administrateur")
+                messages.error(request, "Your account is inactive. Please contact your administrator.")
                 return redirect("login")
 
             # ✅ Vérification si l'utilisateur a activé la 2FA
@@ -90,7 +90,7 @@ def verify_otp(request):
 
     # ➜ Si pas de session : on reste propre
     if not user_id:
-        messages.error(request, "Session expirée ou connexion non initiée.")
+        messages.error(request, "Your session has expired or you are not logged in.")
         return render(request, "verify_otp.html")
 
     user = get_object_or_404(User, id=user_id)
@@ -121,7 +121,7 @@ def verify_otp(request):
             return redirect('list')
 
         # ➜ Ici on reste sur la page et on affiche juste le message
-        messages.error(request, "Code invalide ou expiré")
+        messages.error(request, "Invalid or expired code.")
 
     return render(request, "verify_otp.html")
 
@@ -166,7 +166,7 @@ def logout_view(request):
     storage = messages.get_messages(request)
     storage.used = True
     logout(request)
-    messages.success(request, "Vous avez été déconnecté avec succès.")
+    messages.success(request, "Successfully logged out.")
     return redirect ('login')
 
 
@@ -207,15 +207,15 @@ def register_view(request):
 
                     # 4️⃣ Envoi email à l’admin
                     send_mail(
-                        subject="Nouvelle inscription sur la plateforme",
+                        subject="New registration on the platform.",
                         message=f"""
-                        Un nouvel utilisateur vient de s'inscrire.
+                        A new user has just registered.
 
-                        Nom: {first_name} {last_name}
+                        Full Name: {first_name} {last_name}
                         Username: {username}
                         Email: {email}
 
-                        Veuillez activer son compte 
+                        Please activate their account.
                         """,
                         from_email=settings.DEFAULT_FROM_EMAIL,
                         recipient_list=[settings.ADMIN_NOTIFICATION_EMAIL],
@@ -228,7 +228,7 @@ def register_view(request):
             except Exception as e:
                 messages.error(request, f"Erreur lors de l'inscription : {e}")
         else:
-            messages.error(request, "Le formulaire est invalide. Vérifiez le captcha et les champs.")
+            messages.error(request, "The form is invalid. Please check the captcha and fields.")
 
     else:
         form = ProfileForm()

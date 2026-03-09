@@ -17,7 +17,7 @@ def creer_notification_request(purchase):
     # 🔔 Notification pour le demandeur
     Notification.objects.create(
         user=user,
-        message=f"Votre demande pour le produit '{product.name}' a été envoyée avec succès."
+       message = f'<i class="fa fa-check-circle" style="color: #20b093;"></i> Your request for the product "{product.name}" has been <span style="color:#20b093;"><strong>sent successfully</strong></span>.'
     )
 
     # 🔔 Notifications pour les admins
@@ -26,12 +26,13 @@ def creer_notification_request(purchase):
     for admin in admins:
         Notification.objects.create(
             user=admin,
-            message=(
-                f"{user.first_name} {user.last_name} "
-                f"a fait une demande pour le produit '{product.name}' "
-                f"(Quantité : {purchase.quantity})."
-            )
+           message = (
+                f'<i class="fa fa-check-circle" style="color:#20b093;"></i> '
+                f'Your request for the product "{product.name}" has been <span style="color:#20b093;"><strong>sent successfully</strong></span>.'
+)
         ) 
+
+
 
 def creer_notification_refund(purchase):
     """
@@ -49,8 +50,11 @@ def creer_notification_refund(purchase):
     # 🔔 Notification pour le reseller
     Notification.objects.create(
         user=user,
-        message=f"Votre achat pour le produit '{product.name}' a été rejeté et remboursé."
+        message=f'<i class="fa fa-exclamation-triangle" style="color:#ffbc34;"></i> <strong style="color:#cb1b1b;">Rejected</strong><br/> Your purchase for the product "{product.name}" has been rejected and refunded.'
     )
+
+
+    
 
     # 🔔 Notifications pour les admins
     admins = User.objects.filter(groups__name='admin').exclude(id=user.id)
@@ -58,10 +62,11 @@ def creer_notification_refund(purchase):
     for admin in admins:
         Notification.objects.create(
             user=admin,
-            message=(
-                f"{user.first_name} {user.last_name} ({user.username}) "
-                f"a été remboursé pour le produit '{product.name}' "
-                f"rejeté et remboursé (Quantité : {purchase.quantity})."
+            message = (
+                f'<i class="fa fa-exclamation-triangle" style="color:#ffbc34;"></i> '
+                f'<strong> {user.username} </strong><br/>'
+                f'<span style="color:red"><strong>Rejected and refunded</strong></span> '
+                f'for the product "{product.name}" (Quantity: {purchase.quantity}).'
             )
         )        
 
