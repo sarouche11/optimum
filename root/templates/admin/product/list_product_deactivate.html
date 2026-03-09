@@ -163,6 +163,13 @@
 
                                             </tr>
                                             {% endif %}
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan = "9"><div class="alert alert-info text-center mt-4">
+                                                <i class="fa fa-info-circle"></i> Aucun produit désactivé
+                                            </div></td>
+                                            </tr>
+                                            
                                             {% endfor %}
                                             
                                         </tbody>

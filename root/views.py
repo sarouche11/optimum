@@ -191,16 +191,35 @@ def edit_category(request, cat_id):
 
 @user_is_in_group('admin')
 def deactivate_category(request,code):
-    category = get_object_or_404(Category,id = code)
-    category.active = False
-    category.save()
-    return redirect ('list_category')
+        category = get_object_or_404(Category, id=code)
+
+        # désactiver la catégorie
+        category.active = False
+        category.save()
+
+        # désactiver toutes les sous-catégories de cette catégorie
+        subcategories = category.subcategories.all()
+        subcategories.update(active=False)
+
+        # désactiver tous les produits qui appartiennent à ces sous-catégories
+        Product.objects.filter(subcategory__in=subcategories).update(active=False)
+
+        return redirect('list_category')
 
 @user_is_in_group('admin')
 def activate_category(request,code):
-    category = get_object_or_404(Category,id = code)
+    category = get_object_or_404(Category, id=code)
+
+    # désactiver la catégorie
     category.active = True
     category.save()
+
+    # désactiver toutes les sous-catégories de cette catégorie
+    subcategories = category.subcategories.all()
+    subcategories.update(active=True)
+
+    # désactiver tous les produits qui appartiennent à ces sous-catégories
+    Product.objects.filter(subcategory__in=subcategories).update(active=True)
     return redirect ('list_category_deactivate')
 
 # add subcategory 
