@@ -987,7 +987,7 @@ def buy_product(request):
     if solde < total_price:
         return JsonResponse({
             'success': False,
-            'error': f"Solde insuffisant : {solde} DA."
+            'error': f"Insufficient balance : {solde} DA."
         })
 
     category_type = product.subcategory.category.type_category
@@ -996,7 +996,7 @@ def buy_product(request):
     if category_type == CatgoryType.CODE and product_type == ProductType.CODE and quantity > product.stock:
         return JsonResponse({
             'success': False,
-            'error': "Stock insuffisant."
+            'error': "Insufficient stock."
         })
 
     reste = solde - total_price
@@ -1016,7 +1016,7 @@ def buy_product(request):
             if len(codes) < quantity:
                 return JsonResponse({
                     'success': False,
-                    'error': "Pas assez de codes disponibles."
+                    'error': "Not enough codes available."
                 })
 
         elif category_type == CatgoryType.CODE and product_type == ProductType.REQUEST:
@@ -1068,6 +1068,7 @@ def buy_product(request):
 
          # 📩 Envoi email si REQUEST
         if status == StatusAchat.PENDING:
+            messages.success(request, "Your request has been submitted successfully and is pending approval.")
             send_mail(
                 subject="Nouvelle demande produit (REQUEST)",
                 message=f"""

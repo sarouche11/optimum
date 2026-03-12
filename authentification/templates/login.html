@@ -52,7 +52,7 @@
                     <div class="row">
                         <div class="col-12">
                             <form class="form-horizontal m-t-20" id="loginform" action="{% url 'login' %}" method="POST">
-                                {% include 'messages.html' %}
+                                {% include 'partials/messages.html' %}
                                 {% csrf_token %}
                                 <div class="form-group mb-3">
                                     <label>Email / Username </label>
