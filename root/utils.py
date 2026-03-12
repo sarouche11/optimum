@@ -26,11 +26,13 @@ def creer_notification_request(purchase):
     for admin in admins:
         Notification.objects.create(
             user=admin,
-           message = (
-                f'<i class="fa fa-check-circle" style="color:#20b093;"></i> '
-                f'Your request for the product "{product.name}" has been <span style="color:#20b093;"><strong>sent successfully</strong></span>.'
-)
-        ) 
+          message=(
+            f'<i class="bi bi-send" style="color:#20b093;"></i> '
+            f'<strong>Request</strong><br/>'
+            f'The user "{user.username}" has submitted a request for the product '
+            f'"{product.name}".'
+        )
+    )
 
 
 

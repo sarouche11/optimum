@@ -92,25 +92,65 @@ def toggle_profile_status(request, profil_id):
     profil.active = not profil.active
     profil.save()
 
-    # ✅ Si le compte vient d’être activé → envoyer email
+        # ✅ Si le compte vient d’être activé → envoyer email
     if profil.active:
-        profil.user.email_user(
-            "Activation de votre compte",
-            f"Bonjour {profil.user.username},\n\n"
-            "Votre compte a été activé par l’administrateur.\n"
-            "Vous pouvez maintenant vous connecter à la plateforme.\n\n"
-            "Cordialement."
-        )
-    else : 
-         profil.user.email_user(
-            "Désactivation de votre compte",
-            f"Bonjour {profil.user.username},\n\n"
-            "Votre compte a été désactivé.\n"
-            "Veuillez contactez votre administrateur pour plus d'information.\n\n"
-            "Cordialement."
-        )
+        subject = "Your Account Has Been Activated"
+        body = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+        <p>Hello {profil.user.username},</p>
 
+        <p>Your account has been <strong>activated</strong> by the administrator.</p>
+        <p>You can now log in to the platform.</p>
 
+        <br/>
+        <p>Best regards,<br/>
+        <strong>The Platform Team</strong></p>
+
+        <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
+
+        <!-- Logo -->
+        <img src="https://panel.digiddel.com/static/assets/images/logoB.png" alt="Company Logo" style="height:50px;">
+
+        <!-- Contact info -->
+        <p style="font-size: 12px; color: #555;">
+        Email: contact@yourcompany.com | Phone: +123 456 7890 | Website: <a href="https://panel.digideel.com">Digideel</a>
+        </p>
+    </body>
+    </html>
+    """
+    else:
+        subject = "Your Account Has Been Deactivated"
+        body = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+        <p>Hello {profil.user.username},</p>
+
+        <p>Your account has been <strong>deactivated</strong>.</p>
+        <p>Please contact your administrator for more information.</p>
+
+        <br/>
+        <p>Best regards,<br/>
+        <strong>The Platform Team</strong></p>
+
+        <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
+
+        <!-- Logo -->
+        <img src="https://panel.digiddel.com/static/assets/images/logoB.png" alt="Company Logo" style="height:50px;">
+
+        <!-- Contact info -->
+        <p style="font-size: 12px; color: #555;">
+        Email: contact@yourcompany.com | Phone: +123 456 7890 | Website: <a href="https://panel.digideel.com">Digideel</a>
+        </p>
+    </body>
+    </html>
+    """
+
+    profil.user.email_user(
+        subject=subject,
+        message="",  # message text fallback pour clients mail non-HTML
+        html_message=body
+    )
     messages.success(
         request,
         f"Le profil de {profil.user.username} a été "
@@ -1070,24 +1110,36 @@ def buy_product(request):
         if status == StatusAchat.PENDING:
             messages.success(request, "Your request has been submitted successfully and is pending approval.")
             send_mail(
-                subject="Nouvelle demande produit (REQUEST)",
-                message=f"""
-                    Une nouvelle demande a été effectuée.
+                    subject="New Request Submitted",
+                    message=f"""
+                Hello Admin,
 
-                    Utilisateur : {profil.user.first_name} {profil.user.last_name}
-                    Username : {profil.user.username}
-                    Email : {profil.user.email}
+                A new request has been submitted. Please find the details below:
 
-                    Produit : {product.name}
-                    Quantité : {quantity}
-                    Prix total : {total_price} DA
+                -----------------------------
+                User Information:
+                Name     : {profil.user.first_name} {profil.user.last_name}
+                Username : {profil.user.username}
+                Email    : {profil.user.email}
 
-                    Note : {note}
-                    Requirement : {requirement}
+                Product Information:
+                Product  : {product.name}
+                Quantity : {quantity}
+                Total Price : {total_price} DA
+
+                Additional Details:
+                Note : {note}
+                Requirement: {requirement}
+                -----------------------------
+
+                Please take the necessary action.
+
+                Best regards,
+                Your System
                     """,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.ADMIN_NOTIFICATION_EMAIL],
-                fail_silently=False,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.ADMIN_NOTIFICATION_EMAIL],
+                    fail_silently=False,
             )
             
             creer_notification_request(purchase)    

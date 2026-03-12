@@ -207,15 +207,23 @@ def register_view(request):
 
                     # 4️⃣ Envoi email à l’admin
                     send_mail(
-                        subject="New registration on the platform.",
+                        subject="New User Registration on the Platform",
                         message=f"""
-                        A new user has just registered.
+                    Hello Admin,
 
-                        Full Name: {first_name} {last_name}
-                        Username: {username}
-                        Email: {email}
+                    A new user has just registered on the platform. Please find the details below:
 
-                        Please activate their account.
+                    -----------------------------
+                    User Information:
+                    Full Name: {first_name} {last_name}
+                    Username : {username}
+                    Email    : {email}
+                    -----------------------------
+
+                    Please activate their account at your earliest convenience.
+
+                    Best regards,
+                    Your System
                         """,
                         from_email=settings.DEFAULT_FROM_EMAIL,
                         recipient_list=[settings.ADMIN_NOTIFICATION_EMAIL],
