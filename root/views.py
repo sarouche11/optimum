@@ -2,7 +2,7 @@ from django.shortcuts import render
 from authentification.decorators import user_is_in_group
 from authentification.models import Profile
 from .models import (Category,SubCategory,Product,ActivationCode,Paiement,
-                     ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType,Notification)
+                     ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType,Notification,ActivationCodeLog)
 from .forms import (CategoryForm, SubCategoryForm, 
                     ProductForm, ActivationCodeForm,EditActivationCodeForm,ProductRequestUpdateForm,
                     UserCategoryForm)
@@ -20,7 +20,6 @@ from django.db import transaction
 from django.core.mail import send_mail
 from django.conf import settings
 
-
 from .utils import creer_notification_request,creer_notification_refund
 from django.views.decorators.http import require_POST
 from .context_processors import get_notifications
@@ -31,6 +30,10 @@ from email.mime.image import MIMEImage
 
 from authentification.models import Profile
 from django.contrib.auth.decorators import user_passes_test
+
+from django.http import HttpResponseForbidden
+import logging
+
 
 
 
@@ -662,32 +665,49 @@ def edit_activation_code(request, pk):
 
 
 # liste code 
-@user_is_in_group('admin')
-def list_activation_code(request,id):
+# Vérification admin
+def admin_check(user):
+    return user.is_active and user.groups.filter(name='admin').exists()
+
+@user_passes_test(admin_check)
+def list_activation_code(request, id):
+    # Récupère le produit
     product = get_object_or_404(Product, id=id)
 
+    # Double vérification côté vue
+    if not request.user.groups.filter(name='admin').exists():
+        return HttpResponseForbidden("You are not allowed to view this page.")
+
+    # Enregistrement du log dans la base
+    ActivationCodeLog.objects.create(
+        user=request.user,
+        product_id=product.id,
+        action="Accessed activation codes"
+    )
+
+    # Gestion recherche
     search = request.GET.get('search', '')
 
+    # Gestion pagination
     per_page = request.GET.get('per_page', 10)
     try:
         per_page = int(per_page)
-    except:
+    except ValueError:
         per_page = 10
 
-    # ➜ On récupère les code pour chaque produit
-   
-    code = ActivationCode.objects.filter(product=product).order_by('-created_at')
+    # Récupère tous les codes liés au produit
+    codes = ActivationCode.objects.filter(product=product).order_by('-created_at')
 
-    # Recherche par code
+    # Filtre par recherche si nécessaire
     if search:
-        code = code.filter(
-            code__icontains=search
-        ).distinct()
+        codes = codes.filter(code__icontains=search).distinct()
 
-    paginator = Paginator(code, per_page)
+    # Pagination
+    paginator = Paginator(codes, per_page)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
+    # Context pour le template
     context = {
         'page_obj': page_obj,
         'search': search,
@@ -699,7 +719,7 @@ def list_activation_code(request,id):
 
 
 
-# liste code by product 
+
 # @user_is_in_group('admin')
 # def list_activation_by_product(request):
 

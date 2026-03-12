@@ -167,4 +167,15 @@ class Notification(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.message[:20]}"
+    
+
+
+class ActivationCodeLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product_id = models.IntegerField()
+    action = models.CharField(max_length=255, default="Accessed activation codes")
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Product {self.product_id} - {self.timestamp}"    
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
-from .models import Category,SubCategory,Product,ActivationCode, Paiement , ProductAchat,PurchaseCode
+from .models import Category,SubCategory,Product,ActivationCode, Paiement , ProductAchat,PurchaseCode, ActivationCodeLog
 
 @admin.register(Category)
 class CategoryImportExport(ImportExportModelAdmin):
@@ -181,3 +181,12 @@ class PurchaseCodeImportExport(ImportExportModelAdmin):
 
     search_fields = ['codeCP']
     list_filter = ['active']
+
+
+
+@admin.register(ActivationCodeLog)
+class ActivationCodeLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product_id', 'action', 'timestamp')
+    list_filter = ('user', 'timestamp')
+    search_fields = ('user__username', 'product_id')
+    ordering = ('-timestamp',)    
