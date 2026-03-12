@@ -1,0 +1,147 @@
+{% load static %}
+{% load group_tags %}
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+{% include 'partials/head.html' %}
+
+<body>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div id="main-wrapper">
+        <!-- ============================================================== -->
+        <!-- Topbar header - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        {% include 'partials/header.html' %}
+        <!-- ============================================================== -->
+        <!-- End Topbar header -->
+
+        <!-- Left Sidebar - style you can find in sidebar.scss  -->
+
+        {% include 'partials/sidebar.html' %}
+
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-5 align-self-center">
+                        <h4 class="page-title"><i class="bi bi-tags-fill"></i> Assigned Categories</h4>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="container-fluid">
+                {% include 'partials/messages.html' %}
+
+               <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-light">
+    <h5 class="mb-0">
+        
+        Assign Categories to <strong>{{ profil.user.username }}</strong>
+    </h5>
+</div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+
+                        {% for cat in categories %}
+                        <div class="col-6 col-md-4 col-lg-3">
+
+                            <div class="category-card p-3 d-flex align-items-center
+                                        {% if cat in profil.categories.all %}selected{% endif %}"
+                                data-cat-id="{{ cat.id }}">
+
+                                <!-- Checkbox stylée -->
+                                <input type="checkbox" class="category-checkbox" 
+                                    name="categories" value="{{ cat.id }}"
+                                    id="cat{{ cat.id }}"
+                                    {% if cat in profil.categories.all %}checked{% endif %}>
+
+                                <label for="cat{{ cat.id }}" class="category-label mb-0 ms-2">
+                                    {{ cat.name }}
+                                </label>
+
+                            </div>
+
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <button type="submit" class="btn btn-success mt-4">Save </button>
+                </form>
+
+
+        
+
+                
+
+     
+
+  
+
+     
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            {% include 'partials/footer.html' %}
+            <!-- ============================================================== -->
+            <!-- End footer -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- customizer Panel -->
+    <!-- ============================================================== -->
+
+    <div class="chat-windows"></div>
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'assets/libs/popper.js/dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- apps -->
+    <script src="{% static 'dist/js/app.min.js' %}"></script>
+    <script src="{% static 'dist/js/app.init.iconbar.js' %}"></script>
+    <script src="{% static 'dist/js/app-style-switcher.js' %}"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="{% static 'assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/sparkline/sparkline.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'dist/js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'dist/js/custom.min.js' %}"></script>
+    <!-- This Page JS -->
+    <script src="{% static 'assets/extra-libs/prism/prism.js' %}"></script>
+</body>
+
+</html>

@@ -1,6 +1,7 @@
 
 from django import forms
 from .models import Category,SubCategory,Product,ActivationCode,Paiement,ProductAchat
+from authentification.models import Profile
 
 
 class CategoryForm(forms.ModelForm):
@@ -151,4 +152,17 @@ class ProductRequestUpdateForm(forms.ModelForm):
             'reason': forms.TextInput(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-select'})
         }
+
+
+class UserCategoryForm(forms.ModelForm):
+    categories = forms.ModelMultipleChoiceField(
+        queryset=Category.objects.filter(active=True),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        
+    )
+
+    class Meta:
+        model = Profile
+        fields = ['categories']        
 

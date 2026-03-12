@@ -37368,3 +37368,59 @@ html[dir=rtl] #main-wrapper[data-sidebartype=overlay].show-sidebar .left-sidebar
  
     text-align: center;
 }
+
+
+.category-card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: #f9f9f9;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.category-card.selected {
+    border: 2px solid #1c8d78;
+    background-color: #e6ffed;
+}
+
+/* Checkbox stylée */
+.category-checkbox {
+    appearance: none; /* enlever style par défaut */
+    width: 22px;
+    height: 22px;
+    border: 2px solid #1c8d78;
+    border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.category-checkbox:checked {
+    background-color: #20b093;
+}
+
+.category-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 7px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Label à côté de la checkbox */
+.category-label {
+    cursor: pointer;
+    font-weight: bold;
+}

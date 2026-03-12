@@ -4,7 +4,8 @@ from authentification.models import Profile
 from .models import (Category,SubCategory,Product,ActivationCode,Paiement,
                      ProductAchat,PurchaseCode,CatgoryType,StatusAchat,ProductType,Notification)
 from .forms import (CategoryForm, SubCategoryForm, 
-                    ProductForm, ActivationCodeForm,EditActivationCodeForm,ProductRequestUpdateForm)
+                    ProductForm, ActivationCodeForm,EditActivationCodeForm,ProductRequestUpdateForm,
+                    UserCategoryForm)
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, get_object_or_404
@@ -27,6 +28,9 @@ from django.contrib.auth.decorators import login_required
 import os
 from django.core.mail import EmailMultiAlternatives
 from email.mime.image import MIMEImage
+
+from authentification.models import Profile
+from django.contrib.auth.decorators import user_passes_test
 
 
 
@@ -84,6 +88,8 @@ def list_user(request):
        'per_page': per_page,
     }
     return render(request,'admin/list_user.html',context)
+
+
 
 # activation du compte 
 @user_is_in_group('admin')
@@ -171,12 +177,25 @@ def add_category(request):
 # list category
 @user_is_in_group('admin','reseller')
 def list_category(request):
-    category = Category.objects.filter(active=True).order_by('created_at')
+
+    if request.user.groups.filter(name='admin').exists():
+        # admin voit toutes les catégories
+        category = Category.objects.filter(active=True).order_by('created_at')
+
+    else:
+        # reseller voit seulement ses catégories
+        profil = request.user.profile
+        category = profil.categories.filter(active=True).order_by('created_at')
+
     context = {
-        'category':category
+        'category': category
     }
 
-    return render(request, 'admin/category/list_category.html',context)
+    return render(request, 'admin/category/list_category.html', context)
+
+
+
+
 
 # list category
 @user_is_in_group('admin')
@@ -986,6 +1005,35 @@ def edit_request(request, pk):
     }
 
     return render(request, 'admin/purchase/edit_achat_request.html', context)
+
+
+
+
+
+def admin_check(user):
+    return user.is_superuser or user.groups.filter(name='admin').exists()
+
+@user_passes_test(admin_check)
+def assign_categories(request, profil_id):
+    profil = get_object_or_404(Profile, id=profil_id)
+    categories = Category.objects.filter(active=True)
+
+    if request.method == 'POST':
+        form = UserCategoryForm(request.POST, instance=profil)
+        if form.is_valid():
+            form.save()
+            return redirect('list_user')  # redirige vers la liste des users
+    else:
+        form = UserCategoryForm(instance=profil)
+
+    context = {
+        'form': form, 
+        'profil': profil,
+        'categories': categories
+       
+   }     
+
+    return render(request, 'admin/category/assign_categories.html', context)
 
 
 

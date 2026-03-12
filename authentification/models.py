@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.validators import RegexValidator
 
+
 def generate_code():
     return ''.join(random.choices('AZERTYUIOPQSDFGHJKLMWXCVBN123456789', k=10))
 
@@ -18,6 +19,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     adresse = models.CharField(max_length=200, blank=False, null=False)
     phone = models.CharField(max_length=10, blank=False, null=False,validators=[phone_validator],)
+    categories = models.ManyToManyField('root.Category', blank=True, related_name='users')
     use_2fa = models.BooleanField(default=True)
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

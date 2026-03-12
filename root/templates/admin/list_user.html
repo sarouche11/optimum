@@ -67,6 +67,7 @@
                                                 <th>Status</th>
                                                 <th>Account</th>
                                                 <th>Transaction</th>
+                                                <th>Check Categories</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -113,6 +114,13 @@
                                                     <a href="{% url 'list_transaction' profil.id %}"
                                                         class="btn btn-sm btn-success">
                                                         <i class="fa fa-credit-card"></i>
+                                                    </a>
+                                                </td>
+
+                                                <td>
+                                                    <a href="{% url 'assign_categories' profil.id %}"
+                                                        class="btn btn-sm btn-success">
+                                                        <i class="bi bi-tags-fill"></i>
                                                     </a>
                                                 </td>
                                             </tr>

@@ -16,6 +16,7 @@ from .views import (list_user ,toggle_profile_status,
                     subcategory_list_by_id,product_list_by_id,
 
                     list_achat_user,admin_detail_achats,
+                    assign_categories,
 
                     buy_product, list_activation_user,
 
@@ -82,6 +83,8 @@ urlpatterns = [
     path('edit-product/<int:product_id>/', edit_product, name='edit_product'),
 
     path('purchase/edit/<int:pk>/', edit_request, name='edit_request'),
+
+    path('categories/assigned/<int:profil_id>/', assign_categories, name='assign_categories'),
 
 
     
