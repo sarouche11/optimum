@@ -25,6 +25,8 @@ from django.views.decorators.http import require_POST
 from .context_processors import get_notifications
 from django.contrib.auth.decorators import login_required
 import os
+from django.core.mail import EmailMultiAlternatives
+from email.mime.image import MIMEImage
 
 
 
@@ -97,7 +99,7 @@ def toggle_profile_status(request, profil_id):
     subject = "Your Account Has Been Activated" if profil.active else "Your Account Has Been Deactivated"
 
     # Chemin local vers le logo
-    logo_path = os.path.join(settings.BASE_DIR, "static/assets/images/logoB.png")
+    logo_path = os.path.join(settings.BASE_DIR, "staticfiles", "assets", "images", "logoB.png")
 
     # Contenu HTML du mail
     body = f"""
