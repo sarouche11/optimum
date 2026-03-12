@@ -64,11 +64,11 @@ def creer_notification_refund(purchase):
     for admin in admins:
         Notification.objects.create(
             user=admin,
-            message = (
+         message = (
                 f'<i class="fa fa-exclamation-triangle" style="color:#ffbc34;"></i> '
-                f'<strong> {user.username} </strong><br/>'
-                f'<span style="color:red"><strong>Rejected and refunded</strong></span> '
-                f'for the product "{product.name}" (Quantity: {purchase.quantity}).'
+                f'<strong style="color:#cb1b1b;">Rejected </strong><br/>'
+                f'The purchase by <strong>{user.username}</strong> for the product '
+                f'"{product.name}" has been rejected and refunded.'
             )
         )        
 
