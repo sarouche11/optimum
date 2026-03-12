@@ -110,7 +110,7 @@ def toggle_profile_status(request, profil_id):
         <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
 
         <!-- Logo -->
-        <img src="https://panel.digiddel.com/static/assets/images/logoB.png" alt="Company Logo" style="height:50px;">
+        <img src="https://panel.digiddel.com/panel/optimum/ecommerce/root/static/assets/images" alt="Company Logo" style="height:50px;">
 
         <!-- Contact info -->
         <p style="font-size: 12px; color: #555;">
@@ -136,7 +136,7 @@ def toggle_profile_status(request, profil_id):
         <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
 
         <!-- Logo -->
-        <img src="https://panel.digiddel.com/static/assets/images/logoB.png" alt="Company Logo" style="height:50px;">
+        <img src="https://panel.digiddel.com/panel/optimum/ecommerce/root/static/assets/images" alt="Company Logo" style="height:50px;">
 
         <!-- Contact info -->
         <p style="font-size: 12px; color: #555;">
@@ -153,8 +153,8 @@ def toggle_profile_status(request, profil_id):
     )
     messages.success(
         request,
-        f"Le profil de {profil.user.username} a été "
-        f"{'activé' if profil.active else 'désactivé'}."
+        f"The profile of {profil.user.username} has been "
+        f"{'activated' if profil.active else 'deactivated'}."
     )
 
     return redirect('list_user')
