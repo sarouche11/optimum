@@ -114,6 +114,58 @@
 
                                     
                                 </div>
+
+
+                                {% if purchase.status == "rejected" and refund %}
+
+                                    <div class="table-responsive mt-4">
+                                        <table class="table table-bordered">
+
+                                            <thead class="table-success">
+                                                <tr>
+                                                    <th colspan="4" class="text-center fw-bold">
+                                                        Refund Information
+                                                    </th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                                <tr>
+                                                    <td colspan="3" class="fw-semibold">
+                                                        Refunded Amount (DA)
+                                                    </td>
+                                                    <td class="text-start fw-semibold text-success">
+                                                        + {{ refund.montant }}
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="3">
+                                                        Refund Date
+                                                    </td>
+                                                    <td class="text-start">
+                                                        {{ refund.created_at|date:"d-m-Y H:i" }}
+                                                    </td>
+                                                </tr>
+
+                                                <tr class="table-light">
+                                                    <td colspan="3" class="fw-bold">
+                                                        New Balance (DA)
+                                                    </td>
+                                                    <td class="text-start fw-bold">
+                                                        {{ reste|add:refund.montant }} DA
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                {% endif %}
+
+
+
                                 <hr>
 
 
@@ -131,6 +183,8 @@
                     </div>
                 </div>
 
+
+               {% if purchase.status != "rejected" %}
                 <div class="row g-4"> <!-- g-4 ajoute de l'espacement entre les colonnes -->
 
                     <!-- Codes achetés Carte 1 -->
@@ -250,6 +304,7 @@
                      {% endif %}
                    
                 </div>
+                {% endif %}
 
                 <!-- ============================================================== -->
                 <!-- End PAge Content -->

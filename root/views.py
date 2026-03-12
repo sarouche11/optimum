@@ -760,9 +760,9 @@ def list_transaction_by_code(request,id):
     except:
         per_page = 10
 
-    # ➜ On récupère les code pour chaque produit
    
-    montant = Paiement.objects.filter(profil=profil)
+   
+    montant = Paiement.objects.filter(profil=profil,montant__gt=0).order_by('-created_at')
 
     # Recherche par code
     if search:
@@ -901,16 +901,24 @@ def admin_detail_achats(request, codeCP):
     # Codes liés à cet achat
     codes = purchase.codes.all()
 
+     # récupérer remboursement
+    refund = Paiement.objects.filter(
+        profil=purchase.profil,
+        type=Paiement.TypePaiement.REFUND,
+        montant=purchase.total_price
+    ).order_by('-created_at').first()
+
     context = {
         'purchase': purchase,
         'codes': codes,
+        'refund':refund
     }
 
     return render(request, 'admin/purchase/detail_achat_user.html', context)
 
 
 
-
+@user_is_in_group('admin')
 def edit_request(request, pk):
     request_achat = get_object_or_404(ProductAchat, pk=pk)
 
@@ -929,12 +937,15 @@ def edit_request(request, pk):
                 # Remboursement
                 Paiement.objects.create(
                     profil=profil,
-                    montant=request_achat.total_price,  # positif pour remboursement
+                    montant=request_achat.total_price,  
+                    type=Paiement.TypePaiement.REFUND,
                     active=True
                 )
 
+                creer_notification_refund(updated_purchase)
+
             updated_purchase.save()  # Enregistre les modifications
-            creer_notification_refund(updated_purchase)
+            
 
             # Redirection vers la liste des achats après mise à jour
             return redirect('list_achat_user')
@@ -1198,10 +1209,18 @@ def detail_achat(request, codeCP):
     purchase = get_object_or_404(ProductAchat, codeCP=codeCP, profil=profil)
     codes = purchase.codes.all()
 
+     # récupérer remboursement
+    refund = Paiement.objects.filter(
+        profil=profil,
+        type=Paiement.TypePaiement.REFUND,
+        montant=purchase.total_price
+    ).order_by('-created_at').first()
+
     context = {
         'purchase': purchase,
         'codes': codes,
-        'reste': purchase.reste_after_purchase  # reste fixe au moment de l'achat
+        'reste': purchase.reste_after_purchase ,
+        'refund': refund
     }
 
     return render(request, 'reseller/detail_achat.html', context)

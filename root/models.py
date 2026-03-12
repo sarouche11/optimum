@@ -93,9 +93,15 @@ def decrease_product_stock(sender, instance, **kwargs):
 
 
 class Paiement(models.Model):
+
+    class TypePaiement(models.TextChoices):
+        PAYMENT = "payment", "Paiement"
+        REFUND = "refund", "Remboursement"
+
     codeP = models.CharField(max_length=100, unique=True, default=generate_code)
     profil = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='paiements')
     montant = models.DecimalField(max_digits=10, decimal_places=2)
+    type = models.CharField(max_length=20, choices=TypePaiement.choices, default=TypePaiement.PAYMENT)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -57,6 +57,7 @@
                                         data-page-size="10">
                                         <thead>
                                             <tr>
+                                                <th>Type</th>
                                                 <th>Montant (DA)</th>
                                                 <th>Date</th>
 
@@ -66,14 +67,19 @@
                                         </thead>
                                         <tbody>
                                             {% for paiment in page_obj %}
-                                            <tr>
-
+                                              <tr>
+                                               {% if paiment.type == 'refund' %}
+                                                <td ><span class="label label-warning" style="font-size: 12px;">Refund</span></td>
+                                                {% elif paiment.type == 'payment' %}
+                                                <td ><span class="label label-success" style="font-size: 12px;">Payment</span></td>
+                                                {% endif %}
                                                 <td>{{ paiment.montant }}</td>
 
-                                                <td>{{ paiment.created_at|date:'d-m-Y à H:i' }}</td>
+                                                <td>{{ paiment.created_at|date:'d-m-Y' }}</td>
 
 
                                             </tr>
+                                            
                                             {% endfor %}
                                         </tbody>
 
