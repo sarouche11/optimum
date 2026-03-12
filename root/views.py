@@ -24,7 +24,9 @@ from .utils import creer_notification_request,creer_notification_refund
 from django.views.decorators.http import require_POST
 from .context_processors import get_notifications
 from django.contrib.auth.decorators import login_required
-
+import os
+from django.core.mail import EmailMultiAlternatives
+from email.mime.image import MIMEImage
 
 
 
@@ -85,6 +87,7 @@ def list_user(request):
 
 # activation du compte 
 @user_is_in_group('admin')
+@user_is_in_group('admin')
 def toggle_profile_status(request, profil_id):
     profil = get_object_or_404(Profile, id=profil_id)
 
@@ -92,16 +95,20 @@ def toggle_profile_status(request, profil_id):
     profil.active = not profil.active
     profil.save()
 
-        # ✅ Si le compte vient d’être activé → envoyer email
-    if profil.active:
-        subject = "Your Account Has Been Activated"
-        body = f"""
+    # Sujet du mail
+    subject = "Your Account Has Been Activated" if profil.active else "Your Account Has Been Deactivated"
+
+    # Chemin local vers le logo
+    logo_path = os.path.join(settings.BASE_DIR, "staticfiles/assets/images/logoB.png")
+
+    # Contenu HTML du mail
+    body = f"""
     <html>
     <body style="font-family: Arial, sans-serif; color: #333;">
         <p>Hello {profil.user.username},</p>
 
-        <p>Your account has been <strong>activated</strong> by the administrator.</p>
-        <p>You can now log in to the platform.</p>
+        <p>Your account has been <strong>{'activated' if profil.active else 'deactivated'}</strong>{' by the administrator' if profil.active else ''}.</p>
+        {'<p>You can now log in to the platform.</p>' if profil.active else '<p>Please contact your administrator for more information.</p>'}
 
         <br/>
         <p>Best regards,<br/>
@@ -109,34 +116,8 @@ def toggle_profile_status(request, profil_id):
 
         <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
 
-        <!-- Logo -->
-        <img src="https://panel.digiddel.com/panel/optimum/ecommerce/root/staticfiles/assets/images" alt="Company Logo" style="height:50px;">
-
-        <!-- Contact info -->
-        <p style="font-size: 12px; color: #555;">
-        Email: contact@yourcompany.com | Phone: +123 456 7890 | Website: <a href="https://panel.digideel.com">Digideel</a>
-        </p>
-    </body>
-    </html>
-    """
-    else:
-        subject = "Your Account Has Been Deactivated"
-        body = f"""
-    <html>
-    <body style="font-family: Arial, sans-serif; color: #333;">
-        <p>Hello {profil.user.username},</p>
-
-        <p>Your account has been <strong>deactivated</strong>.</p>
-        <p>Please contact your administrator for more information.</p>
-
-        <br/>
-        <p>Best regards,<br/>
-        <strong>The Platform Team</strong></p>
-
-        <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
-
-        <!-- Logo -->
-        <img src="https://panel.digiddel.com/panel/optimum/ecommerce/root/staticfiles/assets/images" alt="Company Logo" style="height:50px;">
+        <!-- Logo intégré via CID -->
+        <img src="cid:logoB" alt="Company Logo" style="height:50px;"/>
 
         <!-- Contact info -->
         <p style="font-size: 12px; color: #555;">
@@ -146,11 +127,18 @@ def toggle_profile_status(request, profil_id):
     </html>
     """
 
-    profil.user.email_user(
-        subject=subject,
-        message="",  
-        html_message=body
-    )
+    # Création et envoi du mail avec image intégrée
+    msg = EmailMultiAlternatives(subject, "", settings.DEFAULT_FROM_EMAIL, [profil.user.email])
+    msg.attach_alternative(body, "text/html")
+
+    with open(logo_path, 'rb') as f:
+        img = MIMEImage(f.read())
+        img.add_header('Content-ID', '<logoB>')
+        img.add_header('Content-Disposition', 'inline', filename='logoB.png')
+        msg.attach(img)
+
+    msg.send()
+
     messages.success(
         request,
         f"The profile of {profil.user.username} has been "
