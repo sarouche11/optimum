@@ -110,7 +110,7 @@ def toggle_profile_status(request, profil_id):
         <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
 
         <!-- Logo -->
-        <img src="https://panel.digiddel.com/panel/optimum/ecommerce/root/staticfiles/assets/images" alt="Company Logo" style="height:50px;">
+        <img src="https://panel.digiddel.com/staticfiles/assets/images" alt="Company Logo" style="height:50px;">
 
         <!-- Contact info -->
         <p style="font-size: 12px; color: #555;">
@@ -136,7 +136,7 @@ def toggle_profile_status(request, profil_id):
         <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
 
         <!-- Logo -->
-        <img src="https://panel.digiddel.com/panel/optimum/ecommerce/root/staticfiles/assets/images" alt="Company Logo" style="height:50px;">
+        <img src="https://panel.digiddel.com/panel/staticfiles/assets/images" alt="Company Logo" style="height:50px;">
 
         <!-- Contact info -->
         <p style="font-size: 12px; color: #555;">
