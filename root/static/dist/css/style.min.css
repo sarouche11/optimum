@@ -23411,13 +23411,14 @@ fieldset:disabled a.btn {
     color: #fff
 }
 
+/* color item header  */
 .navbar-dark .navbar-nav .nav-link {
-    color: rgba(255, 255, 255, .8)
+    color: #343a40
 }
 
 .navbar-dark .navbar-nav .nav-link:focus,
 .navbar-dark .navbar-nav .nav-link:hover {
-    color: #fff
+    color: #343a40
 }
 
 .navbar-dark .navbar-nav .nav-link.disabled {
@@ -23428,7 +23429,7 @@ fieldset:disabled a.btn {
 .navbar-dark .navbar-nav .nav-link.active,
 .navbar-dark .navbar-nav .nav-link.show,
 .navbar-dark .navbar-nav .show>.nav-link {
-    color: #fff
+    color: #343a40
 }
 
 .navbar-dark .navbar-toggler {
@@ -28909,17 +28910,19 @@ html[dir=ltr] body .p-l-0 {
     background: #6659f7
 }
 
-/* couleur header cote logo  */
+/* color header cote logo  */
 #main-wrapper[data-layout=vertical] .topbar .top-navbar .navbar-header[data-logobg=skin5],
 #main-wrapper[data-layout=horizontal] .topbar .top-navbar .navbar-header[data-logobg=skin5] {
     /* background: rgba(20, 20, 20, 0.8); 
     color: #fff;  */
-    background-color: #F2F2F2;
+    /* background-color: #F2F2F2; */
     background-image: url('/static/assets/images/logom.png');
     background-size: 60% 70%;  /* prend toute la largeur et hauteur du header */
     background-repeat: no-repeat;
     background-position: center;
     height: 64px; 
+
+    background-color: #333333
     
   
    
@@ -28958,9 +28961,22 @@ html[dir=ltr] body .p-l-0 {
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link i,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .nav-small-cap,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link i {
-    color: #000
+    color: white
     
 }
+
+
+#main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] 
+.sidebar-nav ul .sidebar-item .sidebar-link.active i,
+#main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] 
+.sidebar-nav ul .sidebar-item .sidebar-link.active i {
+
+    color: #171717 !important; /* 🔥 force la couleur */
+}
+
+
+
+
 
 #main-wrapper[data-layout=vertical] .topbar .navbar-collapse[data-navbarbg=skin1],
 #main-wrapper[data-layout=vertical] .topbar[data-navbarbg=skin1],
@@ -28991,14 +29007,14 @@ html[dir=ltr] body .p-l-0 {
 }
 
 
-/* couleur header 2eme partie  */
+/* color header 2eme partie  */
 #main-wrapper[data-layout=vertical] .topbar .navbar-collapse[data-navbarbg=skin5],
 #main-wrapper[data-layout=vertical] .topbar[data-navbarbg=skin5],
 #main-wrapper[data-layout=horizontal] .topbar .navbar-collapse[data-navbarbg=skin5],
 #main-wrapper[data-layout=horizontal] .topbar[data-navbarbg=skin5] {
 
-    background: rgba(20, 20, 20, 0.8); /* gris/noir transparent */
-    color: #fff; /* texte blanc pour contraste */
+    background: #fff;
+    color: #343a40 ;
 }
 
 
@@ -29044,26 +29060,47 @@ html[dir=ltr] body .p-l-0 {
     background: #233242
 }
 
+/* color sidebar background  */
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6],
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6],
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul {
-    background: #fff
+    background: #333333
 }
 
 /* color text sidebar  */
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link {
-    color: #000;
-    opacity: .7
+    color: white;
+   
 }
 
-#main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link.active,
-#main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link:hover,
-#main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link.active,
-#main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link:hover {
-    opacity: 1
+#main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] 
+.sidebar-nav ul .sidebar-item .sidebar-link.active,
+#main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] 
+.sidebar-nav ul .sidebar-item .sidebar-link:hover,
+#main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] 
+.sidebar-nav ul .sidebar-item .sidebar-link.active,
+#main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] 
+.sidebar-nav ul .sidebar-item .sidebar-link:hover {
+
+    opacity: 1;
+    background-color: rgba(248, 244, 240, 0.85); /* un peu plus visible */
+    color: #171717;
+    font-weight: 400;
+
+    border-radius: 9px; /* 🔥 important pour l'effet */
+   
+   
+
+    transition: all 0.3s ease;
 }
+
+
+
+
+
+
 
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav .has-arrow::after,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav .has-arrow::after {
@@ -37319,7 +37356,7 @@ html[dir=rtl] #main-wrapper[data-sidebartype=overlay].show-sidebar .left-sidebar
 
 
 .user-profile {
-    background: #f8f9fa;
+    background: rgba(248, 249, 250, 0.8);
     border-radius: 10px;
     border: 1px solid #e5e7eb;
     margin-top: 20px;          /* réduit la largeur et centré */
