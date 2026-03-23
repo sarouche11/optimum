@@ -5,7 +5,7 @@
 *.pyo
 __pycache__/
 
-media/
+/media/
 
 # Django
 *.sqlite3
