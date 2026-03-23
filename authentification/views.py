@@ -12,6 +12,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from django.contrib.auth import update_session_auth_hash
+from authentification.decorators import user_is_in_group
 
 # Create your views here.
 
@@ -247,6 +248,10 @@ def register_view(request):
     }    
 
     return render(request, 'register.html', context)
+
+
+
+
 
 
 

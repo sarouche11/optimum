@@ -28961,7 +28961,7 @@ html[dir=ltr] body .p-l-0 {
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link i,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .nav-small-cap,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link i {
-    color: white
+    color: #fff
     
 }
 
@@ -28971,7 +28971,26 @@ html[dir=ltr] body .p-l-0 {
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] 
 .sidebar-nav ul .sidebar-item .sidebar-link.active i {
 
-    color: #171717 !important; /* 🔥 force la couleur */
+    color: #fff !important; /* 🔥 force la couleur */
+}
+
+
+/* Sous-menu (li enfants) */
+.sidebar-nav .first-level .sidebar-item .sidebar-link {
+    background: transparent !important;
+    color: #fff;
+}
+
+/* Sous-menu actif */
+.sidebar-nav .first-level .sidebar-item.active .sidebar-link {
+    color: #fff;
+    background: transparent !important;
+}
+
+/* Hover */
+.sidebar-nav .first-level .sidebar-item .sidebar-link:hover {
+    color: #fff;
+    background: transparent !important;
 }
 
 
@@ -29057,7 +29076,7 @@ html[dir=ltr] body .p-l-0 {
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin5] ul,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin5],
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin5] ul {
-    background: #233242
+    background: #233242;
 }
 
 /* color sidebar background  */
@@ -29068,7 +29087,7 @@ html[dir=ltr] body .p-l-0 {
     background: #333333
 }
 
-/* color text sidebar  */
+/* color sidebar text   */
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item .sidebar-link {
     color: white;
@@ -29085,14 +29104,9 @@ html[dir=ltr] body .p-l-0 {
 .sidebar-nav ul .sidebar-item .sidebar-link:hover {
 
     opacity: 1;
-    background-color: rgba(248, 244, 240, 0.85); /* un peu plus visible */
-    color: #171717;
+    background-color: rgba(0, 0, 0, .4); /* un peu plus visible */
+    color: #fff;
     font-weight: 400;
-
-    border-radius: 9px; /* 🔥 important pour l'effet */
-   
-   
-
     transition: all 0.3s ease;
 }
 
@@ -29104,7 +29118,7 @@ html[dir=ltr] body .p-l-0 {
 
 #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav .has-arrow::after,
 #main-wrapper[data-layout=horizontal] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav .has-arrow::after {
-    border-color: #000
+    border-color: #fff
 }
 
 .card-group .card,
@@ -29621,7 +29635,8 @@ ul.list-style-none li a:hover {
 .card .card-title {
     position: relative;
     font-weight: 400;
-    margin-bottom: 10px
+    margin-bottom: 10px;
+    color: #000;
 }
 
 
@@ -30284,10 +30299,12 @@ label {
     margin: 0 5px
 }
 
+
+/* sidebar border left   */
 .sidebar-nav>#sidebarnav>.sidebar-item.selected>.sidebar-link,
 .sidebar-nav>#sidebarnav>.sidebar-item>.sidebar-link:hover {
     background: rgba(0, 0, 0, .1);
-    border-left: 2px solid #137eff
+    border-left: 2px solid grey
 }
 
 .sidebar-nav>#sidebarnav>.sidebar-item>.sidebar-link {

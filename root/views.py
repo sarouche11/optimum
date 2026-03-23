@@ -32,13 +32,103 @@ from authentification.models import Profile
 from django.contrib.auth.decorators import user_passes_test
 
 from django.http import HttpResponseForbidden
-import logging
+from user_agents import parse
+from authentification.forms import AddProfileForm
+from django.contrib.auth.models import User,Group
+from django.contrib.auth.hashers import make_password 
 
 
 
 
 #================================== admin ===============================
 
+
+@user_is_in_group('admin')  
+def add_user(request):
+    if request.method == 'POST':
+        form = AddProfileForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Champs du formulaire
+                    username = form.cleaned_data['username']
+                    first_name = form.cleaned_data['first_name']
+                    last_name = form.cleaned_data['last_name']
+                    email = form.cleaned_data['email']
+                    password = form.cleaned_data['password']
+
+                    # 1️⃣ Création du User
+                    user = User.objects.create(
+                        username=username,
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email,
+                        password=make_password(password),
+                    )
+
+                    # 2️⃣ Attribution du groupe
+                    group, created = Group.objects.get_or_create(name='reseller')
+                    user.groups.add(group)
+
+                    # 3️⃣ Création du Profile lié
+                    profile = form.save(commit=False)
+                    profile.user = user
+                    profile.active = True
+                    profile.save()
+
+                    # 4️⃣ Envoi du mail HTML avec logo
+                    logo_url = "https://ezrecnx.stripocdn.email/content/guids/CABINET_2ab71862352e04a3ba4522ed2a64ecde2ee6214a6a6abef3d49eb75423be291d/images/logob.png"
+
+                    subject = "Your Account Has Been Created"
+                    html_content = f"""
+                    <html>
+                    <body style="font-family: Arial, sans-serif; color: #333;">
+                        <p>Hello {first_name},</p>
+
+                        <p>Your account has been <strong>created</strong> by the admin on our platform.</p>
+
+                        <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
+
+                        <p><strong>User Information:</strong></p>
+                        <ul>
+                            <li>Full Name: {first_name} {last_name}</li>
+                            <li>Username: {username}</li>
+                            <li>Email: {email}</li>
+                            <li>Password: {password}</li>
+                        </ul>
+
+                        <p>You can now log in using your credentials.</p>
+
+                        <br/>
+                        <p>Best regards,<br/>
+                        <strong>Your Platform Team</strong></p>
+
+                        <img src="{logo_url}" alt="Platform Logo" style="height:50px; margin-top:20px;"/>
+                    </body>
+                    </html>
+                    """
+
+                    msg = EmailMultiAlternatives(
+                        subject=subject,
+                        body="",  # corps texte vide
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[email],
+                    )
+                    msg.attach_alternative(html_content, "text/html")
+                    msg.send()
+
+                    messages.success(request, f"User {username} added successfully!")
+                    return redirect('add_user')
+
+            except Exception as e:
+                messages.error(request, f"Erreur lors de l'ajout de l'utilisateur : {e}")
+        else:
+            messages.error(request, "Le formulaire est invalide. Vérifiez les champs.")
+    else:
+        form = AddProfileForm()
+
+    context = {'form': form}
+    return render(request, 'admin/user/add_user.html', context)
 # liste user 
 @user_is_in_group('admin')
 def list_user(request):
@@ -90,7 +180,7 @@ def list_user(request):
        'querystring': querystring,
        'per_page': per_page,
     }
-    return render(request,'admin/list_user.html',context)
+    return render(request,'admin/user/list_user.html',context)
 
 
 
@@ -107,16 +197,18 @@ def toggle_profile_status(request, profil_id):
     # Sujet du mail
     subject = "Your Account Has Been Activated" if profil.active else "Your Account Has Been Deactivated"
 
-    # Chemin local vers le logo
-    logo_path = os.path.join(settings.BASE_DIR, "staticfiles/assets/images/logoB.png")
+    # Lien direct vers le logo Stripo (CDN)
+    logo_url = "https://ezrecnx.stripocdn.email/content/guids/CABINET_2ab71862352e04a3ba4522ed2a64ecde2ee6214a6a6abef3d49eb75423be291d/images/logob.png"
 
-    # Contenu HTML du mail
+    # Contenu HTML
     body = f"""
     <html>
     <body style="font-family: Arial, sans-serif; color: #333;">
         <p>Hello {profil.user.username},</p>
 
-        <p>Your account has been <strong>{'activated' if profil.active else 'deactivated'}</strong>{' by the administrator' if profil.active else ''}.</p>
+        <p>Your account has been <strong>{'activated' if profil.active else 'deactivated'}</strong>
+        {'by the administrator.' if profil.active else '.'}</p>
+
         {'<p>You can now log in to the platform.</p>' if profil.active else '<p>Please contact your administrator for more information.</p>'}
 
         <br/>
@@ -125,29 +217,23 @@ def toggle_profile_status(request, profil_id):
 
         <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
 
-        <!-- Logo intégré via CID -->
-        <img src="cid:logoB" alt="Company Logo" style="height:50px;"/>
-
-        <!-- Contact info -->
-        <p style="font-size: 12px; color: #555;">
-        Email: contact@yourcompany.com | Phone: +123 456 7890 | Website: <a href="https://panel.digideel.com">Digideel</a>
-        </p>
+        <!-- Logo via Stripo CDN -->
+        <img src="{logo_url}" alt="Company Logo" style="height:50px;"/>
     </body>
     </html>
     """
 
-    # Création et envoi du mail avec image intégrée
-    msg = EmailMultiAlternatives(subject, "", settings.DEFAULT_FROM_EMAIL, [profil.user.email])
+    # Création et envoi du mail
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body="",  # corps texte vide, on envoie HTML
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[profil.user.email]
+    )
     msg.attach_alternative(body, "text/html")
-
-    with open(logo_path, 'rb') as f:
-        img = MIMEImage(f.read())
-        img.add_header('Content-ID', '<logoB>')
-        img.add_header('Content-Disposition', 'inline', filename='logoB.png')
-        msg.attach(img)
-
     msg.send()
 
+    # Message flash
     messages.success(
         request,
         f"The profile of {profil.user.username} has been "
@@ -664,61 +750,6 @@ def edit_activation_code(request, pk):
 
 
 
-# liste code 
-# Vérification admin
-def admin_check(user):
-    return user.is_active and user.groups.filter(name='admin').exists()
-
-@user_passes_test(admin_check)
-def list_activation_code(request, id):
-    # Récupère le produit
-    product = get_object_or_404(Product, id=id)
-
-    # Double vérification côté vue
-    if not request.user.groups.filter(name='admin').exists():
-        return HttpResponseForbidden("You are not allowed to view this page.")
-
-    # Enregistrement du log dans la base
-    ActivationCodeLog.objects.create(
-        user=request.user,
-        product_id=product.id,
-        action="Accessed activation codes"
-    )
-
-    # Gestion recherche
-    search = request.GET.get('search', '')
-
-    # Gestion pagination
-    per_page = request.GET.get('per_page', 10)
-    try:
-        per_page = int(per_page)
-    except ValueError:
-        per_page = 10
-
-    # Récupère tous les codes liés au produit
-    codes = ActivationCode.objects.filter(product=product).order_by('-created_at')
-
-    # Filtre par recherche si nécessaire
-    if search:
-        codes = codes.filter(code__icontains=search).distinct()
-
-    # Pagination
-    paginator = Paginator(codes, per_page)
-    page_number = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_number)
-
-    # Context pour le template
-    context = {
-        'page_obj': page_obj,
-        'search': search,
-        'per_page': per_page,
-        'product': product,
-    }
-
-    return render(request, 'admin/code/list_code_activation.html', context)
-
-
-
 
 # @user_is_in_group('admin')
 # def list_activation_by_product(request):
@@ -1054,6 +1085,134 @@ def assign_categories(request, profil_id):
    }     
 
     return render(request, 'admin/category/assign_categories.html', context)
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def get_browser(request):
+    ua_string = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = parse(ua_string)
+    # Retourne navigateur + OS
+    return f"{user_agent.browser.family} - {user_agent.os.family}"
+
+@user_is_in_group('admin')
+def log_code(request):
+    #-------------------  search -----------
+    search = request.GET.get('search', '')
+
+    #----------------- récupération du per_page --------
+    per_page = request.GET.get('per_page', 10) 
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
+    
+    log_code = ActivationCodeLog.objects.all().order_by('timestamp')
+
+
+    # -----------------------------------------
+    if search:
+        log_code = log_code.filter(
+           Q(action__icontains=search)
+        )
+
+    
+
+    # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode() 
+
+   
+    paginator = Paginator(log_code, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number) 
+    
+    
+
+    context = {
+       'page_obj': page_obj,
+       'search': search,
+       'querystring': querystring,
+       'per_page': per_page,
+    }
+    return render(request,'admin/code/list_log.html',context)
+
+
+
+# liste code 
+# Vérification admin
+def admin_check(user):
+    return user.is_active and user.groups.filter(name='admin').exists()
+
+@user_passes_test(admin_check)
+def list_activation_code(request, id):
+    # Récupère le produit
+    product = get_object_or_404(Product, id=id)
+
+    # Double vérification côté vue
+    if not request.user.groups.filter(name='admin').exists():
+        return HttpResponseForbidden("You are not allowed to view this page.")
+    
+    ip = get_client_ip(request)
+    browser = get_browser(request)
+
+    # Enregistrement du log dans la base
+    ActivationCodeLog.objects.create(
+        user=request.user,
+        product_id=product.id,
+        action="Accessed activation codes",
+        ip_address=ip,
+        browser=browser
+    )
+
+    # Gestion recherche
+    search = request.GET.get('search', '')
+
+    # Gestion pagination
+    per_page = request.GET.get('per_page', 10)
+    try:
+        per_page = int(per_page)
+    except ValueError:
+        per_page = 10
+
+    # Récupère tous les codes liés au produit
+    codes = ActivationCode.objects.filter(product=product).order_by('-created_at')
+
+    # Filtre par recherche si nécessaire
+    if search:
+        codes = codes.filter(code__icontains=search).distinct()
+
+    # Pagination
+    paginator = Paginator(codes, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    # Context pour le template
+    context = {
+        'page_obj': page_obj,
+        'search': search,
+        'per_page': per_page,
+        'product': product,
+    }
+
+    return render(request, 'admin/code/list_code_activation.html', context)
+
+
+
+
+
+
+
 
 
 

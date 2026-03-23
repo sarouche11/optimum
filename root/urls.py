@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (list_user ,toggle_profile_status,
+from .views import (list_user ,add_user,toggle_profile_status,
                     add_category,list_category,edit_category,deactivate_category,activate_category,
                     list_category_deactivate,
                     
@@ -9,7 +9,7 @@ from .views import (list_user ,toggle_profile_status,
                     add_product,list_product,list_product_deactivate,activate_product,
                     duplicate_product,edit_product,deactivate_product,product_list_by_id_deactivate,
 
-                    add_activation_code,edit_activation_code,list_activation_code,
+                    add_activation_code,edit_activation_code,list_activation_code,log_code,
 
                     add_montant,list_montant,list_transaction_by_code,
                     
@@ -32,6 +32,7 @@ urlpatterns = [
 
     # admin
     path('list_user/', list_user, name='list_user'),
+    path('add_user/', add_user, name='add_user'),
     path('toggle-profile/<int:profil_id>/',toggle_profile_status, name='toggle_profile_status'),
 
     path('add_category/', add_category, name='add_category'),
@@ -62,6 +63,7 @@ urlpatterns = [
     path('list_activation_code/<int:id>', list_activation_code, name='list_activation_code'),
     path('add_activation/', add_activation_code, name='add_activation'),
     path('edit_activation_code/<int:pk>', edit_activation_code, name='edit_activation_code'),
+    path('log_code', log_code, name='log_code'),
 
     # path('list_activation/', list_activation_by_product, name='list_activation'),
 

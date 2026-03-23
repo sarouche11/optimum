@@ -172,10 +172,13 @@ class Notification(models.Model):
 
 class ActivationCodeLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product_id = models.IntegerField()
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     action = models.CharField(max_length=255, default="Accessed activation codes")
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    browser = models.TextField(null=True, blank=True)
+
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - Product {self.product_id} - {self.timestamp}"    
+        return f"{self.user.username} - Product {self.product} - {self.timestamp}"    
 

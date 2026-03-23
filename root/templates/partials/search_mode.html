@@ -5,7 +5,7 @@
    
 
     <!-- 🔥 Sélecteur nombre d’éléments -->
-    <label style="margin-top: 20px;">Afficher :</label>
+    <label style="margin-top: 20px;">Display :</label>
     <select id="perPageSelect" class="form-show w-auto" name="per_page">
       <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
       <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
@@ -26,7 +26,7 @@
           style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 18px;"></i> -->
 
         <!-- Input -->
-        <input type="text" class="input-search border rounded-start" placeholder="Recherche..."
+        <input type="text" class="input-search border rounded-start" placeholder="Search..."
           style="padding-left: 10px; " name="search" value="{{ search }}" />
 
 
