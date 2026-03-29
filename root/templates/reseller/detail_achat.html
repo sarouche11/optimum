@@ -87,7 +87,7 @@
                                                 <th>Image</th>
                                                 <th>Product Name</th>
                                                 <th>Quantity</th>
-                                                <th>Price (DA)</th>
+                                                <th>Price</th>
 
 
 
@@ -102,12 +102,12 @@
 
                                             </tr>
                                             <tr>
-                                                <td colspan="3" class="font-500" align="right">Total Amount (DA)</td>
+                                                <td colspan="3" class="font-500" align="right">Total Amount</td>
                                                 <td class="font-500">{{ purchase.total_price }}</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="3" class="font-500" align="right">Rest (DA)</td>
-                                                <td class="font-500">{{ reste|floatformat:2 }}</td>
+                                                <td colspan="3" class="font-500" align="right">Rest</td>
+                                                <td class="font-500">{{ reste }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -133,7 +133,7 @@
 
                                                 <tr>
                                                     <td colspan="3" class="fw-semibold">
-                                                        Refunded Amount (DA)
+                                                        Refunded Amount 
                                                     </td>
                                                     <td class="text-start fw-semibold text-success">
                                                         + {{ refund.montant }}
@@ -151,10 +151,10 @@
 
                                                 <tr class="table-light">
                                                     <td colspan="3" class="fw-bold">
-                                                        New Balance (DA)
+                                                        New Balance 
                                                     </td>
                                                     <td class="text-start fw-bold">
-                                                        {{ reste|add:refund.montant }} DA
+                                                        {{ reste|add:refund.montant }} 
                                                     </td>
                                                 </tr>
 

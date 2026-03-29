@@ -6,7 +6,7 @@ from .models import (Category,SubCategory,Product,ActivationCode,Paiement,
 from .forms import (CategoryForm, SubCategoryForm, 
                     ProductForm, ActivationCodeForm,EditActivationCodeForm,ProductRequestUpdateForm,
                     UserCategoryForm)
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
@@ -36,6 +36,7 @@ from user_agents import parse
 from authentification.forms import AddProfileForm
 from django.contrib.auth.models import User,Group
 from django.contrib.auth.hashers import make_password 
+
 
 
 
@@ -129,9 +130,24 @@ def add_user(request):
 
     context = {'form': form}
     return render(request, 'admin/user/add_user.html', context)
+
+
 # liste user 
 @user_is_in_group('admin')
 def list_user(request):
+
+    user = request.user
+
+    # 🔹 PARTIE STATS
+    achats = ProductAchat.objects.all()
+
+    stats = achats.aggregate(
+        pending=Count('id', filter=Q(status=StatusAchat.PENDING)),
+        in_progress=Count('id', filter=Q(status=StatusAchat.IN_PROGRESS)),
+        completed=Count('id', filter=Q(status=StatusAchat.COMPLETED)),
+        rejected=Count('id', filter=Q(status=StatusAchat.REJECTED)),
+        total=Count('id')
+    )
     #-------------------  search -----------
     search = request.GET.get('search', '')
 
@@ -179,6 +195,7 @@ def list_user(request):
        'search': search,
        'querystring': querystring,
        'per_page': per_page,
+       'stats': stats,
     }
     return render(request,'admin/user/list_user.html',context)
 
@@ -251,7 +268,7 @@ def add_category(request):
         form = CategoryForm(request.POST, request.FILES)  
         if form.is_valid():
             category = form.save(commit=False)
-            category.active = True  # <-- forcer active à True
+            category.active = True  
             category.save()
             return redirect('list_category')  
     else:
@@ -267,6 +284,19 @@ def add_category(request):
 @user_is_in_group('admin','reseller')
 def list_category(request):
 
+    user = request.user
+
+    # 🔹 PARTIE STATS
+    achats = ProductAchat.objects.filter(profil__user=user)
+
+    stats = achats.aggregate(
+        pending=Count('id', filter=Q(status=StatusAchat.PENDING)),
+        in_progress=Count('id', filter=Q(status=StatusAchat.IN_PROGRESS)),
+        completed=Count('id', filter=Q(status=StatusAchat.COMPLETED)),
+        rejected=Count('id', filter=Q(status=StatusAchat.REJECTED)),
+        total=Count('id')
+    )
+
     if request.user.groups.filter(name='admin').exists():
         # admin voit toutes les catégories
         category = Category.objects.filter(active=True).order_by('created_at')
@@ -277,7 +307,8 @@ def list_category(request):
         category = profil.categories.filter(active=True).order_by('created_at')
 
     context = {
-        'category': category
+        'category': category,
+        'stats': stats
     }
 
     return render(request, 'admin/category/list_category.html', context)
@@ -382,9 +413,45 @@ def add_subcategory(request):
 # list subcategory 
 @user_is_in_group('admin')
 def list_subcategory(request):
+     #-------------------  search -----------
+    search = request.GET.get('search', '')
+
+    #----------------- récupération du per_page --------
+    per_page = request.GET.get('per_page', 10) 
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
     subcategory = SubCategory.objects.all().filter(active=True).order_by('created_at')
+
+
+        # -----------------------------------------
+    if search:
+        subcategory = subcategory.filter(
+           Q(name__icontains=search)
+        )
+
+    
+
+    # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode() 
+
+   
+    paginator = Paginator(subcategory, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number) 
+
     context = {
-        'subcategory':subcategory
+       'page_obj': page_obj,
+       'search': search,
+       'querystring': querystring,
+       'per_page': per_page,
     }
 
     return render(request, 'admin/subcategory/list_subcategory.html',context)
@@ -397,9 +464,44 @@ def list_subcategory(request):
 # list subcategory 
 @user_is_in_group('admin')
 def list_subcategory_deactivate(request):
+      #-------------------  search -----------
+    search = request.GET.get('search', '')
+
+    #----------------- récupération du per_page --------
+    per_page = request.GET.get('per_page', 10) 
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
     subcategory = SubCategory.objects.all().filter(active=False).order_by('created_at')
+
+         # -----------------------------------------
+    if search:
+        subcategory = subcategory.filter(
+           Q(name__icontains=search)
+        )
+
+    
+
+    # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode() 
+
+   
+    paginator = Paginator(subcategory, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number) 
+
     context = {
-        'subcategory':subcategory
+       'page_obj': page_obj,
+       'search': search,
+       'querystring': querystring,
+       'per_page': per_page,
     }
 
     return render(request, 'admin/subcategory/list_subcategory_deactivate.html',context)
@@ -886,12 +988,47 @@ def list_transaction_by_code(request,id):
 # list subcateogry by id 
 @user_is_in_group('admin', 'reseller')
 def subcategory_list_by_id(request, cat_id):
+      #-------------------  search -----------
+    search = request.GET.get('search', '')
+
+    #----------------- récupération du per_page --------
+    per_page = request.GET.get('per_page', 10) 
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
     category = Category.objects.get(id=cat_id)
     subcategory = category.subcategories.filter(active = True)
 
+
+      # -----------------------------------------
+    if search:
+        subcategory = subcategory.filter(
+           Q(name__icontains=search)
+        )
+
+    
+
+    # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode() 
+
+   
+    paginator = Paginator(subcategory, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number) 
+
     context = {
         'category': category,
-        'subcategory': subcategory
+         'page_obj': page_obj,
+       'search': search,
+       'querystring': querystring,
+       'per_page': per_page,
     }
 
     return render(request, 'admin/subcategory/list_subcategory.html', context)
@@ -1505,3 +1642,5 @@ def mark_notifications_as_read(request):
     else:
         Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     return JsonResponse({'status': 'ok'})
+
+

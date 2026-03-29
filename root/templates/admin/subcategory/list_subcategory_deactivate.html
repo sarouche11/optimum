@@ -34,60 +34,113 @@
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
-            <div class="page-breadcrumb">
+        
+
+
+            <!-- table  -->
+
+             <div class="container-fluid">
+                {% include 'partials/messages.html' %}
                 <div class="row">
-                    <div class="col-5 align-self-center">
-                        <h4 class="page-title"><i class="fas fa-ban"></i> SubCategory</h4>
-                    </div>
-                   
-                </div>
-            </div>
-            
-
-            <div class="container-fluid">
-                 {% include 'partials/messages.html' %}
-                <div class="row gx-1 gy-1">
-                    {% for subcat in subcategory %}
-                    <div class="col-lg-3 col-md-6 mb-2 ">
+                    <div class="col-12">
                         <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title"><i class="fas fa-ban"></i> SubCategory</h4>
 
-                            <!-- Wrapper pour image -->
-                            <div class="card-img-wrapper">
-                                {% if subcat.image %}
-                                <img src="{{ subcat.image.url }}" alt="{{ subcat.name }}">
-                                {% else %}
-                                <img src="{% static 'images/default.jpg' %}" alt="Default">
-                                {% endif %}
+                                <div class="table-responsive">
+                                    {% include 'partials/search_mode.html' %}
+                                    {% include 'partials/messages.html' %}
+                                  
+                                    <table id="demo-foo-addrow" class="table m-t-30 no-wrap table-hover contact-list"
+                                        data-page-size="10">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Items</th>
+                                                <th>Edit</th>
+                                                <th>Deactivate</th>
+
+
+
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            {% for subcat in page_obj %}
+
+                                            <tr>
+                                                <td>
+                                                    {% if subcat.image %}
+                                                    <img src="{{ subcat.image.url }}" alt="{{ subcat.name }}" width="40"
+                                                        class="rounded-circle">
+                                                    {% else %}
+                                                    <img src="{% static 'images/default.jpg' %}" alt="Default">
+                                                    {% endif %} {{ subcat.name }}
+                                                </td>
+
+
+
+                                                <td>
+                                                    <a href="{% url 'product_list_by_id_deactivate' subcat.id %}"
+                                                        class="btn btn-sm btn-success">
+                                                        <i class="fa fa-box"></i>
+                                                    </a>
+
+
+                                                </td>
+                                                <td>
+
+
+                                                    <a href="{% url 'edit_subcategory' subcat.id %}"
+                                                         class="btn btn-sm btn-success">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                </td>
+
+
+                                                <td>
+                                                    <a href="{% url 'activate_subcategory' subcat.id %}"
+                                                        class="btn btn-sm btn-danger">
+                                                        <i class="fa fa-undo"></i>
+                                                    </a>
+                                                </td>
+
+
+
+                                            </tr>
+
+
+
+
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="9">
+                                                    <div class="alert alert-info text-center mt-4">
+                                                        <i class="fa fa-info-circle"></i> No subcategories to display.
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+
+                                    </table>
+                                </div>
                             </div>
-                            {% if user|has_group:'admin' %}
-                             <!-- Bouton Edit en overlay -->
-                            <a href="{% url 'edit_subcategory' subcat.id %}" class="btn btn-sm btn-success position-absolute"
-                                style="top:10px; right:45px; z-index:10;">
-                                <i class="fa fa-edit"></i>
-                            </a>
 
-                            <a href="{% url 'activate_subcategory' subcat.id %}" class="btn btn-sm btn-success position-absolute"
-                                style="top:10px; right:10px; z-index:10;">
-                                <i class="fa fa-undo"></i>
-                            </a>
-                            {% endif %}
-                             
-                            
-                             <div class="card-body">
-                                <h4 class="card-title">{{ subcat.name }}</h4>
-                                 <a href="{% url 'product_list_by_id_deactivate' subcat.id %}" class="stretched-link"></a>
-                            </div>
-                           
-
+                            {% include 'partials/pagination.html' %}
                         </div>
+
                     </div>
-                    {% empty %}
-                  <div class="alert alert-info text-center mt-4">
-                    <i class="fa fa-info-circle"></i> No subcategories to display.
-                </div>
-                    {% endfor %}
                 </div>
             </div>
+
+
+            <!-- --- -->
+
+
+   
 
             <!-- ============================================================== -->
             <!-- End Container fluid  -->

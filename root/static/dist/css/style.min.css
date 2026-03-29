@@ -37478,3 +37478,67 @@ html[dir=rtl] #main-wrapper[data-sidebartype=overlay].show-sidebar .left-sidebar
     cursor: pointer;
     font-weight: bold;
 }
+
+
+
+
+.stat-card {
+    border: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-title {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.stat-card h3 {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Colors */
+.balance {
+    background: #f8fafc;
+    color: #1e293b;
+    border-left: 5px solid #3b82f6;
+}
+
+.in_progress {
+    background: #f8fafc;
+    color: #20b093;
+    border-left: 5px solid #3b82f6;
+}
+
+.completed {
+    background: #f0fdf4;
+    color: #166534;
+    border-left: 5px solid #22c55e;
+}
+
+.pending {
+    background: #fffbeb;
+    color: #938c0b;
+    border-left: 5px solid #f59e0b;
+}
+
+.rejected {
+    background: #fef2f2;
+    color: #991b1b;
+    border-left: 5px solid #ef4444;
+}
+
+/* Icon style */
+.icon {
+    font-size: 25px;
+    opacity: 0.8;
+}
