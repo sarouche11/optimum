@@ -12,7 +12,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
 from decimal import Decimal
-from django.db.models import Sum,Prefetch
+from django.db.models import Sum
 from django.utils import timezone
 from django.http import JsonResponse
 from django.db import transaction
@@ -37,9 +37,136 @@ from authentification.forms import AddProfileForm
 from django.contrib.auth.models import User,Group
 from django.contrib.auth.hashers import make_password 
 
+from .utils import encrypt_code
+import hashlib, secrets
+
+from .utils import decrypt_code
+from django.urls import reverse
+import pyotp
+import qrcode
+import io
+import base64
+from authentification.models import Profile
+import traceback
+import time
+# ================================== adminn decryptage =====
 
 
 
+@user_is_in_group('admin')  
+def reveal_activation_code(request, code_id):
+    # 🔐 Vérification accès staff
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect(reverse('forbidden', kwargs={'code': 403}))
+
+    code_obj = get_object_or_404(ActivationCode, id=code_id)
+    profile = request.user.profile
+
+    real_code = None
+    error_msg = None
+    totp_error_msg = None
+    qr_code_base64 = None
+
+    # =========================================================
+    # 1️⃣ Mot de passe temporaire (expire en 60s)
+    # =========================================================
+    regenerate_password = False
+
+    expiry = request.session.get('admin_decrypt_expiry', 0)
+    if 'admin_decrypt_hash' not in request.session or time.time() > expiry:
+        regenerate_password = True
+
+    if regenerate_password:
+        temp_password = secrets.token_urlsafe(10)
+        temp_password_hash = hashlib.sha256(temp_password.encode()).hexdigest()
+
+        request.session['admin_decrypt_hash'] = temp_password_hash
+        request.session['admin_decrypt_expiry'] = time.time() + 60
+
+        send_mail(
+            subject="Mot de passe temporaire pour déchiffrer un code",
+            message=f"Votre mot de passe temporaire (valide 60 secondes) : {temp_password}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[request.user.email],
+            fail_silently=False,
+        )
+        # Si le mot de passe était expiré, on notifie l'utilisateur
+        if 'admin_decrypt_hash' in request.session and not regenerate_password:
+            error_msg = "Mot de passe expiré, un nouveau mot de passe a été envoyé par mail."
+
+    # =========================================================
+    # 2️⃣ Google Authenticator (TOTP)
+    # =========================================================
+    if not profile.totp_secret:
+        profile.totp_secret = pyotp.random_base32()
+        profile.save()
+
+    totp = pyotp.TOTP(profile.totp_secret)
+
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=4,
+        border=2,
+    )
+
+    totp_uri = totp.provisioning_uri(
+        name=request.user.email,
+        issuer_name="Optimum Platform"
+    )
+
+    qr.add_data(totp_uri)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    qr_code_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+    # =========================================================
+    # 3️⃣ POST (Double Auth)
+    # =========================================================
+    if request.method == "POST":
+        password = request.POST.get("admin_password", "")
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+        expiry = request.session.get('admin_decrypt_expiry', 0)
+
+        if time.time() > expiry:
+            error_msg = "Mot de passe expiré, un nouveau mot de passe a été envoyé par mail."
+            # Supprimer l'ancien hash pour forcer la régénération
+            request.session.pop('admin_decrypt_hash', None)
+            request.session.pop('admin_decrypt_expiry', None)
+
+        elif password_hash == request.session.get('admin_decrypt_hash'):
+            totp_code = request.POST.get("totp_code", "")
+
+            if totp.verify(totp_code):
+                try:
+                    real_code = decrypt_code(code_obj.code)
+                except Exception:
+                    real_code = code_obj.code
+
+                request.session.pop('admin_decrypt_hash', None)
+                request.session.pop('admin_decrypt_expiry', None)
+
+            else:
+                totp_error_msg = "Code Google Authenticator invalide"
+
+        else:
+            error_msg = "Mot de passe temporaire incorrect"
+
+    # =========================================================
+    # 4️⃣ Context
+    # =========================================================
+    context = {
+        "code_obj": code_obj,
+        "real_code": real_code,
+        "error_msg": error_msg,
+        "totp_error_msg": totp_error_msg,
+        "qr_code": qr_code_base64,
+    }
+
+    return render(request, "admin/code/reveal_code.html", context)
 
 #================================== admin ===============================
 
@@ -786,6 +913,11 @@ def edit_product(request, product_id):
     return render(request, 'admin/product/edit_product.html', context)
 
 
+
+
+
+
+
 # add activation code 
 @user_is_in_group('admin')
 def add_activation_code(request):
@@ -801,14 +933,16 @@ def add_activation_code(request):
 
             for code in codes:
                 code = code.strip()
-                if code:  # éviter les champs vides
-                    # Vérifier si le code existe déjà pour ce produit
+                if code: 
+                    code_hash = hashlib.sha256(code.encode()).hexdigest()
+
                     if ActivationCode.objects.filter(product=product, code=code).exists():
                         errors.append(f"Le code '{code}' existe déjà pour ce produit.")
                     else:
                         ActivationCode.objects.create(
                             product=product,
-                            code=code
+                            code=encrypt_code(code), 
+                            code_hash=code_hash 
                         )
 
             # Recalcul du stock
@@ -830,29 +964,32 @@ def add_activation_code(request):
 
 @user_is_in_group('admin')
 def edit_activation_code(request, pk):
-    # On récupère le code existant
     activation_code = get_object_or_404(ActivationCode, pk=pk)
-
-    # Formulaire pré-rempli avec les données existantes
     form = EditActivationCodeForm(request.POST or None, instance=activation_code)
 
     if request.method == "POST" and form.is_valid():
-        # Sauvegarde les modifications
-        activation_code = form.save()
-        messages.success(request,'code modifié avec succés')
+        # commit=False pour pouvoir modifier le code et le hash avant de sauver
+        activation_code = form.save(commit=False)
 
+        # Récupérer le code entré par l'admin
+        code = form.cleaned_data.get('code', '').strip()
+        if code:
+            # Encrypter le code
+            activation_code.code = encrypt_code(code)
 
-        return redirect('list_activation_code',  activation_code.product.id)  # adapte selon ta route
+            # Calculer le hash
+            activation_code.code_hash = hashlib.sha256(code.encode()).hexdigest()
+
+        activation_code.save()
+
+        messages.success(request, "Code modifié avec succès !")
+        return redirect('list_activation_code', activation_code.product.id)
 
     context = {
         'form': form,
-        
+        'activation_code': activation_code,
     }
     return render(request, 'admin/code/edit_activation.html', context)
-
-
-
-
 # @user_is_in_group('admin')
 # def list_activation_by_product(request):
 
@@ -1100,12 +1237,11 @@ def list_achat_user(request):
     # Filtrer si recherche
     if search:
         purchases = purchases.filter(
-            Q(product__name__icontains=search) |
             Q(codeCP__icontains=search) |
             Q(profil__user__username__icontains=search) |
-            Q(created_at__icontains=search)|
-            Q (product__activation_codes__code__icontains=search)
-        )
+            Q(created_at__icontains=search)
+        
+        ).distinct()
 
 
        
@@ -1447,7 +1583,10 @@ def buy_product(request):
                     activation_code=code
                 )
 
-                purchased_codes.append(code.code)
+                # purchased_codes.append(code.code)
+                # 🔓 DÉCHIFFREMENT ICI
+                real_code = decrypt_code(code.code)
+                purchased_codes.append(real_code)
 
             product.stock -= quantity
             product.save()
@@ -1477,7 +1616,7 @@ def buy_product(request):
                 Product Information:
                 Product  : {product.name}
                 Quantity : {quantity}
-                Total Price : {total_price} DA
+                Total Price : {total_price} 
 
                 Additional Details:
                 Note : {note}
@@ -1527,6 +1666,13 @@ def list_activation_user(request):
     paginator = Paginator(codes.order_by('-created_at'), per_page)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
+
+
+    for code in page_obj:
+        try:
+            code.decrypted_code = decrypt_code(code.activation_code.code)
+        except:
+            code.decrypted_code = code.activation_code.code 
 
     context = {
         'page_obj': page_obj,
@@ -1586,18 +1732,33 @@ def list_achat(request):
         per_page = 10
 
     # ✅ seulement les achats du user connecté
-    product = ProductAchat.objects.filter(profil__user=request.user)
+    products = ProductAchat.objects.filter(profil__user=request.user)
 
     # Recherche
     if search:
-        product = product.filter(
-          Q(product__name__icontains=search) | Q (codeCP__icontains=search)| Q (product__activation_codes__code__icontains=search)
-          )
+        search_hash = hashlib.sha256(search.encode()).hexdigest()
+        products = products.filter(
+            Q(product__name__icontains=search) |
+            Q(codeCP__icontains=search) |
+            Q(product__activation_codes__code_hash=search_hash)
+        ).distinct()
 
     # Pagination
-    paginator = Paginator(product.order_by('-created_at'), per_page)
+    paginator = Paginator(products.order_by('-created_at'), per_page)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
+
+    # Déchiffrer tous les codes pour chaque achat
+    for purchase in page_obj:
+        purchase.decrypted_codes = []
+        # Récupère tous les codes liés à ce produit et à cet achat
+        codes = PurchaseCode.objects.filter(purchase=purchase).select_related('activation_code')
+        for c in codes:
+            try:
+                real_code = decrypt_code(c.activation_code.code)
+            except:
+                real_code = c.activation_code.code  # ancien code non chiffré
+            purchase.decrypted_codes.append(real_code)
 
     context = {
         'page_obj': page_obj,
@@ -1608,11 +1769,22 @@ def list_achat(request):
     return render(request, 'reseller/list_achat.html', context)
 
 
+
+
 @user_is_in_group('reseller')
 def detail_achat(request, codeCP):
     profil = request.user.profile
     purchase = get_object_or_404(ProductAchat, codeCP=codeCP, profil=profil)
     codes = purchase.codes.all()
+
+      # Déchiffrer les codes
+    decrypted_codes = []
+    for c in codes:
+        try:
+            real_code = decrypt_code(c.activation_code.code)
+        except:
+            real_code = c.activation_code.code  # pour anciens codes non chiffrés
+        decrypted_codes.append(real_code)
 
      # récupérer remboursement
     refund = Paiement.objects.filter(
@@ -1623,7 +1795,7 @@ def detail_achat(request, codeCP):
 
     context = {
         'purchase': purchase,
-        'codes': codes,
+        'decrypted_codes': decrypted_codes,
         'reste': purchase.reste_after_purchase ,
         'refund': refund
     }

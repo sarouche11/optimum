@@ -86,13 +86,13 @@
                                         <td>{{ produit.created_at|date:'d-m-Y à H:i' }}</td>
                                         <td>{{ produit.product.name }}</td>
 
-                                            <td>
+                                        <td>
 
                                                     {% if produit.product.subcategory.category.type_category == "code" and produit.product.type_product == 'code' %}
 
                                                         {% with codes=produit.codes.all %}
                                                             {% if codes %}
-                                                                {{ codes.0.activation_code.code }}{% if codes|length > 1 %} + {{ codes|length|add:"-1" }} ...{% endif %}
+                                                                {{ codes.0.activation_code.code|truncatechars:10 }}{% if codes|length > 1 %} + {{ codes|length|add:"-1" }} ...{% endif %}
                                                             {% else %}
                                                                 -
                                                             {% endif %}

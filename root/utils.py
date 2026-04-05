@@ -3,6 +3,8 @@ from .models import Notification, ProductAchat, StatusAchat
 from authentification.decorators import user_is_in_group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from cryptography.fernet import Fernet
+from django.conf import settings
 
 
 def creer_notification_request(purchase):
@@ -70,7 +72,16 @@ def creer_notification_refund(purchase):
                 f'The purchase by <strong>{user.username}</strong> for the product '
                 f'"{product.name}" has been rejected and refunded.'
             )
-        )        
+        )       
+
+
+cipher = Fernet(settings.ACTIVATION_CODE_KEY)
+
+def encrypt_code(code):
+    return cipher.encrypt(code.encode()).decode()
+
+def decrypt_code(encrypted_code):
+    return cipher.decrypt(encrypted_code.encode()).decode()         
 
 
 

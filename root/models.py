@@ -73,14 +73,18 @@ class Product(models.Model):
 
 class ActivationCode(models.Model):
     code_activ = models.CharField(max_length=100, unique=True, default=generate_code)
-    code = models.CharField(max_length=50, unique=True) 
+    code = models.TextField() 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="activation_codes")
     used = models.BooleanField(default=False)  
+    code_hash = models.CharField(max_length=64, db_index=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     used_at = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        unique_together = ('product', 'code_hash')
+
     def __str__(self):
-        return f"{self.code} "
+        return f"{self.product.name}- {self.code_activ} "
     
 # Signal pour diminuer le stock à la suppression d'un code
 @receiver(pre_delete, sender=ActivationCode)

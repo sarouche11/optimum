@@ -65,7 +65,7 @@
                                             {% for code in page_obj %}
                                             <tr>
                                                 <td>{{ code.created_at|date:'d-m-Y à H:i' }}</td>
-                                                <td>{{ code.activation_code }}</td>
+                                                <td>{{ code.decrypted_code }}</td>
                                                 <td>{{ code.activation_code.product.name }}</td>
                
                                             </tr>

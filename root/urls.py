@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (list_user ,add_user,toggle_profile_status,
+from .views import (reveal_activation_code,list_user ,add_user,toggle_profile_status,
                     add_category,list_category,edit_category,deactivate_category,activate_category,
                     list_category_deactivate,
                     
@@ -31,6 +31,9 @@ from .views import (list_user ,add_user,toggle_profile_status,
 urlpatterns = [
 
     # admin
+    path("admin/reveal-code/<int:code_id>/", reveal_activation_code, name="reveal_activation_code"),
+
+
     path('list_user/', list_user, name='list_user'),
     path('add_user/', add_user, name='add_user'),
     path('toggle-profile/<int:profil_id>/',toggle_profile_status, name='toggle_profile_status'),

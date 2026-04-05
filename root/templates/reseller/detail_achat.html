@@ -206,10 +206,10 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for code in codes %}
+                                            {% for code in decrypted_codes %}
                                             <tr>
-                                                <td class="activation-code">{{ code.activation_code.code }}</td>
-                                                <td>{{ code.created_at|date:'d-m-Y H:i' }}</td>
+                                                <td class="activation-code">{{ code }}</td>
+                                                <td>{{ purchase.created_at|date:'d-m-Y H:i' }}</td>
                                             </tr>
                                             {% empty %}
                                             <tr>

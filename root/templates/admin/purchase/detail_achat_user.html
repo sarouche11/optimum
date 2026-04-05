@@ -93,12 +93,12 @@
 
                                             </tr>
                                             <tr>
-                                                <td colspan="3" class="font-500" align="right">Total Amount (DA)</td>
+                                                <td colspan="3" class="font-500" align="right">Total Amount </td>
                                                 <td class="font-500">{{ purchase.total_price }}</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="3" class="font-500" align="right">Rest (DA)</td>
-                                                <td class="font-500">{{ purchase.reste_after_purchase|floatformat:2 }}</td>
+                                                <td colspan="3" class="font-500" align="right">Rest </td>
+                                                <td class="font-500">{{ purchase.reste_after_purchase }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -134,7 +134,7 @@
                                                     <td colspan="3">
                                                         Refund Date
                                                     </td>
-                                                    <td class="text-start">
+                                                    <td class="text-start" >
                                                         {{ refund.created_at|date:"d-m-Y H:i" }}
                                                     </td>
                                                 </tr>
