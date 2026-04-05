@@ -1223,6 +1223,7 @@ def product_list_by_id(request, cat_id):
 
 # list achat all user
 @user_is_in_group('admin')
+@user_is_in_group('admin')
 def list_achat_user(request):
     search = request.GET.get('search', '')  
     per_page = request.GET.get('per_page', 10)
@@ -1232,31 +1233,40 @@ def list_achat_user(request):
     except:
         per_page = 10
 
+    # ✅ Tous les achats (pour admin)
     purchases = ProductAchat.objects.select_related('product', 'profil').prefetch_related('codes__activation_code')
 
     # Filtrer si recherche
     if search:
+        search_hash = hashlib.sha256(search.encode()).hexdigest()  # hash du code saisi
         purchases = purchases.filter(
             Q(codeCP__icontains=search) |
             Q(profil__user__username__icontains=search) |
+            Q(codes__activation_code__code_hash=search_hash)|
             Q(created_at__icontains=search)
-        
         ).distinct()
-
-
-       
 
     # Pagination
     paginator = Paginator(purchases.order_by('-created_at'), per_page)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
+    # 🔑 Déchiffrer tous les codes pour chaque achat
+    for purchase in page_obj:
+        purchase.decrypted_codes = []
+        # Récupère tous les codes liés à cet achat
+        codes = PurchaseCode.objects.filter(purchase=purchase).select_related('activation_code')
+        for c in codes:
+            try:
+                real_code = decrypt_code(c.activation_code.code)
+            except Exception:
+                real_code = c.activation_code.code  # ancien code non chiffré
+            purchase.decrypted_codes.append(real_code)
+
     context = {
         'page_obj': page_obj,
         'search': search,
         'per_page': per_page,
-       
-
     }
 
     return render(request, 'admin/purchase/list_achat_user.html', context)
@@ -1266,13 +1276,26 @@ def list_achat_user(request):
 # affiche details achat 
 @user_is_in_group('admin')
 def admin_detail_achats(request, codeCP):
+    # 🔐 Vérification admin (optionnel)
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('forbidden')  # ou ta page d'erreur
+
     # Récupère l'achat correspondant au codeCP
     purchase = get_object_or_404(ProductAchat, codeCP=codeCP)
-    
+
     # Codes liés à cet achat
     codes = purchase.codes.all()
 
-     # récupérer remboursement
+    # 🔑 Déchiffrer les codes
+    decrypted_codes = []
+    for c in codes:
+        try:
+            real_code = decrypt_code(c.activation_code.code)
+        except:
+            real_code = c.activation_code.code  # pour anciens codes non chiffrés
+        decrypted_codes.append(real_code)
+
+    # récupérer remboursement
     refund = Paiement.objects.filter(
         profil=purchase.profil,
         type=Paiement.TypePaiement.REFUND,
@@ -1282,12 +1305,11 @@ def admin_detail_achats(request, codeCP):
     context = {
         'purchase': purchase,
         'codes': codes,
-        'refund':refund
+        'decrypted_codes': decrypted_codes,  # 🔑 ajouté pour le template
+        'refund': refund
     }
 
     return render(request, 'admin/purchase/detail_achat_user.html', context)
-
-
 
 @user_is_in_group('admin')
 def edit_request(request, pk):
