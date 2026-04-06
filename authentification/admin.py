@@ -28,7 +28,7 @@ class ProfileImportExport(ImportExportModelAdmin):
         'adresse',
         'phone',
         'use_2fa',
-        'totp_secret',
+       
         'active',
         'created_at',
         'updated_at',

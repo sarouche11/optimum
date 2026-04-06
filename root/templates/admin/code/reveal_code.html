@@ -82,19 +82,7 @@
                                 <form method="post" class="mt-4">
                                     {% csrf_token %}
 
-                                    {% if qr_code %}
-                                    <div class="text-center mb-4">
-                                        <h5>Configurer Google Authenticator</h5>
-
-                                        <img src="data:image/png;base64,{{ qr_code }}" style="max-width:100px;"
-                                            class="img-fluid shadow rounded">
-
-                                        <p class="mt-2 text-muted">
-                                            Scannez ce QR Code avec Google Authenticator
-                                        </p>
-                                    </div>
-                                    {% endif %}
-
+                             
                                     <!-- Mot de passe temporaire -->
                                     <div class="form-group mb-3">
                                         <label class="mb-2"><strong>Mot de passe temporaire (envoyé par
@@ -103,13 +91,7 @@
                                             placeholder="Entrer le mot de passe" required>
                                     </div>
 
-                                    <!-- Code Google Authenticator -->
-                                    <div class="form-group mb-3">
-                                        <label class="mb-2"><strong>Code Google Authenticator</strong></label>
-                                        <input type="text" name="totp_code" class="form-control text-center"
-                                            placeholder="Entrer le code TOTP" required>
-                                    </div>
-
+                                  
                                     <!-- Bouton Déchiffrer -->
                                     <button type="submit" class="btn btn-success mt-3 px-4">
                                         <i class="fa fa-unlock"></i> Déchiffrer

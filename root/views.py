@@ -54,24 +54,22 @@ import time
 
 @user_is_in_group('admin')  
 def reveal_activation_code(request, code_id):
+
     # 🔐 Vérification accès staff
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect(reverse('forbidden', kwargs={'code': 403}))
 
     code_obj = get_object_or_404(ActivationCode, id=code_id)
-    profile = request.user.profile
 
     real_code = None
     error_msg = None
-    totp_error_msg = None
-    qr_code_base64 = None
 
     # =========================================================
-    # 1️⃣ Mot de passe temporaire (expire en 60s)
+    # 1️⃣ Génération mot de passe temporaire (expire 60s)
     # =========================================================
     regenerate_password = False
-
     expiry = request.session.get('admin_decrypt_expiry', 0)
+
     if 'admin_decrypt_hash' not in request.session or time.time() > expiry:
         regenerate_password = True
 
@@ -83,86 +81,51 @@ def reveal_activation_code(request, code_id):
         request.session['admin_decrypt_expiry'] = time.time() + 60
 
         send_mail(
-            subject="Mot de passe temporaire pour déchiffrer un code",
-            message=f"Votre mot de passe temporaire (valide 60 secondes) : {temp_password}",
+            subject="Mot de passe temporaire",
+            message=f"Votre mot de passe (valide 60s) : {temp_password}",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[request.user.email],
             fail_silently=False,
         )
-        # Si le mot de passe était expiré, on notifie l'utilisateur
-        if 'admin_decrypt_hash' in request.session and not regenerate_password:
-            error_msg = "Mot de passe expiré, un nouveau mot de passe a été envoyé par mail."
 
     # =========================================================
-    # 2️⃣ Google Authenticator (TOTP)
-    # =========================================================
-    if not profile.totp_secret:
-        profile.totp_secret = pyotp.random_base32()
-        profile.save()
-
-    totp = pyotp.TOTP(profile.totp_secret)
-
-    qr = qrcode.QRCode(
-        version=1,
-        box_size=4,
-        border=2,
-    )
-
-    totp_uri = totp.provisioning_uri(
-        name=request.user.email,
-        issuer_name="Optimum Platform"
-    )
-
-    qr.add_data(totp_uri)
-    qr.make(fit=True)
-
-    img = qr.make_image(fill_color="black", back_color="white")
-
-    buffered = io.BytesIO()
-    img.save(buffered, format="PNG")
-    qr_code_base64 = base64.b64encode(buffered.getvalue()).decode()
-
-    # =========================================================
-    # 3️⃣ POST (Double Auth)
+    # 2️⃣ Vérification POST
     # =========================================================
     if request.method == "POST":
+
         password = request.POST.get("admin_password", "")
         password_hash = hashlib.sha256(password.encode()).hexdigest()
         expiry = request.session.get('admin_decrypt_expiry', 0)
 
+        # ⏱️ Expiré
         if time.time() > expiry:
-            error_msg = "Mot de passe expiré, un nouveau mot de passe a été envoyé par mail."
-            # Supprimer l'ancien hash pour forcer la régénération
+            error_msg = "Mot de passe expiré, un nouveau a été envoyé"
             request.session.pop('admin_decrypt_hash', None)
             request.session.pop('admin_decrypt_expiry', None)
 
+        # ✅ Correct
         elif password_hash == request.session.get('admin_decrypt_hash'):
-            totp_code = request.POST.get("totp_code", "")
 
-            if totp.verify(totp_code):
-                try:
-                    real_code = decrypt_code(code_obj.code)
-                except Exception:
-                    real_code = code_obj.code
+            try:
+                real_code = decrypt_code(code_obj.code)
+            except:
+                real_code = code_obj.code
 
-                request.session.pop('admin_decrypt_hash', None)
-                request.session.pop('admin_decrypt_expiry', None)
+            # 🧹 nettoyage
+            request.session.pop('admin_decrypt_hash', None)
+            request.session.pop('admin_decrypt_expiry', None)
 
-            else:
-                totp_error_msg = "Code Google Authenticator invalide"
-
+        # ❌ Mauvais
         else:
-            error_msg = "Mot de passe temporaire incorrect"
+            error_msg = "Mot de passe incorrect"
 
     # =========================================================
-    # 4️⃣ Context
+    # 3️⃣ Context
     # =========================================================
     context = {
         "code_obj": code_obj,
         "real_code": real_code,
         "error_msg": error_msg,
-        "totp_error_msg": totp_error_msg,
-        "qr_code": qr_code_base64,
     }
 
     return render(request, "admin/code/reveal_code.html", context)
