@@ -47,7 +47,6 @@ import qrcode
 import io
 import base64
 from authentification.models import Profile
-import traceback
 import time
 # ================================== adminn decryptage =====
 
@@ -1485,7 +1484,12 @@ def list_activation_code(request, id):
 
     # Filtre par recherche si nécessaire
     if search:
-        codes = codes.filter(code__icontains=search).distinct()
+        
+        search_hash = hashlib.sha256(search.encode()).hexdigest()
+
+        codes = codes.filter(
+            Q(code_hash=search_hash)
+        ).distinct()
 
     # Pagination
     paginator = Paginator(codes, per_page)
