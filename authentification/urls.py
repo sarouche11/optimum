@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import login_view,verify_otp,forbidden,logout_view,register_view,success,edit_profile,change_password
+from .views import login_view,verify_otp,forbidden,logout_view,register_view,success,edit_profile,change_password,history_login
 
 
 urlpatterns = [
@@ -11,7 +11,7 @@ urlpatterns = [
     path('success/', success, name='success'),
     path('profile/', edit_profile, name='profile'),
     path('profile/change-password/', change_password, name='change_password'),
-    
+      path('history_login', history_login, name='history_login'),
     path('forbidden/<int:code>/', forbidden, name='forbidden'),
 
     

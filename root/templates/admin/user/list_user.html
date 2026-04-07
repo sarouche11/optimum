@@ -135,6 +135,7 @@
                                                 <th>Amount</th>
                                                 <th>Status</th>
                                                 <th>Account</th>
+                                                <th>TOTP</th>
                                                 <th>Transaction</th>
                                                 <th>Check Categories</th>
                                             </tr>
@@ -175,6 +176,19 @@
                                                         <i class="fa fa-user-times"></i>
                                                         {% else %}
                                                         <i class="fa fa-user-check"></i>
+                                                        {% endif %}
+
+                                                    </a>
+                                                </td>
+
+                                                <td>
+                                                    <a href="{% url 'toggle_totp' profil.id %}"
+                                                        class="btn btn-sm {% if profil.use_2fa_totp %}btn-success{% else %}btn-danger{% endif %}">
+
+                                                        {% if profil.use_2fa_totp %}
+                                                        <i class="bi bi-shield-lock-fill text-success "></i>
+                                                        {% else %}
+                                                        <i class="bi bi-shield-lock-fill text-danger "></i>
                                                         {% endif %}
 
                                                     </a>

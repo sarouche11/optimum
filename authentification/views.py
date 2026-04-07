@@ -17,6 +17,14 @@ import pyotp
 import qrcode
 import io
 import base64
+from .models import LoginHistory
+from root.utils import get_browser,get_client_ip
+from django.core.paginator import Paginator
+
+
+
+
+
 
 # Create your views here.
 def login_view(request):
@@ -64,6 +72,15 @@ def login_view(request):
             else:
                 # Pas de 2FA → login direct
                 login(request, user)
+
+                ip = get_client_ip(request)
+                browser = get_browser(request)
+                LoginHistory.objects.create(
+                        user=user,
+                        ip_address=ip,
+                        browser=browser,
+                        user_agent=request.META.get('HTTP_USER_AGENT', '')
+                    )
 
                 if user.groups.filter(name="reseller").exists():
                     return redirect('list_category')
@@ -127,6 +144,58 @@ def verify_otp(request):
 }
 
     return render(request, "verify_otp.html",context)
+
+
+
+@user_is_in_group('admin', 'reseller')
+def history_login(request):
+    #-------------------  search -----------
+    search = request.GET.get('search', '')
+
+    #----------------- récupération du per_page --------
+    per_page = request.GET.get('per_page', 10) 
+    try:
+        per_page = int(per_page)
+    except:
+        per_page = 10
+
+    
+    history_login = LoginHistory.objects.filter(user=request.user).order_by('timestamp')
+
+
+    # -----------------------------------------
+    if search:
+        history_login = history_login.filter(
+           Q(timestamp__icontains=search)
+        )
+
+    
+
+    # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode() 
+
+   
+    paginator = Paginator(history_login, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number) 
+    
+    
+
+    context = {
+       'page_obj': page_obj,
+       'search': search,
+       'querystring': querystring,
+       'per_page': per_page,
+    }
+    return render(request,'history_login.html',context)
+
+
+
 
 
 def forbidden(request, code):

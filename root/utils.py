@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from cryptography.fernet import Fernet
 from django.conf import settings
+from user_agents import parse
 
 
 def creer_notification_request(purchase):
@@ -82,6 +83,23 @@ def encrypt_code(code):
 
 def decrypt_code(encrypted_code):
     return cipher.decrypt(encrypted_code.encode()).decode()         
+
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def get_browser(request):
+    ua_string = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = parse(ua_string)
+    # Retourne navigateur + OS
+    return f"{user_agent.browser.family} - {user_agent.os.family}"
 
 
 

@@ -47,6 +47,19 @@ class OTP(models.Model):
         return timezone.now() < self.created_at + timedelta(minutes=5)
     
 
+class LoginHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    browser = models.TextField(null=True, blank=True)
+
+
+    def __str__(self):
+        return f"{self.user.username} - {self.timestamp}"
+
+    
+
 
 
 

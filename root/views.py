@@ -48,6 +48,7 @@ import io
 import base64
 from authentification.models import Profile
 import time
+from .utils import get_browser, get_client_ip
 # ================================== adminn decryptage =====
 
 
@@ -291,7 +292,7 @@ def list_user(request):
 
 
 # activation du compte 
-@user_is_in_group('admin')
+
 @user_is_in_group('admin')
 def toggle_profile_status(request, profil_id):
     profil = get_object_or_404(Profile, id=profil_id)
@@ -347,6 +348,65 @@ def toggle_profile_status(request, profil_id):
     )
 
     return redirect('list_user')
+
+
+@user_is_in_group('admin')
+def toggle_totp(request, profil_id):
+    profil = get_object_or_404(Profile, id=profil_id)
+
+    # Inverser l'état
+    profil.use_2fa_totp = not profil.use_2fa_totp
+    profil.save()
+
+    # Sujet du mail
+    subject = "Google Authenticator Enabled" if profil.use_2fa_totp else "Google Authenticator Enabled"
+
+    # Lien direct vers le logo Stripo (CDN)
+    logo_url = "https://ezrecnx.stripocdn.email/content/guids/CABINET_2ab71862352e04a3ba4522ed2a64ecde2ee6214a6a6abef3d49eb75423be291d/images/logob.png"
+
+    # Contenu HTML
+    body = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+        <p>Hello {profil.user.username},</p>
+
+        <p>Google Authenticator verification has been 
+        <strong>{'enabled' if profil.use_2fa_totp else 'disabled'}</strong>
+        by the administrator.</p>
+
+        <br/>
+        <p>Best regards,<br/>
+        <strong>The Platform Team</strong></p>
+
+        <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;"/>
+
+        <!-- Logo via Stripo CDN -->
+        <img src="{logo_url}" alt="Company Logo" style="height:50px;"/>
+    </body>
+    </html>
+    """
+
+    # Création et envoi du mail
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body="",  # corps texte vide, on envoie HTML
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[profil.user.email]
+    )
+    msg.attach_alternative(body, "text/html")
+    msg.send()
+
+    # Message flash
+    messages.success(
+        request,
+        f"Google Authentificator for {profil.user.username} has been "
+        f"{'enabled' if profil.use_2fa_totp else 'disabled'}."
+    )
+
+    return redirect('list_user')
+
+
+
 
 
 
@@ -1374,19 +1434,7 @@ def assign_categories(request, profil_id):
 
     return render(request, 'admin/category/assign_categories.html', context)
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
 
-def get_browser(request):
-    ua_string = request.META.get('HTTP_USER_AGENT', '')
-    user_agent = parse(ua_string)
-    # Retourne navigateur + OS
-    return f"{user_agent.browser.family} - {user_agent.os.family}"
 
 @user_is_in_group('admin')
 def log_code(request):
