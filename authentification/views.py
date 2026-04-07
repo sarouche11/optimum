@@ -282,7 +282,7 @@ def edit_profile(request):
     if profile.use_2fa_totp and profile.totp_secret:
         totp_uri = pyotp.totp.TOTP(profile.totp_secret).provisioning_uri(
             name=request.user.email,
-            issuer_name="MonSite"
+            issuer_name="Panel.Digideel Platform"
         )
         qr = qrcode.make(totp_uri)
         buffer = io.BytesIO()
