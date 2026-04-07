@@ -23,7 +23,7 @@ class Profile(models.Model):
     categories = models.ManyToManyField('root.Category', blank=True, related_name='users')
 
     use_2fa_email = models.BooleanField(default=True)
-    use_2fa_totp = models.BooleanField(default=True)
+    use_2fa_totp = models.BooleanField(default=False)
     totp_secret = models.CharField(max_length=32, blank=True, null=True)
     
     active = models.BooleanField(default=False)
