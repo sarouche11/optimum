@@ -163,7 +163,7 @@ class ProfileEditForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['phone', 'adresse', 'use_2fa']  
+        fields = ['phone', 'adresse', 'use_2fa_email', 'use_2fa_totp']  
 
         widgets = {
                    'adresse': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Address'}),

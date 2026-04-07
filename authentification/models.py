@@ -21,7 +21,11 @@ class Profile(models.Model):
     adresse = models.CharField(max_length=200, blank=False, null=False)
     phone = models.CharField(max_length=10, blank=False, null=False,validators=[phone_validator],)
     categories = models.ManyToManyField('root.Category', blank=True, related_name='users')
-    use_2fa = models.BooleanField(default=True)
+
+    use_2fa_email = models.BooleanField(default=True)
+    use_2fa_totp = models.BooleanField(default=True)
+    totp_secret = models.CharField(max_length=32, blank=True, null=True)
+    
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

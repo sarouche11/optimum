@@ -16,9 +16,22 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">Montant</label>
-            <input type="number" step="0.01" name="montant" class="form-control" placeholder="...DA" required>
+            <input type="number" step="0.01" name="montant" class="form-control" placeholder="..." required>
           </div>
+
+           <!-- Nouveau champ pour mot de passe temporaire -->
+          <div class="mb-3">
+            <label class="form-label">Mot de passe temporaire (reçu par mail)</label>
+            <input type="password" name="admin_password" class="form-control" placeholder="Entrez le mot de passe reçu" required>
+          </div>
+        
+
+
+
         </div>
+        
+        
+        
 
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
@@ -30,3 +43,6 @@
     </div>
   </div>
 </div>
+
+
+

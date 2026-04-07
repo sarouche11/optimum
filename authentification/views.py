@@ -13,14 +13,14 @@ from django.conf import settings
 
 from django.contrib.auth import update_session_auth_hash
 from authentification.decorators import user_is_in_group
+import pyotp
+import qrcode
+import io
+import base64
 
 # Create your views here.
-
-
 def login_view(request):
-
     if request.method == 'POST':
-
         username_or_email = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -34,100 +34,99 @@ def login_view(request):
                 Q(username=username_or_email) |
                 Q(email=username_or_email)
             )
-
             user = authenticate(
                 request,
                 username=user_obj.username,
                 password=password
             )
-
         except User.DoesNotExist:
             user = None
 
         if user is not None:
-
             if not user.profile.active:
                 messages.error(request, "Your account is inactive. Please contact your administrator.")
                 return redirect("login")
 
-            # ✅ Vérification si l'utilisateur a activé la 2FA
-            if user.profile.use_2fa:
-                # Création OTP
-                otp = OTP.objects.create(user=user)
+            # ✅ Si 2FA activée pour email ou Google Authenticator
+            if user.profile.use_2fa_email or user.profile.use_2fa_totp:
+                # Création OTP email si activé
+                if user.profile.use_2fa_email:
+                    otp = OTP.objects.create(user=user)
+                    user.email_user(
+                        "Code de vérification",
+                        f"Votre code de connexion est : {otp.code}"
+                    )
 
-                # Envoi EMAIL
-                user.email_user(
-                    "Code de vérification",
-                    f"Votre code de connexion est : {otp.code}"
-                )
-
-                # Session temporaire
+                # On stocke l'id de l'utilisateur en session
                 request.session['pre_2fa_user'] = user.id
-
                 return redirect('verify_otp')
 
             else:
+                # Pas de 2FA → login direct
                 login(request, user)
-                
+
                 if user.groups.filter(name="reseller").exists():
                     return redirect('list_category')
-
                 if user.groups.filter(name="admin").exists():
                     return redirect('list_user')
-                    
-                  # page après login
+                return redirect('list')
 
         else:
             messages.error(request, "Identifiants invalides")
-
     else:
         captchaForm = CaptchaForm()
 
-    context = {'captchaForm': captchaForm}    
-    return render(request, 'login.html', context)
+    return render(request, 'login.html', {'captchaForm': captchaForm})
+
+
+
 def verify_otp(request):
-
     user_id = request.session.get('pre_2fa_user')
-
-    # ➜ Si pas de session : on reste propre
     if not user_id:
         messages.error(request, "Your session has expired or you are not logged in.")
         return render(request, "verify_otp.html")
 
     user = get_object_or_404(User, id=user_id)
+    profile = user.profile
 
     if request.method == "POST":
+        email_code = request.POST.get("otp")        # code email
+        totp_code = request.POST.get("totp_code")   # code Google Auth
 
-        code = request.POST.get("otp")
+        # ✅ Vérification OTP Email si activé
+        if profile.use_2fa_email:
+            otp = OTP.objects.filter(user=user, code=email_code).last()
+            if not otp or not otp.is_valid():
+                messages.error(request, "Code email invalide ou expiré.")
+                return render(request, "verify_otp.html")
 
-        otp = OTP.objects.filter(
-            user=user,
-            code=code
-        ).last()
+        # ✅ Vérification TOTP Google Authenticator si activé
+        if profile.use_2fa_totp:
+            if not profile.totp_secret:
+                messages.error(request, "Google Authenticator non configuré.")
+                return render(request, "verify_otp.html")
 
-        if otp and otp.is_valid():
+            totp = pyotp.TOTP(profile.totp_secret)
+            if not totp.verify(totp_code):
+                messages.error(request, "Code Google Authenticator invalide.")
+                return render(request, "verify_otp.html")
 
-            login(request, user)
+        # ✅ Tout est correct → login
+        login(request, user)
+        request.session.pop('pre_2fa_user', None)
 
-            # ➜ Suppression sécurisée SANS KeyError
-            request.session.pop('pre_2fa_user', None)
+        # redirection selon groupe
+        if user.groups.filter(name="reseller").exists():
+            return redirect('list_category')
+        if user.groups.filter(name="admin").exists():
+            return redirect('list_user')
+        return redirect('list')
+    
+    context = {
+    'profile': profile
+}
 
-            # 👉 redirection selon groupe
-            if user.groups.filter(name="reseller").exists():
-                return redirect('list_category')
-
-            if user.groups.filter(name="admin").exists():
-                return redirect('list_user')
-
-            return redirect('list')
-
-        # ➜ Ici on reste sur la page et on affiche juste le message
-        messages.error(request, "Invalid or expired code.")
-
-    return render(request, "verify_otp.html")
-
-
-
+    return render(request, "verify_otp.html",context)
 
 
 def forbidden(request, code):
@@ -265,23 +264,38 @@ def edit_profile(request):
             # Mise à jour User
             request.user.first_name = form.cleaned_data['first_name']
             request.user.last_name = form.cleaned_data['last_name']
-
             request.user.save()
 
-            # Mise à jour Profile
-            form.save()
+            # TOTP: si activé et pas déjà configuré, générer secret
+            profile = form.save(commit=False)
+            if profile.use_2fa_totp and not profile.totp_secret:
+                profile.totp_secret = pyotp.random_base32()
 
+            profile.save()
             messages.success(request, "Profile successfully updated.")
             return redirect('profile')
     else:
         form = ProfileEditForm(instance=profile, user=request.user)
 
+    # Si TOTP activé → générer QR code
+    qr_code_base64 = None
+    if profile.use_2fa_totp and profile.totp_secret:
+        totp_uri = pyotp.totp.TOTP(profile.totp_secret).provisioning_uri(
+            name=request.user.email,
+            issuer_name="MonSite"
+        )
+        qr = qrcode.make(totp_uri)
+        buffer = io.BytesIO()
+        qr.save(buffer, format="PNG")
+        qr_code_base64 = base64.b64encode(buffer.getvalue()).decode()
+
     context = {
-         'form': form
-    }    
+        'form': form,
+        'qr_code_base64': qr_code_base64,
+        'profile': profile
+    }
 
-    return render(request, 'profile.html',context)
-
+    return render(request, 'profile.html', context)
 
 def change_password(request):
     if request.method == 'POST':

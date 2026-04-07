@@ -984,32 +984,63 @@ def edit_activation_code(request, pk):
 
 #     return render(request, 'admin/code/list_activation_by_product.html', context)
 
+@user_is_in_group('admin')
+def generate_temp_password(request, profil_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized"}, status=403)
 
+    # Génération du mot de passe temporaire
+    temp_password = secrets.token_urlsafe(8)
+    temp_hash = hashlib.sha256(temp_password.encode()).hexdigest()
+    request.session['montant_hash'] = temp_hash
+    request.session['montant_expiry'] = time.time() + 60  # 60 secondes
+
+    # Envoi de l'email
+    send_mail(
+        subject="Mot de passe temporaire pour ajouter montant",
+        message=f"Votre mot de passe temporaire (valide 60s) : {temp_password}",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[request.user.email],
+        fail_silently=False,
+    )
+
+    return JsonResponse({"success": True})
 
 
 # attirubution du montant pour chaque user 
 @user_is_in_group('admin')
 def add_montant(request):
-    
-    print("POST =", request.POST) 
+
+    # 🔐 Vérification accès staff
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect(reverse('forbidden', kwargs={'code': 403}))
+
     profil_id = request.POST.get('profil_id')
     montant = request.POST.get('montant')
+    password = request.POST.get('admin_password')
 
-    if not profil_id or not montant:
-        return HttpResponse("Données manquantes", status=400)
-    
-    messages.success(request, "Montant attribué avec succés.")
+    if not profil_id or not montant or not password:
+        return HttpResponseForbidden("Données invalides")
+
+    # Vérification mot de passe temporaire
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    if password_hash != request.session.get('montant_hash') or time.time() > request.session.get('montant_expiry', 0):
+        messages.error(request, "Mot de passe temporaire invalide ou expiré")
+        return redirect('list_user')
 
     profil = get_object_or_404(Profile, id=profil_id)
-
     Paiement.objects.create(
         profil=profil,
         montant=montant,
+        
     )
 
+    # Nettoyer la session
+    request.session.pop('montant_hash', None)
+    request.session.pop('montant_expiry', None)
+
+    messages.success(request, "Montant ajouté avec succès")
     return redirect('list_user')
-
-
 
 # list montant 
 @user_is_in_group('admin')

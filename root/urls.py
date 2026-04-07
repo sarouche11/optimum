@@ -11,7 +11,7 @@ from .views import (reveal_activation_code,list_user ,add_user,toggle_profile_st
 
                     add_activation_code,edit_activation_code,list_activation_code,log_code,
 
-                    add_montant,list_montant,list_transaction_by_code,
+                    add_montant,list_montant,list_transaction_by_code,generate_temp_password,
                     
                     subcategory_list_by_id,product_list_by_id,
 
@@ -70,7 +70,7 @@ urlpatterns = [
 
     # path('list_activation/', list_activation_by_product, name='list_activation'),
 
-
+    path('generate-temp-password/<int:profil_id>/', generate_temp_password, name='generate_temp_password'),
     path('add_montant/', add_montant, name='add_montant'),
     path('list_montant/', list_montant, name='list_montant'),
 

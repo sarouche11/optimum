@@ -8,7 +8,8 @@ class ProfileImportExport(ImportExportModelAdmin):
         'user',
         'adresse',
         'phone',
-        'use_2fa',
+        'use_2fa_email',
+        'use_2fa_totp',
         'active',
     ]
 
@@ -27,7 +28,8 @@ class ProfileImportExport(ImportExportModelAdmin):
         'get_email',
         'adresse',
         'phone',
-        'use_2fa',
+        'use_2fa_email',
+        'use_2fa_totp',
        
         'active',
         'created_at',

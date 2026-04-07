@@ -152,7 +152,8 @@
                                                 <td>
                                                     <a href="#" class="btn btn-sm btn-success btn-add-montant"
                                                         data-bs-toggle="modal" data-bs-target="#addMontantModal"
-                                                        data-profil="{{ profil.id }}">
+                                                        data-profil="{{ profil.id }}"
+                                                        data-url="{% url 'generate_temp_password' profil.id %}">
                                                         <i class="fa fa-plus-circle"></i>
                                                         <i class="fa fa-money-bill-wave"></i>
 
@@ -271,8 +272,32 @@
   <script src="{% static 'dist/js/notifications_handler.js' %}"></script>
 
 
+
     <!-- pop-up  -->
     {% include 'admin/amount/add_montant.html' %}
+
+      <script>
+document.querySelectorAll('.btn-add-montant').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const profilId = this.dataset.profil;
+        const url = this.dataset.url; // URL correcte
+        document.getElementById('profil_id_input').value = profilId;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Mot de passe temporaire envoyé par email');
+                } else {
+                    alert('Erreur lors de l’envoi du mot de passe');
+                }
+            })
+            .catch(() => alert('Impossible de contacter le serveur'));
+    });
+});
+</script>
+
+
 
 
 
