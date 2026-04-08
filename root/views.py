@@ -956,12 +956,15 @@ def add_activation_code(request):
 
             for code in codes:
                 code = code.strip()
-                if code: 
-                    code_hash = hashlib.sha256(code.encode()).hexdigest()
+                if not code:
+                     continue
+                
+                code_hash = hashlib.sha256(code.encode()).hexdigest()
 
-                    if ActivationCode.objects.filter(product=product, code=code).exists():
+                if ActivationCode.objects.filter(product=product, code_hash=code_hash).exists():
                         errors.append(f"Le code '{code}' existe déjà pour ce produit.")
-                    else:
+                        continue
+                else:
                         ActivationCode.objects.create(
                             product=product,
                             code=encrypt_code(code), 
@@ -984,6 +987,9 @@ def add_activation_code(request):
         'form': form
     }
     return render(request, 'admin/code/add_activation.html', context)
+
+
+
 
 @user_is_in_group('admin')
 def edit_activation_code(request, pk):
