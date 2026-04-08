@@ -49,6 +49,7 @@ import base64
 from authentification.models import Profile
 import time
 from .utils import get_browser, get_client_ip
+from django.db import IntegrityError
 # ================================== adminn decryptage =====
 
 
@@ -1624,20 +1625,22 @@ def buy_product(request):
             codes = []
 
       
-
-
-        purchase = ProductAchat.objects.create(
-            profil=profil,
-            product=product,
-            quantity=quantity,
-            total_price=total_price,
-            note=note,
-            reste_after_purchase=reste,
-            status=status,
-            requirement=requirement if product_type == ProductType.REQUEST or category_type == CatgoryType.REQUEST else None,
-               
-        )
-
+        try:
+            purchase = ProductAchat.objects.create(
+                profil=profil,
+                product=product,
+                quantity=quantity,
+                total_price=total_price,
+                note=note,
+                reste_after_purchase=reste,
+                status=status,
+                requirement=requirement if product_type == ProductType.REQUEST or category_type == CatgoryType.REQUEST else None,
+            )
+        except IntegrityError:
+            return JsonResponse({
+                "success": False,
+                "message": "Une erreur est survenue : le code existe déjà."
+            }, status=400)
         purchased_codes = []
 
         if status == StatusAchat.COMPLETED:
