@@ -1668,6 +1668,9 @@ def buy_product(request):
             product.stock -= quantity
             product.save()
 
+
+            
+
         Paiement.objects.create(
             profil=profil,
             montant=-total_price,

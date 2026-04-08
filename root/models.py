@@ -207,15 +207,34 @@ class PurchaseCode(models.Model):
     def __str__(self):
         return self.activation_code.code
     
+def generate_unique_codeN(model, field_name='codeN', length=10):
+    import random
 
+    while True:
+        code = ''.join(random.choices('AZERTYUIOPQSDFGHJKLMWXCVBN123456789', k=length))
+        if not model.objects.filter(**{field_name: code}).exists():
+            return code
 
 
 class Notification(models.Model):
-    codeN = models.CharField(default=generate_code, editable=False, unique=True,max_length=100)
+    codeN = models.CharField(editable=False, unique=True,max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+
+
+    def save(self, *args, **kwargs):
+        if not self.codeN:
+            for _ in range(5):  # retry sécurité
+                try:
+                    self.codeN = generate_unique_codeN(Notification)
+                    super().save(*args, **kwargs)
+                    return
+                except IntegrityError:
+                    continue
+            raise Exception("Impossible de générer un code unique")
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"{self.user.username} - {self.message[:20]}"
