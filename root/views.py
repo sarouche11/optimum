@@ -1152,7 +1152,7 @@ def list_transaction_by_code(request,id):
 
    
    
-    montant = Paiement.objects.filter(profil=profil,montant__gt=0).order_by('-created_at')
+    montant = Paiement.objects.filter(profil=profil).order_by('-created_at')
 
     # Recherche par code
     if search:
