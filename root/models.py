@@ -118,6 +118,14 @@ def decrease_product_stock(sender, instance, **kwargs):
         product.save()  
 
 
+def generate_unique_codeP(model, field_name='codeP', length=10):
+    import random
+
+    while True:
+        code = ''.join(random.choices('AZERTYUIOPQSDFGHJKLMWXCVBN123456789', k=length))
+        if not model.objects.filter(**{field_name: code}).exists():
+            return code
+
 
 class Paiement(models.Model):
 
@@ -126,13 +134,29 @@ class Paiement(models.Model):
         CREDITE = "credite", "Credited"
         REFUND = "refund", "Remboursement"
 
-    codeP = models.CharField(max_length=100, unique=True, default=generate_code)
+    codeP = models.CharField(max_length=100, unique=True, editable=False)
     profil = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='paiements')
     montant = models.IntegerField()
     type = models.CharField(max_length=20, choices=TypePaiement.choices, default=TypePaiement.CREDITE)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+
+    def save(self, *args, **kwargs):
+        if not self.codeP:
+            for _ in range(5):  # retry sécurité
+                try:
+                    self.codeP = generate_unique_codeP(Paiement)
+                    super().save(*args, **kwargs)
+                    return
+                except IntegrityError:
+                    continue
+            raise Exception("Impossible de générer un code unique")
+
+        super().save(*args, **kwargs)    
+
 
     def __str__(self):
         return f"{self.profil.user.username}"
