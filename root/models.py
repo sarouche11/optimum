@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models,IntegrityError
 import random
 from django.contrib.auth.models import User
 from authentification.models import Profile
@@ -82,7 +82,7 @@ def generate_unique_code(model, field_name='code_activ', length=10):
             return code
 
 class ActivationCode(models.Model):
-    code_activ = models.CharField(max_length=100, unique=True, default=generate_unique_code)
+    code_activ = models.CharField(max_length=100, unique=True, editable=False)
     code = models.TextField() 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="activation_codes")
     used = models.BooleanField(default=False)  
@@ -92,6 +92,19 @@ class ActivationCode(models.Model):
 
     class Meta:
         unique_together = ('product', 'code_hash')
+
+    def save(self, *args, **kwargs):
+        if not self.code_activ:
+            for _ in range(5):  # retry sécurité
+                try:
+                    self.code_activ = generate_unique_code(ActivationCode)
+                    super().save(*args, **kwargs)
+                    return
+                except IntegrityError:
+                    continue
+            raise Exception("Impossible de générer un code unique")
+
+        super().save(*args, **kwargs)    
 
     def __str__(self):
         return f"{self.product.name}- {self.code_activ} "
