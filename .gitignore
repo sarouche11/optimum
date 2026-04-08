@@ -10,7 +10,7 @@ __pycache__/
 # Django
 *.sqlite3
 *.log
-main/settings.py
+
 .env
 
 # Static & Media
