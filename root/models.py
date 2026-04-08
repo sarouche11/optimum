@@ -71,8 +71,18 @@ class Product(models.Model):
         return self.name
     
 
+
+
+def generate_unique_code(model, field_name='code_activ', length=10):
+    import random
+
+    while True:
+        code = ''.join(random.choices('AZERTYUIOPQSDFGHJKLMWXCVBN123456789', k=length))
+        if not model.objects.filter(**{field_name: code}).exists():
+            return code
+
 class ActivationCode(models.Model):
-    code_activ = models.CharField(max_length=100, unique=True, default=generate_code)
+    code_activ = models.CharField(max_length=100, unique=True, default=generate_unique_code)
     code = models.TextField() 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="activation_codes")
     used = models.BooleanField(default=False)  
