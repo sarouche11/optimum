@@ -1782,6 +1782,14 @@ def history_transaction(request):
             profil__user__first_name__icontains=search
         )
 
+      # ---------------Récupérer tous les paramètres GET sauf 'page' ------------
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+
+    # ------------------Convertir en string utilisable dans les URLs-----------------
+    querystring = params.urlencode()     
+
     # Pagination
     paginator = Paginator(paiements.order_by('-created_at'), per_page)
     page_number = request.GET.get('page', 1)
@@ -1790,6 +1798,7 @@ def history_transaction(request):
     context = {
         'page_obj': page_obj,
         'search': search,
+        'querystring': querystring,
         'per_page': per_page,
     }
 
