@@ -3,7 +3,7 @@ from .models import Notification, ProductAchat, StatusAchat
 from authentification.decorators import user_is_in_group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from django.conf import settings
 from user_agents import parse
 
@@ -82,8 +82,12 @@ def encrypt_code(code):
     return cipher.encrypt(code.encode()).decode()
 
 def decrypt_code(encrypted_code):
-    return cipher.decrypt(encrypted_code.encode()).decode()         
-
+    cipher = Fernet(settings.FERNET_KEY)
+    try:
+        return cipher.decrypt(encrypted_code.encode()).decode()
+    except InvalidToken:
+        # Si ce n'est pas chiffré, renvoie tel quel
+        return encrypted_code
 
 
 def get_client_ip(request):
