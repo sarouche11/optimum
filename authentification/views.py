@@ -101,7 +101,8 @@ def verify_otp(request):
     user_id = request.session.get('pre_2fa_user')
     if not user_id:
         messages.error(request, "Your session has expired or you are not logged in.")
-        return render(request, "verify_otp.html")
+        form = CaptchaForm()
+        return render(request, "login.html", {"form": form})
 
     user = get_object_or_404(User, id=user_id)
     profile = user.profile
@@ -115,18 +116,18 @@ def verify_otp(request):
             otp = OTP.objects.filter(user=user, code=email_code).last()
             if not otp or not otp.is_valid():
                 messages.error(request, "Code email invalide ou expiré.")
-                return render(request, "verify_otp.html")
+                return redirect('login')
 
         # ✅ Vérification TOTP Google Authenticator si activé
         if profile.use_2fa_totp:
             if not profile.totp_secret:
                 messages.error(request, "Google Authenticator non configuré.")
-                return render(request, "verify_otp.html")
+                return redirect('login')
 
             totp = pyotp.TOTP(profile.totp_secret)
             if not totp.verify(totp_code):
                 messages.error(request, "Code Google Authenticator invalide.")
-                return render(request, "verify_otp.html")
+                return redirect('login')
 
         # ✅ Tout est correct → login
         login(request, user)
@@ -316,10 +317,6 @@ def register_view(request):
     }    
 
     return render(request, 'register.html', context)
-
-
-
-
 
 
 

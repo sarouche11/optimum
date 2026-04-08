@@ -66,17 +66,20 @@
                                         </thead>
                                         <tbody>
                                             {% for paiment in page_obj %}
-                                            <tr>
-                                               {% if paiment.type == 'refund' %}
-                                                <td ><span class="label label-warning" style="font-size: 12px;">Refund</span></td>
-                                                {% elif paiment.type == 'payment' %}
-                                                <td ><span class="label label-success" style="font-size: 12px;">Payment</span></td>
+                                           <tr>
+                                                {% if paiment.type == 'refund' %}
+                                                    <td><span class="label label-warning" style="font-size: 12px;">Refund</span></td>
+                                                {% else %}
+                                                    {% if paiment.montant > 0 %}
+                                                        <td><span class="label label-success" style="font-size: 12px;">Credited</span></td>
+                                                    {% elif paiment.montant < 0 %}
+                                                        <td><span class="label label-danger" style="font-size: 12px;">Debited</span></td>
+                                                    {% else %}
+                                                        <td><span class="label label-secondary" style="font-size: 12px;">0</span></td>
+                                                    {% endif %}
                                                 {% endif %}
                                                 <td>{{ paiment.montant }}</td>
-
                                                 <td>{{ paiment.created_at|date:'d-m-Y' }}</td>
-
-
                                             </tr>
                                             {% endfor %}
                                         </tbody>

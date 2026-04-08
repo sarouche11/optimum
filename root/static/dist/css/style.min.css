@@ -4878,6 +4878,10 @@ label {
     width: 1.4em
 }
 
+body{
+    font-family: 'Poppins', sans-serif !important;
+}
+
 body,
 caption {
     text-align: left

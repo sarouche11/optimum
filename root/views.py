@@ -1765,7 +1765,7 @@ def history_transaction(request):
     # Récupérer tous les codes achetés par le revendeur connecté
     profil = request.user.profile
 
-    paiements = Paiement.objects.filter(profil=profil, montant__gt=0).order_by('-created_at')
+    paiements = Paiement.objects.filter(profil=profil).order_by('-created_at')
 
     # Filtrer si une recherche est saisie
     if search:

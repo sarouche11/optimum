@@ -239,7 +239,7 @@
                     <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
                         aria-expanded="false">
                         <i class="bi bi-box"></i>
-                        <span class="hide-menu"> Product </span>
+                        <span class="hide-menu"> Items </span>
                     </a>
 
                     <ul aria-expanded="false" class="collapse first-level">
@@ -267,21 +267,37 @@
                 </li>
 
 
-                 <li class="sidebar-item {% if '/add_activation/' in request.path %}active{% endif %}">
-                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'add_activation' %}"
+          
+
+
+                  <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
                         aria-expanded="false">
-                        <i class="bi bi-key fs-4 " style="transform: rotate(-20deg);"></i>
-                        <span class="hide-menu">Code</span>
+                        <i class="bi bi-key fs-4"></i>
+                        <span class="hide-menu">Code </span>
                     </a>
+                    <ul aria-expanded="false" class="collapse  first-level">
+                        <li class="sidebar-item {% if '/add_activation/' in request.path %}active{% endif %}">
+                            <a href="{% url 'add_activation' %}" class="sidebar-link">
+                                <i class="fa fa-plus"></i>
+                                <span class="hide-menu"> Add </span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {% if '/log_code/' in request.path %}active{% endif %}">
+                            <a href="{% url 'log_code' %}" class="sidebar-link">
+                                <i class="bi bi-clock-history"></i>
+                                <span class="hide-menu"> Code History </span>
+                            </a>
+                        </li>
+
+                        
+
+                    </ul>
                 </li>
 
-                 <li class="sidebar-item {% if '/log_code/' in request.path %}active{% endif %}">
-                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'log_code' %}"
-                        aria-expanded="false">
-                        <i class="bi-clock-history" style="transform: rotate(-20deg);"></i>
-                        <span class="hide-menu">Code History</span>
-                    </a>
-                </li>
+
+
+
                 
                  <li class="sidebar-item {% if '/history_login/' in request.path %}active{% endif %}">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'history_login' %}"
