@@ -9,6 +9,14 @@ from django.contrib.auth.forms import PasswordChangeForm
 class CaptchaForm(forms.Form):
     captcha = CaptchaField()
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['captcha'].widget.attrs.update({
+            "class": "form-control",
+            "placeholder": "Enter code",
+        })
+
 
 
 class ProfileForm(forms.ModelForm):
