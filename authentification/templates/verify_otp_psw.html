@@ -42,65 +42,40 @@
 
                 <div class="row justify-content-center" style="margin-top: 50px;">
 
-                    <div class="col-lg-6 col-md-8 ">
+                    <div class="col-lg-4 col-md-4 ">
 
                         <div class="card border-0 shadow-sm rounded-4">
 
                             <!-- HEADER -->
                             <div class="card-header bg-white border-0 text-center py-3">
 
-                                <h4 class="fw-bold mb-0">
-                                    <i class="fa fa-lock text-success"></i> Change Password
-                                </h4>
+                               
 
-                                <small class="text-muted">
-                                    Secure your account by updating your password
-                                </small>
+                              
 
                             </div>
 
-                            <div class="card-body p-4">
+                            <div class="card-body text-center p-4">
 
-                                <form method="POST">
-                                    {% csrf_token %}
+                        <h4 class="fw-bold mb-2">OTP Verification</h4>
+                        <p class="text-muted small">Enter the verification code sent by email</p>
 
-                                    <!-- OLD PASSWORD -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Current password</label>
-                                        {{ form.old_password }}
-                                        {% for error in form.old_password.errors %}
-                                        <div class="text-danger small mt-1">{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
+                        <form method="POST">
+                            {% csrf_token %}
 
-                                    <!-- NEW PASSWORD -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">New password</label>
-                                        {{ form.new_password1 }}
-                                        {% for error in form.new_password1.errors %}
-                                        <div class="text-danger small mt-1">{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-
-                                    <!-- CONFIRM PASSWORD -->
-                                    <div class="mb-4">
-                                        <label class="form-label fw-semibold">Confirm new password</label>
-                                        {{ form.new_password2 }}
-                                        {% for error in form.new_password2.errors %}
-                                        <div class="text-danger small mt-1">{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-
-                                    <!-- BUTTON -->
-                                     <div class="col-lg-6 mx-auto">
-                                    <button type="submit" class="btn btn-success w-100 rounded-3 py-2">
-                                        Send OTP Code
-                                    </button>
-                                    </div>
-
-                                </form>
-
+                            <div class="mb-3">
+                                <input type="text" name="otp" class="form-control text-center fs-4" maxlength="6"
+                                    placeholder="------">
                             </div>
+                             <div class="col-lg-6 mx-auto">
+                            <button class="btn btn-success w-100 rounded-3">
+                                Change Password
+                            </button>
+                            </div>
+
+                        </form>
+
+                    </div>
 
                         </div>
 

@@ -20,7 +20,9 @@ import base64
 from .models import LoginHistory
 from root.utils import get_browser,get_client_ip
 from django.core.paginator import Paginator
-
+import  secrets
+import time
+from .utils import logout_other_sessions
 
 
 
@@ -363,20 +365,78 @@ def edit_profile(request):
 
     return render(request, 'profile.html', context)
 
-def change_password(request):
-    if request.method == 'POST':
-        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            user = form.save()  # sauvegarde le nouveau mot de passe
-            update_session_auth_hash(request, user)  # garde l'utilisateur connecté
-            messages.success(request, "Mot de passe mis à jour avec succès !")
-            return redirect('profile')
-        else:
-            messages.error(request, "Erreur dans le formulaire, veuillez corriger les champs ci-dessous.")
-    else:
-        form = CustomPasswordChangeForm(user=request.user)
 
-    return render(request, 'change_password.html', {'form': form})
+def change_password(request):
+
+    if request.method == "POST":
+
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+
+        if form.is_valid():
+
+            otp = str(secrets.randbelow(900000) + 100000)
+
+            request.session["otp"] = otp
+            request.session["otp_expiry"] = time.time() + 300
+            request.session["form_data"] = request.POST.dict()
+
+            send_mail(
+                "Code de vérification",
+                f"Votre code est : {otp}",
+                settings.DEFAULT_FROM_EMAIL,
+                [request.user.email],
+            )
+
+            return redirect("verify_otp_change_psw")
+
+        return render(request, "change_password.html", {"form": form})
+
+    form = CustomPasswordChangeForm(user=request.user)
+
+    return render(request, "change_password.html", {"form": form})
+
+
+
+
+def verify_otp_change_psw(request):
+
+    if request.method == "POST":
+
+        code = request.POST.get("otp")
+        stored = request.session.get("otp")
+        expiry = request.session.get("otp_expiry")
+
+        if not stored or time.time() > expiry:
+            messages.error(request, "Code expiré")
+            return redirect("change_password")
+
+        if code != stored:
+            messages.error(request, "Code incorrect")
+            return render(request, "verify_otp_psw.html")
+
+        # restore form data
+        form = CustomPasswordChangeForm(
+            user=request.user,
+            data=request.session.get("form_data")
+        )
+
+        if form.is_valid():
+            user = form.save()
+
+            update_session_auth_hash(request, user)
+
+            # logout other devices
+            logout_other_sessions(request, user)
+
+            # cleanup
+            request.session.flush()
+
+            messages.success(request, "Mot de passe changé avec succès")
+            return redirect("login")
+
+    return render(request, "verify_otp_psw.html")
+
+
 
 
 
