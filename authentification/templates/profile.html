@@ -66,7 +66,7 @@
 
                         <p class="text-muted mb-2">{{ user.username }}</p>
 
-                        <span class="badge bg-success px-3 py-2">
+                        <span class="label label-success px-3 py-2">
                             {% for group in request.user.groups.all %}
                                 {{ group.name }}{% if not forloop.last %}, {% endif %}
                             {% empty %}
@@ -110,8 +110,6 @@
 
         <!-- 📝 EDIT PROFILE FULL WIDTH UNDER -->
         <div class="row">
-
-          
 
             <div class="col-lg-8">
 
@@ -225,7 +223,10 @@
 
                         <p>
                             <small class="text-muted">Account</small><br>
-                            <span class="badge bg-success">Active</span>
+
+                            {% if user.profile.active  %}
+                            <span class="label label-success mt-2" >Active</span>
+                            {% endif %}
                         </p>
 
                         
