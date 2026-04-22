@@ -37546,3 +37546,17 @@ html[dir=rtl] #main-wrapper[data-sidebartype=overlay].show-sidebar .left-sidebar
     font-size: 25px;
     opacity: 0.8;
 }
+
+
+.card {
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.form-control {
+    border-radius: 10px;
+}
